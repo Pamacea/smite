@@ -98,6 +98,15 @@
       "category": "development"
     },
     {
+      "name": "smite-brainstorm",
+      "source": "./plugins/smite-brainstorm",
+      "description": "Creative thinking, ideation & problem-solving partner for any topic",
+      "author": {
+        "name": "Pamacea"
+      },
+      "category": "development"
+    },
+    {
       "name": "linter-sentinel",
       "source": "./plugins/linter-sentinel",
       "description": "Auto-fix ESLint, TypeScript, and Prettier violations with surgical precision",
