@@ -89,10 +89,10 @@
 /smite-gatekeeper
 
 # 6. Maintain documentation
-*start-doc-maintainer --mode=sync
+/smite--doc-maintainer --mode=sync
 
 # 7. Fix linting issues
-*start-linter-sentinel --mode=fix
+/smite-linter-sentinel --mode=fix
 ```
 
 ### Individual Plugin Installation
