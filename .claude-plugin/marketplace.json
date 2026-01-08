@@ -35,15 +35,6 @@
       "category": "development"
     },
     {
-      "name": "smite-architect",
-      "source": "./plugins/smite-architect",
-      "description": "Software architecture and system design agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
       "name": "smite-aura",
       "source": "./plugins/smite-aura",
       "description": "Design system and UI/UX component creation agent",
