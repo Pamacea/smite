@@ -227,13 +227,6 @@ function generateChecklist(agent) {
             'Define pricing strategy',
             'Project financial scenarios'
         ],
-        architect: [
-            'Design system architecture',
-            'Define database schema',
-            'Specify API endpoints',
-            'Create architecture diagrams',
-            'Document technical decisions'
-        ],
         aura: [
             'Define design tokens',
             'Create component library',

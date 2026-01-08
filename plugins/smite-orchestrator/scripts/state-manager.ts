@@ -27,7 +27,6 @@ const WORKFLOW_ORDER: AgentName[] = [
   'initializer',
   'explorer',
   'strategist',
-  'architect',
   'aura',
   'constructor',
   'gatekeeper',
@@ -39,7 +38,6 @@ type AgentName =
   | 'initializer'
   | 'explorer'
   | 'strategist'
-  | 'architect'
   | 'aura'
   | 'constructor'
   | 'gatekeeper'
@@ -50,7 +48,6 @@ type WorkflowPhase =
   | 'init'
   | 'exploration'
   | 'strategy'
-  | 'design'
   | 'design-system'
   | 'implementation'
   | 'review'
@@ -203,7 +200,6 @@ function determinePhase(agentName: AgentName): WorkflowPhase {
     'initializer': 'init',
     'explorer': 'exploration',
     'strategist': 'strategy',
-    'architect': 'design',
     'aura': 'design-system',
     'constructor': 'implementation',
     'gatekeeper': 'review',
@@ -263,8 +259,7 @@ function suggestByPhase(state: OrchestratorState): NextAgentResult {
   const phaseTransitions: Record<WorkflowPhase, AgentName | null> = {
     'init': 'initializer',
     'exploration': 'strategist',
-    'strategy': 'architect',
-    'design': 'aura',
+    'strategy': 'aura',
     'design-system': 'constructor',
     'implementation': 'gatekeeper',
     'review': 'handover',

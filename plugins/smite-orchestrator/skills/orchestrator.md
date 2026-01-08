@@ -152,19 +152,19 @@ Voulez-vous lancer SURGEON pour un audit chirurgical ?
 
 ```bash
 # 1. Agent Principal produit un artefact
-*start-brain architect
-→ Génère architect-product.md
+*start-brain strategist
+→ Génère strategist-business-model.md
 
 # 2. ORCHESTRATOR détecte automatiquement
 → Trigger GATEKEEPER
-*start-gatekeeper --auto --artifact="architect-product.md"
+*start-gatekeeper --auto --artifact="strategist-business-model.md"
 → Résultat : ✅ PASS
 
 # 3. ORCHESTRATOR suggère HANDOVER
 → Prompt : "Créer un MISSION_BRIEF.md pour Aura ?"
 → User : [Y]es
 → Trigger HANDOVER
-*start-handover --from="architect" --to="aura"
+*start-handover --from="strategist" --to="aura"
 → Génère MISSION_BRIEF.md
 
 # 4. User continue avec Aura
@@ -321,6 +321,117 @@ const copy2 = /* même code */; → Trigger Surgeon
 
 🎭 *ORCHESTRATOR LOG - Session [UUID]*
 ```
+
+---
+
+## 🎨 MODE CUSTOM WORKFLOW
+
+**Créez votre propre workflow d'agents sur mesure**
+
+### Quand utiliser le mode custom ?
+
+- **Workflow spécifique** : Votre projet nécessite une séquence d'agents particulière
+- **Itération rapide** : Vous voulez répéter certains agents
+- **Skip unnecessary steps** : Certains agents ne sont pas pertinents pour votre tâche
+- **Expert workflow** : Vous savez exactement ce dont vous avez besoin
+
+### Comment l'utiliser ?
+
+**1. Définir votre workflow custom**
+
+```bash
+/smite:orchestrator --workflow=custom --agents=explorer,strategist,constructor
+```
+
+**2. Agents disponibles**
+
+- `initializer` - Initialisation projet et stack technique
+- `explorer` - Exploration codebase et dépendances
+- `strategist` - Analyse business et stratégie marché
+- `aura` - Design system et composants UI
+- `constructor` - Implémentation et code
+- `gatekeeper` - Review qualité et validation
+- `handover` - Documentation et transfert de connaissances
+- `surgeon` - Refactoring et optimisation
+- `brainstorm` - Réflexion créative et résolution de problèmes
+
+**3. Exemples de workflows custom**
+
+```bash
+# Quick feature (sans design)
+/smite:orchestrator --workflow=custom --agents=explorer,constructor,gatekeeper
+
+# Business focus (sans implémentation)
+/smite:orchestrator --workflow=custom --agents=strategist,brainstorm,handover
+
+# Design sprint (sans business)
+/smite:orchestrator --workflow=custom --agents=explorer,aura,constructor
+
+# Full audit (tous les agents de qualité)
+/smite:orchestrator --workflow=custom --agents=explorer,gatekeeper,surgeon,handover
+
+# Brainstorming session
+/smite:orchestrator --workflow=custom --agents=brainstorm,strategist,brainstorm
+
+# Refactoring deep dive
+/smite:orchestrator --workflow=custom --agents=explorer,surgeon,constructor,gatekeeper
+```
+
+**4. Workflow avec répétition**
+
+```bash
+# Itération stratégie → brainstorm → stratégie
+/smite:orchestrator --workflow=custom --agents=strategist,brainstorm,strategist,constructor
+```
+
+### Séquence logique recommandée
+
+**Pour un développement complet:**
+```
+explorer → strategist → aura → constructor → gatekeeper → handover
+```
+
+**Pour un quick fix:**
+```
+explorer → constructor → gatekeeper
+```
+
+**Pour du refactoring:**
+```
+explorer → surgeon → gatekeeper
+```
+
+**Pour de la stratégie pure:**
+```
+brainstorm → strategist → handover
+```
+
+### État du workflow custom
+
+L'orchestrator suit automatiquement votre progression dans le workflow custom:
+
+```bash
+# Voir l'état actuel
+*orchestrator-status
+
+# Output:
+## Workflow Custom Progress
+explorer → strategist → aura → constructor → gatekeeper → handover
+   [✓]        [✓]         [    ]      [        ]      [      ]
+
+Current: aura
+Next: constructor
+Completed: 2/6 (33%)
+```
+
+### Transitions automatiques
+
+L'orchestrator continue de déclencher automatiquement:
+- **Gatekeeper** après chaque agent qui produit des artefacts
+- **Handover** suggère la transition vers l'agent suivant
+- **Surgeon** si de la dette technique est détectée
+
+Mais suit **votre séquence custom** plutôt que le workflow standard.
 
 ---
 

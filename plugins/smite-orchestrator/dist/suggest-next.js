@@ -27,10 +27,6 @@ const AGENT_INFO = {
         description: 'Business strategy, market analysis & revenue optimization',
         deliverables: 'Market analysis, business model, pricing strategy, personas, financial projections'
     },
-    architect: {
-        description: 'Design system architecture',
-        deliverables: 'Architecture diagrams, database schema, API specifications'
-    },
     aura: {
         description: 'Create design system and UI components',
         deliverables: 'Design tokens, component library, style guide'
@@ -90,7 +86,7 @@ function generateReason(state, nextAgent) {
         return 'Workflow is complete!';
     }
     const completed = state.agents_called.length;
-    const total = 8; // Total agents in workflow
+    const total = 7; // Total agents in workflow
     const progress = Math.round((completed / total) * 100);
     return `${progress}% complete. ${total - completed} agent(s) remaining.`;
 }
@@ -98,8 +94,8 @@ function generateReason(state, nextAgent) {
  * Generate workflow progress string
  */
 function generateWorkflowProgress(calledAgents) {
-    const agents = ['initializer', 'explorer', 'strategist', 'architect', 'aura', 'constructor', 'gatekeeper', 'handover'];
-    let progress = 'initializer → explorer → strategist → architect → aura → constructor → gatekeeper → handover\n';
+    const agents = ['initializer', 'explorer', 'strategist', 'aura', 'constructor', 'gatekeeper', 'handover'];
+    let progress = 'initializer → explorer → strategist → aura → constructor → gatekeeper → handover\n';
     agents.forEach(agent => {
         const called = calledAgents.includes(agent);
         progress += called ? ' [✓]' : ' [ ]';

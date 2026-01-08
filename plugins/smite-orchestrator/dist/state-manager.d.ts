@@ -12,8 +12,8 @@
  *   ts-node state-manager.ts get-next
  *   ts-node state-manager.ts get-state
  */
-type AgentName = 'initializer' | 'explorer' | 'strategist' | 'architect' | 'aura' | 'constructor' | 'gatekeeper' | 'handover' | 'surgeon';
-type WorkflowPhase = 'init' | 'exploration' | 'strategy' | 'design' | 'design-system' | 'implementation' | 'review' | 'documentation' | 'refactoring' | 'unknown';
+type AgentName = 'initializer' | 'explorer' | 'strategist' | 'aura' | 'constructor' | 'gatekeeper' | 'handover' | 'surgeon';
+type WorkflowPhase = 'init' | 'exploration' | 'strategy' | 'design-system' | 'implementation' | 'review' | 'documentation' | 'refactoring' | 'unknown';
 interface Artifact {
     path: string;
     category: string;

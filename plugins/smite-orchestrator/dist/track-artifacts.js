@@ -142,10 +142,10 @@ function updateSessionInfo(state, projectDir) {
 ## Workflow Progress
 
 \`\`\`
-initializer → explorer → strategist → architect → aura → constructor → gatekeeper → handover
+initializer → explorer → strategist → aura → constructor → gatekeeper → handover
 `;
     // Add progress indicators
-    const agents = ['initializer', 'explorer', 'strategist', 'architect', 'aura', 'constructor', 'gatekeeper', 'handover'];
+    const agents = ['initializer', 'explorer', 'strategist', 'aura', 'constructor', 'gatekeeper', 'handover'];
     agents.forEach(agent => {
         const called = state.agents_called.includes(agent);
         const isCurrent = state.current_agent === agent;
