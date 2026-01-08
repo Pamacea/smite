@@ -35,6 +35,7 @@ Active l'agent Constructor pour le développement.
 
 **Flags:**
 - `--tech=[nextjs|rust|python|go]` : Spécialise l'agent pour une stack spécifique
+- `--design` : Mode implémentation de design (SVG, Figma, UI components)
 - `--feature="[name]"` : Construit une feature spécifique
 - `--component="[name]"` : Construit un composant spécifique
 
@@ -419,6 +420,438 @@ async def create_task(
     )
     await db.commit()
     return result.scalar_one()
+```
+
+---
+
+### MODE: --design
+
+**Spécialisation:** Transformation de designs en composants code
+
+**Sources de design:**
+- Figma files & components
+- SVG files & illustrations
+- Images à convertir en SVG
+- Design tokens (colors, spacing, typography)
+- Mockups & wireframes
+
+**Patterns & Best Practices:**
+
+1. **Conversion Figma → Code**
+   - Analyser la structure du design Figma
+   - Extraire design tokens (colors, spacing, typography)
+   - Identifier les composants réutilisables
+   - Créer une hiérarchie de composants
+   - Implémenter avec design system existant
+
+2. **SVG Optimisation**
+   - Minifier les SVG (svgo)
+   - Utiliser `currentColor` pour les couleurs dynamiques
+   - Optimiser les paths et shapes
+   - Ajouter `viewBox` pour responsive
+   - Utiliser `width` et `height` avec `className`
+
+3. **Composants SVG Réutilisables**
+
+**Icon component:**
+```typescript
+// components/ui/icon.tsx
+interface IconProps {
+  name: string
+  size?: number
+  className?: string
+}
+
+export function Icon({ name, size = 24, className }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <use href={`#icon-${name}`} />
+    </svg>
+  )
+}
+
+// Utilisation dans l'app
+<Icon name="home" size={32} className="text-primary" />
+```
+
+**Sprite system:**
+```typescript
+// components/ui/sprite.tsx
+export function SpriteSheet() {
+  return (
+    <svg style={{ display: 'none' }}>
+      <defs>
+        {/* Icons définis ici */}
+        <symbol id="icon-home" viewBox="0 0 24 24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
+        </symbol>
+        <symbol id="icon-search" viewBox="0 0 24 24">
+          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/>
+        </symbol>
+      </defs>
+    </svg>
+  )
+}
+```
+
+4. **Illustrations SVG Animées**
+
+**Animated illustration:**
+```typescript
+// components/illustrations/hero.tsx
+export function HeroIllustration() {
+  return (
+    <svg viewBox="0 0 400 300" className="w-full h-auto">
+      {/* Background */}
+      <circle cx="200" cy="150" r="100" fill="url(#gradient)" />
+
+      {/* Animated elements */}
+      <g className="floating">
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          values="0,0; 0,-10; 0,0"
+          dur="3s"
+          repeatCount="indefinite"
+        />
+        <path d="..." fill="#6366F1" />
+      </g>
+
+      {/* Gradient definitions */}
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#6366F1" />
+          <stop offset="100%" stopColor="#8B5CF6" />
+        </linearGradient>
+      </defs>
+
+      {/* CSS animation */}
+      <style>{`
+        .floating {
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
+    </svg>
+  )
+}
+```
+
+5. **Design Tokens Implementation**
+
+**À partir de Figma:**
+```typescript
+// lib/design-tokens.ts
+// Extrait de Figma: colors, spacing, typography
+
+export const tokens = {
+  colors: {
+    primary: {
+      50: '#EEF2FF',
+      100: '#E0E7FF',
+      500: '#6366F1',  // Figma: Primary
+      600: '#4F46E5',
+      900: '#312E81',
+    },
+    semantic: {
+      success: '#10B981',
+      warning: '#F59E0B',
+      error: '#EF4444',
+    }
+  },
+  spacing: {
+    xs: '4px',    // Figma: 4px
+    sm: '8px',    // Figma: 8px
+    md: '16px',   // Figma: 16px
+    lg: '24px',   // Figma: 24px
+    xl: '32px',   // Figma: 32px
+  },
+  typography: {
+    font: {
+      sans: 'Inter', // Figma: Inter
+      mono: 'Fira Code',
+    },
+    size: {
+      xs: '0.75rem',   // 12px
+      sm: '0.875rem',  // 14px
+      base: '1rem',    // 16px
+      lg: '1.125rem',  // 18px
+      xl: '1.25rem',   // 20px
+    }
+  }
+}
+```
+
+6. **Responsive Design from Figma**
+
+**Multi-breakpoint implementation:**
+```typescript
+// components/features/hero-section.tsx
+export function HeroSection() {
+  return (
+    <section className="container mx-auto px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Mobile: 1 colonne, Desktop: 2 colonnes */}
+        <div className="space-y-4">
+          <h1 className="text-4xl md:text-6xl font-bold">
+            {/* Figma: Desktop 60px, Mobile 36px */}
+            Build faster
+          </h1>
+          <p className="text-lg md:text-xl">
+            Build products with confidence
+          </p>
+        </div>
+        <div>
+          <HeroIllustration />
+        </div>
+      </div>
+    </section>
+  )
+}
+```
+
+7. **Figma Component Variants**
+
+**Button variants from Figma:**
+```typescript
+// components/ui/button.tsx
+// Figma variants: Primary, Secondary, Outline, Ghost
+
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
+  children: React.ReactNode
+}
+
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  children
+}: ButtonProps) {
+  const baseStyles = 'rounded-lg font-medium transition-colors'
+
+  const variants = {
+    primary: 'bg-primary-500 text-white hover:bg-primary-600',
+    secondary: 'bg-secondary-500 text-white hover:bg-secondary-600',
+    outline: 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50',
+    ghost: 'text-gray-700 hover:bg-gray-100'
+  }
+
+  const sizes = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg'
+  }
+
+  return (
+    <button className={`${baseStyles} ${variants[variant]} ${sizes[size]}`}>
+      {children}
+    </button>
+  )
+}
+```
+
+8. **SVG Patterns & Textures**
+
+**Pattern background:**
+```typescript
+// components/patterns/dot-pattern.tsx
+export function DotPattern({ color = '#6366F1' }: { color?: string }) {
+  return (
+    <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+      <pattern
+        id="dotPattern"
+        x="0"
+        y="0"
+        width="20"
+        height="20"
+        patternUnits="userSpaceOnUse"
+      >
+        <circle cx="2" cy="2" r="1" fill={color} opacity="0.3" />
+      </pattern>
+      <rect width="100%" height="100%" fill="url(#dotPattern)" />
+    </svg>
+  )
+}
+```
+
+9. **Logo & Brand Assets**
+
+**Responsive logo component:**
+```typescript
+// components/brand/logo.tsx
+export function Logo({
+  variant = 'full',
+  className
+}: {
+  variant?: 'full' | 'icon' | 'wordmark'
+  className?: string
+}) {
+  if (variant === 'icon') {
+    return (
+      <svg
+        viewBox="0 0 24 24"
+        className={className}
+        fill="currentColor"
+      >
+        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+    )
+  }
+
+  if (variant === 'wordmark') {
+    return (
+      <svg
+        viewBox="0 0 120 24"
+        className={className}
+        fill="currentColor"
+      >
+        <text x="0" y="18" fontSize="18" fontWeight="bold">
+          BRAND
+        </text>
+      </svg>
+    )
+  }
+
+  // Full logo (icon + wordmark)
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <Logo variant="icon" className="w-6 h-6" />
+      <Logo variant="wordmark" className="h-6" />
+    </div>
+  )
+}
+```
+
+10. **Design Implementation Workflow**
+
+**Processus de conversion Figma → Code:**
+
+```bash
+# 1. Analyser le design Figma
+*start-constructor --design --source="figma:file-id"
+
+# 2. Extraire les design tokens
+→ Génère: lib/design-tokens.ts
+→ Couleurs, spacing, typography
+
+# 3. Identifier les composants
+→ Boutons, cards, inputs, etc.
+→ Crée: components/ui/*.tsx
+
+# 4. Implémenter les layouts
+→ Pages, sections, templates
+→ Crée: app/**/*.tsx
+
+# 5. Optimiser les SVG
+→ Minifier, simplifier paths
+→ Crée: components/icons/*.tsx
+
+# 6. Ajouter les responsive
+→ Mobile-first approach
+→ Breakpoints: sm, md, lg, xl
+
+# 7. Valider avec Figma
+→ Pixel-perfect match
+→ Spacing exact
+```
+
+**Exemple de conversion:**
+
+```typescript
+// Figma Frame: Hero Section
+// → app/(routes)/page.tsx
+
+export default function HomePage() {
+  return (
+    <section
+      className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50"
+      style={{
+        // Figma padding: 64px vertical, 32px horizontal
+        paddingTop: '64px',
+        paddingBottom: '64px',
+        paddingLeft: '32px',
+        paddingRight: '32px'
+      }}
+    >
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <div className="space-y-6">
+            {/* Figma: Heading 1 - 48px, Bold, Primary-900 */}
+            <h1 className="text-5xl font-bold text-primary-900">
+              Build products with confidence
+            </h1>
+
+            {/* Figma: Body - 18px, Regular, Gray-600 */}
+            <p className="text-lg text-gray-600 leading-relaxed">
+              Ship faster with our complete toolkit
+            </p>
+
+            {/* Figma: Button - Primary, 180px width, 48px height */}
+            <Button variant="primary" size="lg" className="w-45 h-12">
+              Get Started
+            </Button>
+          </div>
+
+          {/* Illustration */}
+          <div className="relative">
+            {/* Figma: Illustration - 600x400px */}
+            <HeroIllustration className="w-full max-w-[600px]" />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+```
+
+11. **SVG Asset Optimization**
+
+**Automated optimization pipeline:**
+```bash
+# 1. Export depuis Figma en SVG
+# 2. Optimiser avec svgo
+npx svgo input.svg --output output.svg
+
+# 3. Convertir en composant React
+npx @svgr/cli output.svg --out-dir components/icons
+
+# 4. Résultat
+export function Icon({ className }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className}>
+      <path d="..." />
+    </svg>
+  )
+}
+```
+
+**Custom SVGR config:**
+```javascript
+// svgr.config.js
+module.exports = {
+  icon: true,
+  typescript: true,
+  replaceAttrValues: {
+    '#000': 'currentColor',
+    '#000000': 'currentColor'
+  },
+  svgProps: {
+    className: '{className}'
+  }
+}
 ```
 
 ---
