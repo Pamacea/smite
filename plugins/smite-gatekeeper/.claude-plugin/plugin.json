@@ -4,5 +4,13 @@
   "version": "1.0.0",
   "author": {
     "name": "Pamacea"
+  },
+  "hooks": {
+    "SubagentStop": [
+      {
+        "command": "node",
+        "args": ["plugins/smite-orchestrator/dist/agent-complete.js", "gatekeeper"]
+      }
+    ]
   }
 }

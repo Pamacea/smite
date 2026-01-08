@@ -8,7 +8,12 @@
       "mcp__zread__search_doc",
       "mcp__zread__read_file",
       "mcp__zread__get_repo_structure",
-      "WebSearch"
+      "WebSearch",
+      "mcp__web-search-prime__webSearchPrime",
+      "mcp__web-reader__webReader",
+      "Bash(del:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
