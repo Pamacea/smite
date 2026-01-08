@@ -5,12 +5,5 @@
   "author": {
     "name": "Pamacea"
   },
-  "hooks": {
-    "SubagentStop": [
-      {
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/agent-complete.js", "initializer"]
-      }
-    ]
-  }
+  "commands": "./commands/"
 }

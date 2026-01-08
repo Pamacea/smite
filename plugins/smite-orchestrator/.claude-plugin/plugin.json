@@ -5,36 +5,5 @@
   "author": {
     "name": "Pamacea"
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/session-init.js"]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "toolName": "Write",
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/track-artifacts.js", "{{context.toolResult.filePath}}", "{{context.activeAgent}}"]
-      },
-      {
-        "toolName": "Write",
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/detect-debt.js", "file", "{{context.toolResult.filePath}}"]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/agent-complete.js", "{{context.agentName}}"]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "command": "node",
-        "args": ["plugins/smite-orchestrator/dist/suggest-display.js"]
-      }
-    ]
-  }
+  "commands": "./commands/"
 }
