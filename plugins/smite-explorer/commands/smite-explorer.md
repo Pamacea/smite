@@ -3,7 +3,7 @@ description: Codebase exploration, dependency mapping & pattern discovery
 argument-hint: [--task=find-function|find-component|find-bug|find-deps|map-architecture|analyze-impacts] [--scope=module|full] [--target=pattern]
 ---
 
-Use the smite-explorer skill to explore and understand the codebase structure.
+Explore and understand the codebase structure.
 
 **Tasks:**
 - `find-function` - Locate specific functions and their usage across the codebase
@@ -23,7 +23,7 @@ Use the smite-explorer skill to explore and understand the codebase structure.
 - `docs/explorer-architecture.md` - Architecture overview
 
 **Usage:**
-/smite:explorer --task=find-function --target="getUserData"
-/smite:explorer --task=find-component --scope=module
-/smite:explorer --task=map-architecture
-/smite:explorer --task=find-bug --target="memory leak"
+/smite-explorer --task=find-function --target="getUserData"
+/smite-explorer --task=find-component --scope=module
+/smite-explorer --task=map-architecture
+/smite-explorer --task=find-bug --target="memory leak"

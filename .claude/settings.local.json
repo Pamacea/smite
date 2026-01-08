@@ -21,7 +21,8 @@
       "Bash(bash:*)",
       "Bash(ls:*)",
       "Bash(git config:*)",
-      "Skill(smite-orchestrator:smite:orchestrator)"
+      "Skill(smite-orchestrator:smite:orchestrator)",
+      "Bash(find:*)"
     ]
   }
 }
