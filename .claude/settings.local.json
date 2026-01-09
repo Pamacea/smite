@@ -37,7 +37,8 @@
       "Bash(xargs:*)",
       "Skill(smite-explorer:smite:explorer)",
       "Skill(smite-brainstorm:smite:brainstorm)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Skill(smite-explorer:explorer)"
     ]
   }
 }
