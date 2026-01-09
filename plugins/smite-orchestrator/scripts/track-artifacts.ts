@@ -106,10 +106,11 @@ function trackArtifact(
       total_artifacts: state.artifacts.length
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: error.message
+      error: message
     };
   }
 }

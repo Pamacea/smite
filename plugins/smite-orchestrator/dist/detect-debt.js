@@ -186,9 +186,10 @@ function detectDebt(filePath, projectDir = process.cwd()) {
         };
     }
     catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return {
             analyzed: false,
-            error: error.message
+            error: message
         };
     }
 }
@@ -217,7 +218,12 @@ function generateSummary(issues) {
  * Create technical debt suggestion file
  */
 function createDebtSuggestion(filePath, issues, projectDir) {
-    const suggestionPath = path.join(projectDir, '.smite', 'suggestions', 'fix-surgeon.md');
+    const suggestionsDir = path.join(projectDir, '.smite', 'suggestions');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(suggestionsDir)) {
+        fs.mkdirSync(suggestionsDir, { recursive: true });
+    }
+    const suggestionPath = path.join(suggestionsDir, 'fix-surgeon.md');
     const highIssues = issues.filter(i => i.severity === 'high');
     const mediumIssues = issues.filter(i => i.severity === 'medium');
     let content = `# ⚠️ TECHNICAL DEBT DETECTED

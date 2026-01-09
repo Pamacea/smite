@@ -180,6 +180,14 @@ function getNext(projectDir = process.cwd()) {
     }
     // Find last completed agent index (use current_agent if running, last_completed_agent if just finished)
     const agentToFind = state.current_agent || state.last_completed_agent;
+    // Add null check
+    if (!agentToFind) {
+        return {
+            next: 'initializer',
+            message: 'Starting workflow from beginning',
+            state
+        };
+    }
     const currentIndex = WORKFLOW_ORDER.indexOf(agentToFind);
     if (currentIndex === -1) {
         // Current agent not in standard workflow, suggest next based on phase
@@ -216,7 +224,7 @@ function suggestByPhase(state) {
         'implementation': 'gatekeeper',
         'review': 'handover',
         'documentation': null,
-        'refactoring': state.current_agent, // Return to previous agent
+        'refactoring': state.last_completed_agent || null, // Return to previous agent or end
         'unknown': null
     };
     const nextAgent = phaseTransitions[state.phase];

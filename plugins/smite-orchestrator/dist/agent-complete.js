@@ -78,9 +78,10 @@ function handleAgentComplete(agentName, projectDir = process.cwd()) {
         };
     }
     catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return {
             success: false,
-            error: error.message
+            error: message
         };
     }
 }
@@ -88,7 +89,12 @@ function handleAgentComplete(agentName, projectDir = process.cwd()) {
  * Create suggestion file
  */
 function createSuggestionFile(completedAgent, suggestion, projectDir) {
-    const suggestionPath = path.join(projectDir, '.smite', 'suggestions', 'next-action.md');
+    const suggestionsDir = path.join(projectDir, '.smite', 'suggestions');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(suggestionsDir)) {
+        fs.mkdirSync(suggestionsDir, { recursive: true });
+    }
+    const suggestionPath = path.join(suggestionsDir, 'next-action.md');
     const content = `# 🎯 NEXT AGENT SUGGESTION
 
 **Generated**: ${new Date().toISOString()}

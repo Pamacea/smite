@@ -49,7 +49,14 @@
       "Skill(smite-gatekeeper:smite:gatekeeper)",
       "Skill(smite-handover:smite:handover)",
       "Skill(smite-surgeon:smite:surgeon)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(if:*)",
+      "Bash(then echo \"Directory exists\")",
+      "Bash(else:*)",
+      "Bash(then echo \"✅ detect-debt.js exists\")",
+      "Bash(then echo \"✅ agent-complete.js exists\")",
+      "Bash(echo:*)",
+      "Bash(then ls -lh plugins/smite-orchestrator/dist/*.js)"
     ]
   },
   "hooks": {

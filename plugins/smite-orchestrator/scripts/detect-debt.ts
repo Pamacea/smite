@@ -204,10 +204,11 @@ function detectDebt(filePath: string, projectDir: string = process.cwd()): DebtD
       summary: generateSummary(issues)
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       analyzed: false,
-      error: error.message
+      error: message
     };
   }
 }
@@ -240,7 +241,14 @@ function generateSummary(issues: DebtIssue[]) {
  * Create technical debt suggestion file
  */
 function createDebtSuggestion(filePath: string, issues: DebtIssue[], projectDir: string): void {
-  const suggestionPath = path.join(projectDir, '.smite', 'suggestions', 'fix-surgeon.md');
+  const suggestionsDir = path.join(projectDir, '.smite', 'suggestions');
+
+  // Create directory if it doesn't exist
+  if (!fs.existsSync(suggestionsDir)) {
+    fs.mkdirSync(suggestionsDir, { recursive: true });
+  }
+
+  const suggestionPath = path.join(suggestionsDir, 'fix-surgeon.md');
 
   const highIssues = issues.filter(i => i.severity === 'high');
   const mediumIssues = issues.filter(i => i.severity === 'medium');

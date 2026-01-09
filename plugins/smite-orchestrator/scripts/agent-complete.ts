@@ -13,7 +13,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { loadState, saveState, init, AgentName } from './state-manager';
-import { generateSuggestion } from './suggest-next';
+import { generateSuggestion, SuggestionResult } from './suggest-next';
 
 interface CompleteResult {
   success: boolean;
@@ -62,10 +62,11 @@ function handleAgentComplete(
       suggestion_file: '.smite/suggestions/next-action.md'
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: error.message
+      error: message
     };
   }
 }
@@ -78,7 +79,14 @@ function createSuggestionFile(
   suggestion: SuggestionResult,
   projectDir: string
 ): void {
-  const suggestionPath = path.join(projectDir, '.smite', 'suggestions', 'next-action.md');
+  const suggestionsDir = path.join(projectDir, '.smite', 'suggestions');
+
+  // Create directory if it doesn't exist
+  if (!fs.existsSync(suggestionsDir)) {
+    fs.mkdirSync(suggestionsDir, { recursive: true });
+  }
+
+  const suggestionPath = path.join(suggestionsDir, 'next-action.md');
 
   const content = `# 🎯 NEXT AGENT SUGGESTION
 
@@ -127,12 +135,6 @@ ${suggestion.deliverables || '*No deliverables yet*'}
   fs.writeFileSync(suggestionPath, content, 'utf-8');
 }
 
-interface SuggestionResult {
-  next: AgentName | null;
-  reason?: string;
-  workflow_progress: string;
-  deliverables?: string;
-}
 
 /**
  * CLI interface

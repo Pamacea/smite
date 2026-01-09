@@ -10,7 +10,7 @@
  *   ts-node suggest-next.ts [project_dir]
  */
 
-import { loadState, AgentName, getNext as getNextAgent } from './state-manager';
+import { loadState, AgentName, getNext as getNextAgent, OrchestratorState } from './state-manager';
 
 // Type Definitions
 export interface SuggestionResult {
@@ -94,7 +94,7 @@ export function generateSuggestion(projectDir: string = process.cwd()): Suggesti
 /**
  * Generate reason for suggestion
  */
-function generateReason(state: any, nextAgent: AgentName | null): string {
+function generateReason(state: OrchestratorState, nextAgent: AgentName | null): string {
   if (!nextAgent) {
     return 'Workflow is complete!';
   }

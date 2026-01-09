@@ -120,9 +120,10 @@ function trackArtifact(filePath, agentName = null, projectDir = process.cwd()) {
         };
     }
     catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return {
             success: false,
-            error: error.message
+            error: message
         };
     }
 }

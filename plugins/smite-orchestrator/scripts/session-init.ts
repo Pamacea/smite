@@ -125,10 +125,11 @@ function initSession(projectDir: string = process.cwd()): void {
       }
     }));
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error(JSON.stringify({
       success: false,
-      error: error.message
+      error: message
     }));
     process.exit(1);
   }

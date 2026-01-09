@@ -12,7 +12,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { loadState, AgentName } from './state-manager';
+import { loadState, AgentName, Artifact, OrchestratorState } from './state-manager';
 import { AGENT_INFO } from './suggest-next';
 
 interface HandoffResult {
@@ -57,10 +57,11 @@ function generateHandoff(
       next_agent: nextAgent
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: error.message
+      error: message
     };
   }
 }
@@ -70,7 +71,7 @@ function generateHandoff(
  */
 function generateHandoffContent(
   nextAgent: AgentName,
-  state: any,
+  state: OrchestratorState,
   projectDir: string
 ): string {
   const previousAgent = state.last_completed_agent || state.agents_called[state.agents_called.length - 1];
@@ -100,8 +101,8 @@ ${agentInfo.description}
     content += `### Artifacts Delivered\n\n`;
 
     // Group artifacts by agent
-    const byAgent: Record<string, any[]> = {};
-    state.artifacts.forEach((artifact: any) => {
+    const byAgent: Record<string, Artifact[]> = {};
+    state.artifacts.forEach((artifact: Artifact) => {
       const agent = artifact.agent || 'unknown';
       if (!byAgent[agent]) {
         byAgent[agent] = [];
@@ -112,7 +113,7 @@ ${agentInfo.description}
     // List artifacts by agent
     Object.entries(byAgent).forEach(([agent, artifacts]) => {
       content += `#### ${agent.toUpperCase()}\n\n`;
-      artifacts.forEach((artifact: any) => {
+      artifacts.forEach((artifact: Artifact) => {
         content += `- 📄 \`${artifact.path}\`\n`;
       });
       content += '\n';
