@@ -15,8 +15,6 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(/plugin install:*)",
-      "Bash(/plugin install smite-architect@smite-marketplace)",
-      "Bash(/plugin install smite-handover@smite-marketplace)",
       "Bash(/plugin:*)",
       "Bash(bash:*)",
       "Bash(ls:*)",
@@ -25,13 +23,6 @@
       "Bash(find:*)",
       "Bash(findstr:*)",
       "Bash(npm run typecheck:*)",
-      "Bash(while read dir)",
-      "Bash(do if [ -f \"C:\\\\Users\\\\Yanis\\\\Projects\\\\smite-marketplace\\\\plugins$dir\\\\agents$dir.task.md\" ])",
-      "Bash(then echo \"✅ $dir\")",
-      "Bash(else echo \"❌ $dir \\(missing\\)\")",
-      "Bash(fi:*)",
-      "Bash(done:*)",
-      "Bash(if exist \"plugins\\\\nul\" del \"plugins\\\\nul\")",
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
@@ -49,14 +40,8 @@
       "Skill(smite-gatekeeper:smite:gatekeeper)",
       "Skill(smite-handover:smite:handover)",
       "Skill(smite-surgeon:smite:surgeon)",
-      "Bash(node:*)",
-      "Bash(if:*)",
-      "Bash(then echo \"Directory exists\")",
-      "Bash(else:*)",
-      "Bash(then echo \"✅ detect-debt.js exists\")",
-      "Bash(then echo \"✅ agent-complete.js exists\")",
       "Bash(echo:*)",
-      "Bash(then ls -lh plugins/smite-orchestrator/dist/*.js)"
+      "Bash(done:*)"
     ]
   },
   "hooks": {
@@ -74,13 +59,8 @@
         "matcher": "Edit|Write.*\\.(ts|tsx|js|jsx)$",
         "hooks": [
           {
-            "type": "command",
-            "command": "node plugins/smite-orchestrator/dist/detect-debt.js file $FILE_PATH",
-            "statusMessage": "🔪 Detecting technical debt..."
-          },
-          {
             "type": "prompt",
-            "prompt": "A source file was just modified. The detect-debt script ran. If technical debt was found in the output:\n1. Inform the user: '🔪 Technical debt detected in {filePath}'\n2. List each issue with line number and severity from the script output\n3. Suggest: 'Run Surgeon to address {N} technical debt items?'\n4. If user agrees, use: Skill tool with skill='smite-surgeon:smite:surgeon' and args='--target={filePath} --auto-detect'\n\nOnly scan these extensions: .ts, .tsx, .js, .jsx\nIgnore: test files, node_modules/, dist/"
+            "prompt": "You are a technical debt detector. A TypeScript/JavaScript file was just edited/written.\n\nStep 1: Check file eligibility\n- ONLY scan files matching: **.ts, .tsx, .js, .jsx**\n- IGNORE if file path contains: test, spec, node_modules, dist, build\n- Get the file path from the tool result context\n\nStep 2: Read the file and scan for:\n\n1. **'any' types** (HIGH severity)\n   - Search for: ': any', '<any>', 'any[]'\n   - Example: 'function foo(x: any)'\n\n2. **TODO/FIXME comments** (MEDIUM severity)\n   - Search for: '// TODO:', '// FIXME:', '// TODO ', '// FIXME '\n\n3. **console.log/debugger** (MEDIUM severity)\n   - Search for: 'console.log', 'console.debug', 'debugger'\n   - Exclude: console.error, console.warn (these are legitimate)\n\n4. **Long functions** (LOW severity)\n   - Identify functions/methods > 50 lines\n   - Exclude: test files, component definitions (React)\n\n5. **Empty interfaces/types** (HIGH severity)\n   - Search for: 'interface {}', 'type {}', 'interface Empty'\n\n6. **@ts-ignore/@ts-nocheck** (HIGH severity)\n   - Search for: '@ts-ignore', '@ts-nocheck'\n\n7. **Missing return types** (LOW severity, if strict mode)\n   - Functions without explicit return types\n   - Exclude: arrow functions, React components\n\nStep 3: Report findings\n\nIf ANY issues are found, format output as:\n```\n🔪 Technical Debt Detected in {filePath}\n\nSeverity: [HIGH/MEDIUM/LOW]\nIssues:\n1. Line {line}: 'any' type found in '{functionName}' - HIGH\n2. Line {line}: console.log left in production code - MEDIUM\n3. Line {line}: Empty interface '{interfaceName}' - HIGH\n...\n\nTotal: {N} issue(s)\n\nRecommendation: Run smite-surgeon for automatic refactoring?\n[Y]es - Launch surgeon agent\n[N]o - Keep debt for now\n[S]kip - Don't ask again for this file\n```\n\nIf NO issues found:\n- No output (silent success)\n\nExecute this check IMMEDIATELY after every Edit/Write operation on TS/JS files."
           }
         ]
       }
@@ -90,13 +70,8 @@
         "matcher": "smite-",
         "hooks": [
           {
-            "type": "command",
-            "command": "node plugins/smite-orchestrator/dist/agent-complete.js $AGENT_NAME",
-            "statusMessage": "🎯 Updating workflow state..."
-          },
-          {
             "type": "prompt",
-            "prompt": "A smite agent just completed and the state was updated. Read .smite/orchestrator-state.json to understand workflow state. Then:\n1. Identify which agent just completed\n2. Determine the next logical agent based on:\n   - Standard workflow: initializer → explorer → strategist → aura → constructor → gatekeeper → handover\n   - OR custom workflow if defined in orchestrator state\n3. Inform user: '✅ {agentName} completed'\n4. Suggest: '🔄 Next agent: {nextAgent} - {reason}'\n5. Ask: 'Run {nextAgent}? [Y]es / [N]o / [S]kip'\n\nCheck .smite/suggestions/next-action.md for the generated suggestion file."
+            "prompt": "You are a SMITE Orchestrator workflow manager. A smite agent just completed.\n\nStep 1: Identify the completed agent\n- Get the agent name from the context (e.g., 'smite-explorer', 'smite-constructor')\n- Extract the base name (remove 'smite-' prefix if present)\n\nStep 2: Load or create orchestrator state\n- Try to read: `.smite/orchestrator-state.json`\n- If file doesn't exist, create initial state:\n```json\n{\n  \"session_id\": \"<generate-uuid>\",\n  \"created_at\": \"<ISO-timestamp>\",\n  \"updated_at\": \"<ISO-timestamp>\",\n  \"project_dir\": \"<current-directory>\",\n  \"current_agent\": null,\n  \"phase\": \"init\",\n  \"artifacts\": [],\n  \"agents_called\": [],\n  \"workflow_complete\": false,\n  \"last_completed_agent\": \"<completed-agent-name>\"\n}\n```\n\nStep 3: Update state\n- Set `current_agent` to null (agent completed)\n- Set `last_completed_agent` to the completed agent name\n- Add agent to `agents_called` array if not already present\n- Update `updated_at` timestamp\n- Write updated state back to `.smite/orchestrator-state.json`\n\nStep 4: Determine next agent\n- Use standard workflow order:\n  1. initializer\n  2. explorer\n  3. strategist\n  4. aura\n  5. constructor\n  6. gatekeeper\n  7. handover\n- Find the position of `last_completed_agent` in this order\n- Suggest the next agent in sequence\n- If all agents completed, set `workflow_complete: true` and suggest no next agent\n\nStep 5: Generate workflow progress\n- Create a visual progress bar showing completed agents\n- Use emojis: ✅ for completed, ⏳ for current, ❌ for pending\n- Example:\n```\n✅ initializer → ✅ explorer → ⏳ strategist → ❌ aura → ❌ constructor → ❌ gatekeeper → ❌ handover\n```\n\nStep 6: Create suggestion file\n- Ensure directory `.smite/suggestions/` exists\n- Create file: `.smite/suggestions/next-action.md`\n- Content format:\n```markdown\n# 🎯 NEXT AGENT SUGGESTION\n\n**Generated**: <ISO-timestamp>\n**Completed**: <completed-agent>\n\n---\n\n## ✅ Completed: <AGENT-NAME>\n\nAgent has finished its work.\n\n---\n\n## 🎯 Recommendation\n\n**Next Agent**: `<next-agent-name>` (or 'Workflow Complete!')\n\n**Reason**: <why this agent is next>\n\n---\n\n## 📊 Workflow Progress\n\n<visual-progress-bar-from-Step-5>\n\n---\n\n## 🚀 Quick Start\n\nTo continue the workflow, run:\n\n```\n/smite:<next-agent>\n```\n\n(Or: '🎉 All agents completed! Review the artifacts in the `docs/` directory.')\n\n---\n\n## 📋 Deliverables\n\n<list-of-deliverables-or-'No deliverables yet'>\n\n---\n\n*Suggestions are automatically generated by SMITE Orchestrator*\n```\n\nStep 7: Inform user\n- Display: `✅ <agent-name> completed`\n- Display: `🔄 Next agent: <next-agent> - <reason>`\n- Ask: `Run <next-agent>? [Y]es / [N]o / [S]kip`\n\nExecute these steps IMMEDIATELY after any smite agent completes."
           }
         ]
       }

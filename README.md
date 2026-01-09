@@ -490,51 +490,50 @@ Install only what you need:
 
 ---
 
-## 🔧 Orchestrator Scripts
+## 🔧 Orchestrator Architecture
 
-The auto-orchestration system is built with **TypeScript** and includes compiled scripts used by Claude Code 2.1.0 hooks:
+The auto-orchestration system uses **Claude Code 2.1.0 PROMPT-ONLY hooks** - zero external script dependencies:
 
-### Core Scripts (plugins/smite-orchestrator/scripts/)
+### Design Philosophy
 
-- **state-manager.ts** - Workflow state management and next agent logic
-- **session-init.ts** - Session initialization
-- **track-artifacts.ts** - Artifact tracking and logging
-- **agent-complete.ts** - Agent completion handler (SubagentStop hook)
-- **detect-debt.ts** - Technical debt pattern detection (PostToolUse hook)
-- **suggest-next.ts** - Next agent suggestion engine
-- **generate-handoff.ts** - Handoff document generation
-- **suggest-display.ts** - Suggestion display system
+- **🎯 100% Prompt-Based**: All hook logic is defined as prompts, no external scripts
+- **🌍 Universal Compatibility**: Works on any OS without JavaScript runtime requirements
+- **⚡ Zero Setup**: No build steps, no compilation, no dependencies
+- **🔄 State Managed In-Place**: Orchestrator state stored in `.smite/orchestrator-state.json`
 
-### Compiled Scripts (dist/)
+### Hook Implementation
 
-Used directly by hooks in `.claude/settings.local.json`:
+All hooks are defined in `.claude/settings.local.json`:
 
-```bash
-# Technical debt detection (PostToolUse hook)
-node plugins/smite-orchestrator/dist/detect-debt.js file $FILE_PATH
+| Hook Type | Matcher | Implementation |
+|-----------|---------|----------------|
+| **PostToolUse** | `Edit|Write.*\\.(ts\|tsx\|js\|jsx)$` | Prompt-based technical debt detection |
+| **PostToolUse** | `Edit|Write.*docs/.*\\.md$` | Prompt-based documentation validation |
+| **SubagentStop** | `smite-` | Prompt-based workflow state management |
+| **PreToolUse** | `Task.*smite-\|Skill.*smite-` | Prompt-based workflow validation |
 
-# Agent completion handler (SubagentStop hook)
-node plugins/smite-orchestrator/dist/agent-complete.js $AGENT_NAME
+### State Management
 
-# State management (used by scripts)
-node plugins/smite-orchestrator/dist/state-manager.js get-state
+The orchestrator maintains state in `.smite/orchestrator-state.json`:
+
+```json
+{
+  "session_id": "uuid",
+  "created_at": "ISO-timestamp",
+  "updated_at": "ISO-timestamp",
+  "current_agent": null,
+  "last_completed_agent": "explorer",
+  "agents_called": ["initializer", "explorer"],
+  "workflow_complete": false,
+  "artifacts": []
+}
 ```
 
-### Build System
-
-```bash
-# Compile TypeScript to JavaScript
-cd plugins/smite-orchestrator
-npm run build
-
-# Watch mode for development
-npm run watch
-
-# Test state manager
-npm test
-```
-
-Compiled scripts are automatically generated in `plugins/smite-orchestrator/dist/` and used by hooks.
+This state is:
+- ✅ Automatically created by hooks when needed
+- ✅ Updated after each agent completion
+- ✅ Used to suggest next agent in workflow
+- ✅ Persistent across sessions
 
 ---
 
@@ -591,15 +590,7 @@ smite-marketplace/
 │   │   ├── skills/surgeon.md
 │   │   └── agents/surgeon.task.md    # ⭐ NEW
 │   │
-│   ├── smite-orchestrator/           # Auto-orchestration system
-│   │   ├── scripts/                  # TypeScript source
-│   │   │   ├── state-manager.ts      # Workflow state management
-│   │   │   ├── agent-complete.ts     # SubagentStop handler
-│   │   │   ├── detect-debt.ts        # PostToolUse handler
-│   │   │   └── suggest-next.ts       # Next agent logic
-│   │   ├── dist/                     # Compiled JavaScript (used by hooks)
-│   │   ├── tsconfig.json
-│   │   ├── package.json
+│   ├── smite-orchestrator/           # Auto-orchestration system (PROMPT-ONLY)
 │   │   └── skills/orchestrator.md    # Orchestrator interface
 │   │
 │   ├── smite-router/                # Intelligent agent routing ⭐ NEW
@@ -667,15 +658,7 @@ smite-marketplace/
 │   │   ├── skills/surgeon.md
 │   │   └── agents/surgeon.task.md    # ⭐ NEW
 │   │
-│   ├── smite-orchestrator/           # Auto-orchestration system
-│   │   ├── scripts/                  # TypeScript source
-│   │   │   ├── state-manager.ts      # Workflow state management
-│   │   │   ├── agent-complete.ts     # SubagentStop handler
-│   │   │   ├── detect-debt.ts        # PostToolUse handler
-│   │   │   └── suggest-next.ts       # Next agent logic
-│   │   ├── dist/                     # Compiled JavaScript (used by hooks)
-│   │   ├── tsconfig.json
-│   │   ├── package.json
+│   ├── smite-orchestrator/           # Auto-orchestration system (PROMPT-ONLY)
 │   │   └── skills/orchestrator.md    # Orchestrator interface
 │   │
 │   ├── smite-router/                # Intelligent agent routing ⭐ NEW
