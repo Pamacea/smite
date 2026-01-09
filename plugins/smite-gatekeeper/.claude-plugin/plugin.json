@@ -6,5 +6,7 @@
     "name": "Pamacea"
   },
   "commands": "./commands/",
-  "skills": "./skills/"
+  "skills": {
+    "gatekeeper": "./skills/gatekeeper.md"
+  }
 }

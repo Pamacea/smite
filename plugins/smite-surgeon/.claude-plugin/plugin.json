@@ -5,5 +5,8 @@
   "author": {
     "name": "Pamacea"
   },
-  "skills": "./skills/"
+  "commands": "./commands/",
+  "skills": {
+    "surgeon": "./skills/surgeon.md"
+  }
 }
