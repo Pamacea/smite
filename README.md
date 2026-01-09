@@ -129,47 +129,61 @@ The orchestrator creates these files automatically:
 
 ---
 
-## ⚡ NEW: Dual Execution Mode (v2.0)
+## ⚡ Parallel Execution with Task Tool
 
-**Each SMITE agent now supports two execution modes:**
+**Run multiple SMITE agents simultaneously with real-time progress tracking**
 
-| Mode | Execution | Progress UI | Best For |
-|------|-----------|-------------|----------|
-| **Skill** | Sequential | Manual logging | Single agents, `/smite-[agent]` commands |
-| **Task** | Parallel | Native "Running x Agents" | Multi-agent workflows, orchestration |
+### Skill vs Task Tool
 
-### Skill Mode (Sequential)
+| Tool | Purpose | Progress UI | Usage |
+|------|---------|-------------|-------|
+| **Skill** | Load agent prompt from file | None | `Skill(skill="smite-explorer:explorer")` |
+| **Task** | Create parallel subagents | "Running X Agents" | `Task(subagent_type="general-purpose", prompt="...")` |
+
+### Running Agents in Parallel
+
+To execute multiple agents simultaneously with the "Running X Agents" UI:
+
+```typescript
+// Launch 3 agents in parallel
+Task(subagent_type="general-purpose", prompt="Explore the codebase and map architecture")
+Task(subagent_type="general-purpose", prompt="Check for lint errors and fix them")
+Task(subagent_type="general-purpose", prompt="Update documentation with recent changes")
+
+// Result:
+// 🚀 Running 3 Agents in parallel...
+// [Real-time progress tracking for each agent]
+// ✅ All 3 Agents completed
+```
+
+### Sequential Execution (Commands)
+
+For single-agent workflows, use CLI commands:
 
 ```bash
 # Run single agent
 /smite-gatekeeper --mode=commit-validation
+
+# Or via Skill tool (no parallel UI)
+Skill(skill="smite-gatekeeper:gatekeeper")
 ```
 
-### Task Mode (Parallel) ⭐
+### When to Use Each Mode
 
-```bash
-# Ask for parallel workflow
-"Please validate, refactor, and document this feature"
+**Use Task Tool (Parallel):**
+- Multiple independent tasks
+- Need real-time progress tracking
+- Different agents working simultaneously
+- Example: "Explore code, check lint, and update docs in parallel"
 
-# Result:
-🚀 Running 3 Agents in parallel...
-
-[Real-time progress for each agent]
-
-✅ All 3 Agents completed
-```
-
-### Benefits of Task Mode
-
-- ✅ **Real-time tracking** - See "Running x Agents" progress
-- ✅ **Parallel execution** - Multiple agents run simultaneously
-- ✅ **Faster workflows** - ~2-3x speedup for independent tasks
-- ✅ **Better error isolation** - One failure doesn't block others
+**Use Skill Tool or Commands (Sequential):**
+- Single agent tasks
+- Chained workflows (output of one → input of next)
+- Simple one-off tasks
 
 ### Documentation
 
-- **[docs/DUAL_MODE_GUIDE.md](./docs/DUAL_MODE_GUIDE.md)** - Complete guide for dual execution mode
-- **[docs/COMPLETION_REPORT.md](./docs/COMPLETION_REPORT.md)** - Implementation summary
+- **[docs/DUAL_MODE_GUIDE.md](./docs/DUAL_MODE_GUIDE.md)** - Complete guide for Task tool usage
 
 **Backwards compatible:** All existing `/smite-[agent]` commands still work exactly as before!
 

@@ -1,333 +1,295 @@
-# SMITE Agents - Dual Mode Execution Guide
+# 🚀 Parallel Execution with Task Tool
 
-## 🎯 Overview
-
-Each SMITE agent now supports **two execution modes**:
-
-| Mode | Tool | Execution | Progress UI | Best For |
-|------|------|-----------|-------------|----------|
-| **Skill** | `Skill` tool | Sequential | Manual logging | Single agents, `/smite-[agent]` commands |
-| **Task** | `Task` tool | Parallel | Native "Running x Agents" | Multi-agent workflows, orchestration |
+**Guide for running multiple SMITE agents simultaneously**
 
 ---
 
-## 🚀 Quick Start
+## 📖 Overview
 
-### Single Agent (Skill Mode)
+The **Task tool** allows you to run multiple SMITE agents in parallel with real-time "Running X Agents" progress tracking. This is perfect for independent tasks that can be executed simultaneously.
+
+---
+
+## 🔄 Skill vs Task Tool
+
+### Skill Tool (Sequential)
+
+**Purpose:** Load an agent's prompt from a markdown file and execute it sequentially.
+
+**Characteristics:**
+- ✅ Simple invocation via CLI (`/smite-explorer`)
+- ✅ Programmatic via `Skill(skill="...")` tool
+- ❌ No "Running X Agents" UI
+- ❌ No parallel execution
+- ✅ Best for: Single agent tasks
+
+**Usage:**
+```typescript
+// Via Skill tool
+Skill(skill="smite-explorer:explorer")
+
+// Via CLI command
+/smite:explorer --task=map-architecture
+```
+
+### Task Tool (Parallel) ⭐
+
+**Purpose:** Create true parallel subagents with real-time progress tracking.
+
+**Characteristics:**
+- ✅ "Running X Agents" UI appears
+- ✅ Multiple agents execute simultaneously
+- ✅ Real-time progress for each agent
+- ✅ ~2-3x faster for independent tasks
+- ✅ Best for: Multi-agent workflows
+
+**Usage:**
+```typescript
+// Launch 3 agents in parallel - ALL IN ONE MESSAGE
+Task(subagent_type="general-purpose", prompt="Explore codebase architecture")
+Task(subagent_type="general-purpose", prompt="Check for lint errors")
+Task(subagent_type="general-purpose", prompt="Update documentation")
+
+// Result:
+// 🚀 Running 3 Agents in parallel...
+// [Real-time progress for each agent]
+// ✅ All 3 Agents completed
+```
+
+---
+
+## 💡 When to Use Each
+
+### Use Task Tool (Parallel) When:
+
+1. **Multiple Independent Tasks**
+   - Tasks that don't depend on each other
+   - Can be executed simultaneously
+   - Example: Code exploration + Lint check + Doc update
+
+2. **Need Real-Time Progress**
+   - Want to see "Running X Agents" UI
+   - Monitor each agent's progress
+   - Track execution in real-time
+
+3. **Faster Execution Required**
+   - Time-sensitive workflows
+   - Large codebases
+   - Multiple analysis types needed
+
+### Use Skill Tool or CLI Commands (Sequential) When:
+
+1. **Single Agent Tasks**
+   - Only one agent needed
+   - Simple one-off operations
+   - Example: Just explore the codebase
+
+2. **Chained Workflows**
+   - Output of one agent → Input of next
+   - Sequential dependencies
+   - Example: Explorer → Constructor → Gatekeeper
+
+3. **Simple Operations**
+   - Quick tasks
+   - Don't need progress tracking
+   - Example: Quick code review
+
+---
+
+## 📝 Practical Examples
+
+### Example 1: Codebase Analysis (3 Agents Parallel)
+
+**Scenario:** Need to explore code, check lint, and update docs simultaneously.
+
+```typescript
+// Launch all 3 agents in ONE message
+Task(subagent_type="general-purpose", prompt=`You are the SMITE Explorer agent.
+Analyze the codebase architecture and create a dependency map.
+Focus on: plugins/, docs/, and .claude-plugin/ directories.
+Output: Architecture report with diagrams.`)
+
+Task(subagent_type="general-purpose", prompt=`You are the Linter Sentinel agent.
+Check for TypeScript errors, ESLint violations, and formatting issues.
+Report all findings with file paths and line numbers.
+Output: Lint report with fixable issues.`)
+
+Task(subagent_type="general-purpose", prompt=`You are the Doc Maintainer agent.
+Review README.md and all documentation for accuracy.
+Check if all 11 plugins are documented correctly.
+Output: Documentation analysis with update suggestions.`)
+
+// Result: 🚀 Running 3 Agents in parallel...
+```
+
+### Example 2: Feature Development (Sequential)
+
+**Scenario:** Implement a new feature step-by-step.
 
 ```bash
-# Run single agent
-/smite-gatekeeper --mode=commit-validation
+# Step 1: Explore codebase
+/smite:explorer --task=find-component --target=Button
+
+# Step 2: Implement feature (depends on step 1)
+/smite-constructor --tech=nextjs
+
+# Step 3: Validate (depends on step 2)
+/smite-gatekeeper --mode=test
+
+# Step 4: Document (depends on step 3)
+/smite-handover
 ```
 
-### Parallel Agents (Task Mode) ⭐
+### Example 3: Quality Check (2 Agents Parallel)
 
-```text
-# Ask for parallel workflow
-"Please validate, refactor, and document this feature"
+**Scenario:** Quick quality validation before commit.
 
-# Result:
-🚀 Running 3 Agents in parallel...
+```typescript
+// Run both checks in parallel
+Task(subagent_type="general-purpose", prompt="Check all TypeScript files for type errors and compilation issues. List all files with errors.")
+Task(subagent_type="general-purpose", prompt="Review recent code changes for best practices violations. Check for: console.logs, any types, TODO comments.")
 
-[Real-time progress for each agent]
-
-✅ All 3 Agents completed
-```
-
-**Benefits of Task Mode:**
-- ✅ Real-time tracking - See "Running x Agents" progress
-- ✅ Parallel execution - ~2-3x faster for independent tasks
-- ✅ Better error isolation - One failure doesn't block others
-
----
-
-## 📋 All Available Agents (11)
-
-| Agent | Purpose | Skill Command | Task File |
-|-------|---------|---------------|-----------|
-| **Initializer** | Project initialization | `/smite-init` | `agents/initializer.task.md` |
-| **Explorer** | Codebase analysis | `/smite-explorer` | `agents/explorer.task.md` |
-| **Strategist** | Business strategy | `/smite-strategist` | `agents/strategist.task.md` |
-| **Aura** | Design systems | `/smite-aura` | `agents/aura.task.md` |
-| **Constructor** | Implementation | `/smite-constructor` | `agents/constructor.task.md` |
-| **Gatekeeper** | Code review & validation | `/smite-gatekeeper` | `agents/gatekeeper.task.md` |
-| **Handover** | Knowledge transfer | `/smite-handover` | `agents/handover.task.md` |
-| **Surgeon** | Refactoring | `/smite-surgeon` | `agents/surgeon.task.md` |
-| **Brainstorm** | Creative problem-solving | `/smite-brainstorm` | `agents/brainstorm.task.md` |
-| **Linter Sentinel** | Auto-fix linting | `*start-linter-sentinel` | `agents/linter-sentinel.task.md` |
-| **Doc Maintainer** | Documentation sync | `*start-doc-maintainer` | `agents/doc-maintainer.task.md` |
-
----
-
-## 🔄 When to Use Which Mode
-
-### Use Skill Mode When
-
-✅ Running a **single agent**
-✅ User invokes agent via **`/smite-[agent]` command**
-✅ **Sequential workflow** is sufficient
-✅ **Simple task** without coordination needs
-
-### Use Task Mode When ⭐
-
-✅ Running **2+ agents in parallel**
-✅ **Real-time progress tracking** needed
-✅ **Multi-agent orchestration**
-✅ **Time-critical workflows** (parallelization saves time)
-✅ **Complex coordination** with dependencies
-
----
-
-## 💡 Usage Examples
-
-### Example 1: Parallel Code Review
-
-```text
-User: "Please validate and refactor this code"
-
-🚀 Running 2 Agents in parallel...
-
-Agent 1: Validating architecture...
-Agent 2: Analyzing refactoring opportunities...
-
-✅ All 2 Agents completed
-
-Gatekeeper: ✅ PASS
-Surgeon: ⚠️ 3 improvements found
-```
-
-### Example 2: Full Feature Workflow
-
-```text
-User: "Build new feature with validation"
-
-Phase 1: 🚀 3 agents in parallel (Explorer, Brainstorm, Strategist)
-Phase 2: 🚀 1 agent (Aura - Design)
-Phase 3: 🚀 1 agent (Constructor - Implementation)
-Phase 4: 🚀 3 agents in parallel (Gatekeeper, Surgeon, Handover)
-
-✅ Feature complete!
-```
-
-### Example 3: Quality Assurance
-
-```text
-User: "Check code quality and documentation"
-
-🚀 Running 3 Agents in parallel...
-
-Agent 1: Linter Sentinel - Fixing linting issues...
-Agent 2: Gatekeeper - Validating architecture...
-Agent 3: Doc Maintainer - Syncing documentation...
-
-✅ All 3 Agents completed
-
-Linter: ✅ Fixed 12 issues
-Gatekeeper: ✅ PASS - No violations
-Doc Maintainer: ✅ Updated 8 files
+// Result: 🚀 Running 2 Agents in parallel...
 ```
 
 ---
 
-## 🛠️ Task Tool Implementation
+## ⚙️ Task Tool Reference
 
-### Basic Pattern
+### Basic Syntax
 
-```text
-1. Print: "🚀 Running [N] Agents in parallel..."
-
-2. In ONE message, launch multiple Tasks:
-   Task(subagent_type="general-purpose",
-     prompt="Read plugins/[agent]/agents/[agent].task.md and execute: [args]")
-
-3. Each agent runs independently
-
-4. Print: "✅ All [N] Agents completed"
+```typescript
+Task(subagent_type="general-purpose", prompt="<your prompt here>")
 ```
 
-### Example: Parallel Validation
+### Parameters
 
-```text
-🚀 Running 3 Agents in parallel...
+- **subagent_type**: Type of agent to create
+  - `"general-purpose"` - Universal agent (most common)
+  - Other specialized types available
 
-Task(subagent_type="general-purpose",
-  prompt="Read plugins/smite-gatekeeper/agents/gatekeeper.task.md
-         --artifact=src/features/new --mode=commit-validation")
+- **prompt**: The task instructions
+  - Can be multi-line
+  - Include agent role/mode
+  - Specify output format
+  - Add context and constraints
 
-Task(subagent_type="general-purpose",
-  prompt="Read plugins/smite-surgeon/agents/surgeon.task.md
-         --auto-target=src/features/new --reason=complexity")
+### Best Practices
 
-Task(subagent_type="general-purpose",
-  prompt="Read plugins/smite-handover/agents/handover.task.md
-         --from=constructor --to=maintainer")
+1. **Launch in One Message**
+   - Put ALL `Task()` calls in a SINGLE message
+   - This creates true parallel execution
+   - Each message creates sequential execution
 
-[All run in parallel with progress tracking]
+2. **Clear Prompts**
+   - Specify agent role ("You are the SMITE Explorer")
+   - Define task scope clearly
+   - Request specific output format
 
-✅ All 3 Agents completed
+3. **Independent Tasks**
+   - Only parallelize truly independent tasks
+   - Dependencies should run sequentially
+   - Consider blast radius
+
+---
+
+## 🎯 Real-World Workflows
+
+### Full Feature Development (Mixed Approach)
+
+```typescript
+// Phase 1: Exploration (Sequential)
+/smite:explorer --task=map-architecture
+
+// Phase 2: Analysis (Parallel)
+Task(subagent_type="general-purpose", prompt="Analyze business requirements and estimate complexity")
+Task(subagent_type="general-purpose", prompt="Review technical stack and identify dependencies")
+Task(subagent_type="general-purpose", prompt="Check security considerations and compliance")
+
+// Phase 3: Implementation (Sequential)
+/smite-constructor --tech=nextjs
+
+// Phase 4: Validation (Parallel)
+Task(subagent_type="general-purpose", prompt="Run all tests and check coverage")
+Task(subagent_type="general-purpose", prompt="Perform code review and check best practices")
+Task(subagent_type="general-purpose", prompt="Validate performance and check for bottlenecks")
+
+// Phase 5: Documentation (Sequential)
+/smite-handover
+```
+
+### Bug Investigation (Mixed Approach)
+
+```typescript
+// Phase 1: Diagnosis (Parallel)
+Task(subagent_type="general-purpose", prompt="Search codebase for similar bug patterns")
+Task(subagent_type="general-purpose", prompt="Analyze git history for recent changes")
+Task(subagent_type="general-purpose", prompt="Check error logs and stack traces")
+
+// Phase 2: Fix (Sequential)
+/smite-constructor --tech=nextjs
+
+// Phase 3: Validation (Parallel)
+Task(subagent_type="general-purpose", prompt="Run regression tests")
+Task(subagent_type="general-purpose", prompt="Verify fix doesn't break other features")
 ```
 
 ---
 
-## 📁 File Structure
+## 🔍 Troubleshooting
 
-Each SMITE agent now has **two definition files**:
+### "Running X Agents" doesn't appear
 
-```
-plugins/smite-gatekeeper/
-├── skills/
-│   └── gatekeeper.md          # Skill mode (sequential)
-└── agents/
-    └── gatekeeper.task.md     # Task mode (parallel) ⭐
-```
+**Problem:** No parallel UI when using Task tool.
 
----
+**Solution:** Make sure to put ALL `Task()` calls in ONE message, not multiple messages.
 
-## 🎓 Orchestrator Integration
+### Agents run sequentially instead of parallel
 
-The orchestrator automatically uses Task mode for parallel workflows:
+**Problem:** Agents execute one after another.
 
-```text
-User: /smite-orchestrator --workflow=custom --agents=explorer,constructor,gatekeeper
+**Solution:** Check that you're using `Task()` tool, not `Skill()` tool. Skill tool is always sequential.
 
-Result:
-Phase 1: 🚀 Running Explorer...
-Phase 2: 🚀 Running Constructor...
-Phase 3: 🚀 Running 2 Agents in parallel (Gatekeeper + Surgeon)...
+### One agent fails, others continue
 
-✅ All agents completed
-```
+**Problem:** Error in one agent stops all agents.
+
+**Solution:** This is expected behavior with Task tool. Each agent has independent error handling.
 
 ---
 
-## ⚡ Performance Comparison
+## 📊 Performance Comparison
 
-### Sequential (Skill Mode)
-```
-Agent 1: 30 seconds
-Agent 2: 45 seconds
-Agent 3: 20 seconds
-Total: 95 seconds
-```
-
-### Parallel (Task Mode)
-```
-Agent 1: 30 seconds ┐
-Agent 2: 45 seconds ├─ All run together
-Agent 3: 20 seconds ┘
-Total: ~45 seconds (max of all)
-```
-
-**Speedup:** ~2x faster for 3 independent agents! 🚀
+| Approach | Time | UI | Best For |
+|----------|------|-----|----------|
+| **Sequential (3 tasks)** | ~9 min | None | Chained workflows |
+| **Parallel (3 tasks)** | ~3 min | "Running 3 Agents" | Independent tasks |
+| **Speedup** | **3x faster** | ✅ Real-time tracking | Multi-agent workflows |
 
 ---
 
-## 🔄 Migration Notes
+## ✅ Key Takeaways
 
-### Backwards Compatibility
+1. **Task Tool = Parallel + Progress UI**
+   - Use for multiple independent tasks
+   - Real-time "Running X Agents" display
+   - ~2-3x faster execution
 
-✅ All existing `/smite-[agent]` commands still work
-✅ Skill mode unchanged
-✅ Task mode is additive, not breaking
+2. **Skill Tool/CLI = Sequential**
+   - Use for single agent tasks
+   - Chained workflows
+   - Simple operations
 
-### From Old to New
+3. **Launch Tasks in One Message**
+   - ALL `Task()` calls must be in SINGLE message
+   - Creates true parallel execution
 
-**Before:**
-```text
-🚀 Running Agent Gatekeeper...
-Skill(smite-gatekeeper:smite:gatekeeper)
-✅ Agent Gatekeeper completed
-```
-
-**After (Parallel):**
-```text
-🚀 Running 3 Agents in parallel...
-
-Task(prompt="Execute gatekeeper.task.md")
-Task(prompt="Execute surgeon.task.md")
-Task(prompt="Execute handover.task.md")
-
-✅ All 3 Agents completed
-```
+4. **Match Tool to Workflow**
+   - Independent tasks → Task tool
+   - Dependent tasks → Sequential
+   - Mixed workflows → Combine both
 
 ---
 
-## 🧪 Testing
-
-### Quick Test
-
-```bash
-# Test Skill mode
-/smite-gatekeeper --mode=commit-validation
-
-# Test Task mode (via orchestrator)
-"Please validate and refactor this code"
-```
-
-### Expected Results
-
-**Skill Mode:**
-```text
-🛡️ Gatekeeper starting validation...
-[Validation happens]
-✅ Gatekeeper completed
-Status: ✅ PASS
-```
-
-**Task Mode:**
-```text
-🚀 Running 2 Agents in parallel...
-
-Agent 1: Validating architecture...
-Agent 2: Analyzing refactoring opportunities...
-
-✅ All 2 Agents completed
-```
-
----
-
-## 📚 Resources
-
-- **[README.md](../README.md)** - Main README with installation
-- **[COMPLETION_REPORT.md](./COMPLETION_REPORT.md)** - Implementation details
-- Each agent's `.task.md` file contains full execution protocol
-
----
-
-## 🎯 Best Practices
-
-### For Users
-
-1. **Single agent?** Use `/smite-[agent]` command (Skill mode)
-2. **Multiple agents?** Describe your goal, orchestrator uses Task mode
-3. **Need speed?** Task mode runs agents in parallel
-4. **Need tracking?** Task mode shows real-time progress
-
-### For Developers
-
-1. **Orchestration** - Use Task tool for multi-agent workflows
-2. **Sequential** - Use Skill tool for single agents
-3. **Always** print "🚀 Running..." before Task calls
-4. **Always** launch parallel Tasks in ONE message
-
----
-
-## 🏆 Summary
-
-You now have **the best of both worlds**:
-
-| Need | Solution |
-|------|----------|
-| Run one agent | Use **Skill** mode (or `/smite-[agent]` command) |
-| Run multiple agents | Use **Task** mode (via orchestrator) |
-| Real-time progress | Use **Task** mode |
-| Max speed | Use **Task** mode (parallel execution) |
-
-**Flexibility of Skill mode + Power of Task mode!** 🚀
-
----
-
-**Version:** 2.0
-**Status:** ✅ Production Ready
-**Last Updated:** 2025-01-09
-**Total Agents:** 11 (9 SMITE + 2 QA)
+**Last Updated:** January 9, 2026
+**SMITE Marketplace v2.0**
