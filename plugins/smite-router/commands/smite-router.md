@@ -6,6 +6,7 @@ argument-hint: [--auto] [--explain] [--force]
 Intelligent routing agent that analyzes your project and selects the most appropriate SMITE agent automatically.
 
 **Features:**
+
 - Auto-detects programming language (TypeScript, Rust, Python, Go)
 - Auto-detects frameworks (Next.js, React, Angular, Actix, FastAPI)
 - Analyzes project structure and dependencies
@@ -15,30 +16,39 @@ Intelligent routing agent that analyzes your project and selects the most approp
 **Usage:**
 
 **Auto mode (recommended):**
+
 ```
 *start-s_router
 ```
+
 Automatically analyzes the project and suggests the best agent for your task.
 
 **With explanation:**
+
 ```
 *start-s_router --explain
 ```
+
 Shows detailed reasoning about why a specific agent was chosen.
 
 **Custom framework:**
+
 ```
 *start-s_router --framework=custom
 ```
+
 When using a framework not natively supported, the router will:
+
 - Detect it as "custom framework"
 - Suggest using smite-constructor without --tech flag
 - Allow you to specify framework-specific patterns
 
 **Manual override:**
+
 ```
 *start-s_router --agent=constructor --mode=custom
 ```
+
 Force specific agent selection with custom mode.
 
 **Examples:**
@@ -85,11 +95,11 @@ Force specific agent selection with custom mode.
 
 **Auto-routing Table:**
 
-| Context | Agent | Flags |
-|---------|-------|-------|
-| TypeScript + Next.js | smite-constructor | `--tech=nextjs` |
-| Rust + Axum | smite-constructor | `--tech=rust` |
-| Python + FastAPI | smite-constructor | `--tech=python` |
-| Code analysis needed | smite-explorer | `--task=analyze` |
-| Documentation needed | smite-handover | - |
-| Lint errors | linter-sentinel | `--mode=fix` |
+| Context              | Agent             | Flags            |
+| -------------------- | ----------------- | ---------------- |
+| TypeScript + Next.js | smite-constructor | `--tech=nextjs`  |
+| Rust + Axum          | smite-constructor | `--tech=rust`    |
+| Python + FastAPI     | smite-constructor | `--tech=python`  |
+| Code analysis needed | smite-explorer    | `--task=analyze` |
+| Documentation needed | smite-handover    | -                |
+| Lint errors          | linter-sentinel   | `--mode=fix`     |

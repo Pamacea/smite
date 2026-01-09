@@ -8,17 +8,20 @@
  * Usage:
  *   ts-node agent-complete.ts <agent_name> [project_dir]
  */
-import { AgentName } from './state-manager';
+import { AgentName } from "./state-manager";
 interface CompleteResult {
-    success: boolean;
-    message?: string;
-    next_agent?: AgentName | null;
-    suggestion_file?: string;
-    error?: string;
+  success: boolean;
+  message?: string;
+  next_agent?: AgentName | null;
+  suggestion_file?: string;
+  error?: string;
 }
 /**
  * Handle agent completion
  */
-declare function handleAgentComplete(agentName: string, projectDir?: string): CompleteResult;
+declare function handleAgentComplete(
+  agentName: string,
+  projectDir?: string,
+): CompleteResult;
 export { handleAgentComplete };
 //# sourceMappingURL=agent-complete.d.ts.map

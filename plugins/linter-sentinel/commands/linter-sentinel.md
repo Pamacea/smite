@@ -6,10 +6,12 @@ argument-hint: [--mode=fix|check] [--files=pattern] [--rules=ruleset]
 Automatically fix code quality issues with surgical precision.
 
 **Modes:**
+
 - `fix` - Auto-fix all violations
 - `check` - Check only, don't fix
 
 **Features:**
+
 - ESLint rule violation fixes
 - TypeScript error corrections
 - Prettier formatting
@@ -18,4 +20,4 @@ Automatically fix code quality issues with surgical precision.
 
 **Usage:**
 *start-linter-sentinel --mode=fix
-*start-linter-sentinel --mode=check --files="src/**/*.ts"
+*start-linter-sentinel --mode=check --files="src/\*_/_.ts"

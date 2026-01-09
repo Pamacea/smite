@@ -9,6 +9,7 @@
 L'agent Explorer est un **Senior Codebase Archaeologist & Pattern Detective**. Il explore profondément la codebase pour créer des cartes de dépendances, trouver des fonctions, des composants, identifier les bugs, les améliorations possibles, et comprendre l'architecture globale.
 
 **Objectifs :**
+
 - Cartographier l'architecture et les dépendances
 - Trouver des fonctions et composants spécifiques
 - Identifier les patterns de code (bons et mauvais)
@@ -72,8 +73,8 @@ Trouve des composants UI (React, Vue, Angular) et analyse leurs relations.
 1. **Quel composant cherchez-vous ?** (nom ou type)
 2. **Quel framework ?** (React, Vue, Angular, Svelte)
 3. **Quelles relations ?** (parents, enfants, siblings)
-3. **Quels props/state ?** (inputs, outputs)
-4. **Quels hooks/effects ?** (useEffect, useState, etc.)
+4. **Quels props/state ?** (inputs, outputs)
+5. **Quels hooks/effects ?** (useEffect, useState, etc.)
 6. **Quels événements ?** (handlers, callbacks)
 7. **Niveau de détail ?** (summary, detailed)
 
@@ -267,7 +268,7 @@ Trouve et analyse les patterns de code (design patterns, anti-patterns).
 
 ### Pour FIND-FUNCTION / FIND-COMPONENT
 
-```markdown
+````markdown
 # EXPLORER REPORT : [Function/Component Name]
 
 **Date** : [Date]
@@ -288,11 +289,14 @@ Trouve et analyse les patterns de code (design patterns, anti-patterns).
 ## 2. DÉFINITION
 
 ### Signature
+
 ```typescript
-function example(param1: Type1, param2: Type2): ReturnType
+function example(param1: Type1, param2: Type2): ReturnType;
 ```
+````
 
 ### Description
+
 [Brief description of what it does]
 
 ---
@@ -304,6 +308,7 @@ function example(param1: Type1, param2: Type2): ReturnType
 ```
 
 ### Complexity
+
 - **Cyclomatic** : X
 - **Cognitive** : Y
 - **Lines of Code** : Z
@@ -313,10 +318,12 @@ function example(param1: Type1, param2: Type2): ReturnType
 ## 4. DÉPENDANCES
 
 ### Imports
+
 - `module1` : Used for [purpose]
 - `module2` : Used for [purpose]
 
 ### External
+
 - `lib1` : Version X.Y.Z
 
 ---
@@ -324,10 +331,12 @@ function example(param1: Type1, param2: Type2): ReturnType
 ## 5. RELATIONS
 
 ### Appelants (Who uses it)
+
 - `caller1()` : Line X in `file1.ts`
 - `caller2()` : Line Y in `file2.ts`
 
 ### Appels (What it uses)
+
 - `dep1()` : Line X in `impl.ts`
 - `dep2()` : Line Y in `impl.ts`
 
@@ -336,10 +345,12 @@ function example(param1: Type1, param2: Type2): ReturnType
 ## 6. TESTS
 
 ### Unit Tests
+
 - ✅ `test1()` : [description] - `tests/file1.spec.ts:10`
 - ✅ `test2()` : [description] - `tests/file2.spec.ts:25`
 
 ### Coverage
+
 - **Lines** : X%
 - **Branches** : Y%
 - **Functions** : Z%
@@ -349,6 +360,7 @@ function example(param1: Type1, param2: Type2): ReturnType
 ## 7. DOCUMENTATION
 
 ### JSDoc / Comments
+
 ```typescript
 /**
  * [Documentation]
@@ -356,6 +368,7 @@ function example(param1: Type1, param2: Type2): ReturnType
 ```
 
 ### External Docs
+
 - [Link to docs]
 
 ---
@@ -363,17 +376,20 @@ function example(param1: Type1, param2: Type2): ReturnType
 ## 8. RECOMMANDATIONS
 
 ### Améliorations
+
 - [ ] [Improvement 1]
 - [ ] [Improvement 2]
 
 ### Risques
+
 - ⚠️ [Risk 1]
 - ⚠️ [Risk 2]
 
 ---
 
 **Généré par SMITE Explorer Agent**
-```
+
+````
 
 ### Pour MAP-ARCHITECTURE
 
@@ -397,13 +413,14 @@ graph TD
     A[Client] --> B[API Layer]
     B --> C[Business Logic]
     C --> D[Data Layer]
-```
+````
 
 ---
 
 ## 2. LAYERS
 
 ### Presentation Layer
+
 - **Responsibility** : UI/UX
 - **Technologies** : React, Next.js
 - **Modules** :
@@ -412,6 +429,7 @@ graph TD
   - `hooks/` : Custom hooks
 
 ### Business Layer
+
 - **Responsibility** : Business logic
 - **Technologies** : TypeScript, Node.js
 - **Modules** :
@@ -419,6 +437,7 @@ graph TD
   - `utils/` : Helpers
 
 ### Data Layer
+
 - **Responsibility** : Data access
 - **Technologies** : Prisma, PostgreSQL
 - **Modules** :
@@ -430,11 +449,13 @@ graph TD
 ## 3. MODULES
 
 ### Module 1 : [Name]
+
 - **Responsibility** : [What it does]
 - **Dependencies** : [What it depends on]
 - **Dependents** : [Who depends on it]
 
 ### Module 2 : [Name]
+
 ...
 
 ---
@@ -456,11 +477,13 @@ sequenceDiagram
 ## 5. PATTERNS UTILISÉS
 
 ### Design Patterns
+
 - **Repository Pattern** : Data access
 - **Factory Pattern** : Object creation
 - **Observer Pattern** : Event handling
 
 ### Architectural Patterns
+
 - **Layered Architecture** : Separation of concerns
 - **Dependency Injection** : Loose coupling
 
@@ -469,11 +492,13 @@ sequenceDiagram
 ## 6. ANTI-PATTERNS
 
 ### ⚠️ God Object
+
 - **Location** : `services/BigService.ts`
 - **Impact** : Hard to maintain
 - **Recommendation** : Split into smaller services
 
 ### ⚠️ Circular Dependency
+
 - **Modules** : A ↔ B
 - **Impact** : Tight coupling
 - **Recommendation** : Introduce abstraction layer
@@ -492,16 +517,19 @@ sequenceDiagram
 ## 8. API & INTERFACES
 
 ### REST API
+
 - `GET /api/users` : List users
 - `POST /api/users` : Create user
 
 ### Internal APIs
+
 - `UserService` : User operations
 - `AuthService` : Authentication
 
 ---
 
 **Généré par SMITE Explorer Agent**
+
 ```
 
 ---
@@ -571,3 +599,4 @@ sequenceDiagram
 
 **EXPLORER AGENT v1.0**
 *Your guide through the codebase maze - Discover, understand, and navigate*
+```

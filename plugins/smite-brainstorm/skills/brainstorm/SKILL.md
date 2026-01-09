@@ -9,6 +9,7 @@
 L'agent Brainstorm est un **Partenaire de Réflexion Créative**. Il explore les idées, résout les problèmes, créer des plans et dialogue avec l'utilisateur sur n'importe quel sujet.
 
 **Objectifs :**
+
 - Explorer en profondeur n'importe quel sujet
 - Créer des plans structurés (code, projets, features)
 - Résoudre des problèmes complexes par le dialogue
@@ -84,16 +85,19 @@ Création d'un plan structuré pour un projet ou une feature.
 # PLAN : [Nom du Projet/Feature]
 
 ## Contexte
+
 - Objectif
 - Stack technique
 - Contraintes
 
 ## Architecture Proposée
+
 - Structure
 - Composants
 - Flux de données
 
 ## Étapes d'Implémentation
+
 1. [Étape 1] - Description
    - Fichiers à modifier/créer
    - dépendances
@@ -103,14 +107,17 @@ Création d'un plan structuré pour un projet ou une feature.
    ...
 
 ## Risques et Mitigations
+
 - Risque 1 : Solution
 - Risque 2 : Solution
 
 ## Critères de Succès
+
 - [ ] Critère 1
 - [ ] Critère 2
 
 ## Prochaines Actions
+
 - Agent à invoquer
 - Tâches immédiates
 ```
@@ -240,13 +247,16 @@ Aide à la configuration d'outils, plugins et configurations.
 # CODE PLAN : [Feature Name]
 
 ## Overview
+
 **Objectif** : [Description]
 **Type** : [Feature/Bugfix/Refactor]
 **Priorité** : [High/Medium/Low]
 
 ## Architecture
 ```
+
 [Diagramme ou description]
+
 ```
 
 ## Changes Required
@@ -292,33 +302,40 @@ Aide à la configuration d'outils, plugins et configurations.
 # ADR : [Title]
 
 ## Context
+
 [Problème ou situation]
 
 ## Decision
+
 [Choix fait]
 
 ## Alternatives Considered
 
 ### Option A : [Name]
+
 - Pros : [Avantages]
 - Cons : [Inconvénients]
 - Status : [Rejeté/Poursuivi]
 
 ### Option B : [Name]
+
 - Pros : [Avantages]
 - Cons : [Inconvénients]
 - Status : [Rejeté/Poursuivi]
 
 ## Rationale
+
 [Pourquoi ce choix]
 
 ## Consequences
+
 - Positives : [Bénéfices]
 - Negatives : [Coûts/risques]
 - Technical : [Impacts]
 - Business : [Impacts]
 
 ## Related
+
 - [Liens vers docs/code]
 ```
 
@@ -327,6 +344,7 @@ Aide à la configuration d'outils, plugins et configurations.
 ## ✅ CHECKLIST
 
 ### Explore Mode
+
 - [ ] Sujet compris
 - [ ] Contexte identifié
 - [ ] Alternatives explorées
@@ -334,6 +352,7 @@ Aide à la configuration d'outils, plugins et configurations.
 - [ ] Prochaines étapes définies
 
 ### Plan Mode
+
 - [ ] Objectifs clairs
 - [ ] Architecture définie
 - [ ] Étapes détaillées
@@ -341,6 +360,7 @@ Aide à la configuration d'outils, plugins et configurations.
 - [ ] Critères de succès
 
 ### Solve Mode
+
 - [ ] Problème compris
 - [ ] Causes analysées
 - [ ] Solutions proposées
@@ -348,6 +368,7 @@ Aide à la configuration d'outils, plugins et configurations.
 - [ ] Validation définie
 
 ### Discuss Mode
+
 - [ ] Sujet clarifié
 - [ ] Options explorées
 - [ ] Points de vue échangés
@@ -355,6 +376,7 @@ Aide à la configuration d'outils, plugins et configurations.
 - [ ] Décision facilitée
 
 ### Configure Mode
+
 - [ ] Outil compris
 - [ ] Environnement identifié
 - [ ] Configuration proposée
@@ -374,4 +396,4 @@ Aide à la configuration d'outils, plugins et configurations.
 ---
 
 **BRAINSTORM AGENT v1.0**
-*Your creative thinking partner - Explore, plan, solve, discuss, configure*
+_Your creative thinking partner - Explore, plan, solve, discuss, configure_

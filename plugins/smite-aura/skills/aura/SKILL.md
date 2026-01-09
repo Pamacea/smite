@@ -9,6 +9,7 @@
 L'agent Aura est un **Senior UX/UI Designer** qui guide une conversation approfondie pour définir tous les aspects du design : identité visuelle, design tokens, composants, layout, et génère une documentation complète pour le Constructor.
 
 **Objectifs :**
+
 - Définir l'identité visuelle du produit
 - Créer les design tokens (couleurs, typographie, espacements)
 - Spécifier les composants UI
@@ -133,7 +134,7 @@ Active l'agent Aura pour définir le design system.
 
 ## 📝 TEMPLATE DE DOCUMENTATION
 
-```markdown
+````markdown
 # AURA DESIGN SYSTEM : [Nom du Projet]
 
 ---
@@ -141,20 +142,25 @@ Active l'agent Aura pour définir le design system.
 ## 1. IDENTITÉ DE MARQUE
 
 ### Nom du Produit
+
 [Nom]
 
 ### Mission
+
 [Description]
 
 ### Valeurs
+
 - Valeur 1 : [Description]
 - Valeur 2 : [Description]
 
 ### Personnalité
+
 - Adjectifs : [3-5 adjectifs]
 - Tone of Voice : [Formel, Casual, Playful]
 
 ### Références
+
 - Référence 1 : [URL]
 - Référence 2 : [URL]
 
@@ -165,10 +171,12 @@ Active l'agent Aura pour définir le design system.
 ### Couleurs
 
 #### Primary
+
 - DEFAULT : `hsl(XXX, XX%, XX%)` - `#[HEX]`
 - Foreground : `hsl(XXX, XX%, XX%)` - `#[HEX]`
 
 #### Semantic
+
 - Success : `hsl(142, 76%, 36%)` - `#10B981`
 - Warning : `hsl(45, 93%, 47%)` - `#F59E0B`
 - Error : `hsl(0, 84%, 60%)` - `#EF4444`
@@ -176,17 +184,20 @@ Active l'agent Aura pour définir le design system.
 ### Typographie
 
 #### Font Families
+
 - Sans Serif : [Inter, system-ui]
 - Serif : [Merriweather, Georgia]
 - Mono : [JetBrains Mono]
 
 #### Font Sizes
+
 - Display 2XL : `4.5rem` (72px)
 - H1 : `2.25rem` (36px)
 - H2 : `1.875rem` (30px)
 - Body : `1rem` (16px)
 
 ### Espacements (8pt Grid)
+
 - 0 : `0`
 - 1 : `0.25rem` (4px)
 - 2 : `0.5rem` (8px)
@@ -195,6 +206,7 @@ Active l'agent Aura pour définir le design system.
 - 12 : `3rem` (48px)
 
 ### Border Radius
+
 - sm : `0.125rem`
 - DEFAULT : `0.25rem`
 - lg : `0.5rem`
@@ -202,6 +214,7 @@ Active l'agent Aura pour définir le design system.
 - 2xl : `1rem`
 
 ### Shadows
+
 - sm : `0 1px 2px 0 rgb(0 0 0 / 0.05)`
 - DEFAULT : `0 4px 6px -1px rgb(0 0 0 / 0.1)`
 - lg : `0 10px 15px -3px rgb(0 0 0 / 0.1)`
@@ -213,23 +226,29 @@ Active l'agent Aura pour définir le design system.
 ### Button
 
 #### Primary
+
 ```tsx
-<button className="
+<button
+  className="
   px-6 py-3
   bg-primary text-primary-foreground
   rounded-lg
   font-semibold
   hover:opacity-90
   focus-visible:ring-2
-">
+"
+>
   Button
 </button>
 ```
+````
 
 ### Card
+
 [Spécifications...]
 
 ### Input
+
 [Spécifications...]
 
 ---
@@ -237,11 +256,13 @@ Active l'agent Aura pour définir le design system.
 ## 4. LAYOUTS
 
 ### Container
+
 ```tsx
 <div className="container mx-auto px-4 max-w-7xl">
 ```
 
 ### Grid
+
 - 2 cols : `grid-cols-1 md:grid-cols-2`
 - 3 cols : `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`
 - 4 cols : `grid-cols-1 md:grid-cols-2 lg:grid-cols-4`
@@ -251,11 +272,13 @@ Active l'agent Aura pour définir le design system.
 ## 5. ANIMATIONS
 
 ### Timing
+
 - Fast : `150ms`
 - Base : `200ms`
 - Slow : `300ms`
 
 ### Easing
+
 - Linear : `linear`
 - Ease In : `ease-in`
 - Ease Out : `ease-out`
@@ -273,6 +296,7 @@ Active l'agent Aura pour définir le design system.
 ## 7. RESPONSIVE
 
 ### Breakpoints
+
 - sm : `640px`
 - md : `768px`
 - lg : `1024px`
@@ -284,12 +308,14 @@ Active l'agent Aura pour définir le design system.
 ## 8. GUIDELINES
 
 ### DO ✅
+
 - Utiliser les design tokens
 - Suivre le 8pt grid
 - Respecter la hiérarchie
 - Inclure focus states
 
 ### DON'T ❌
+
 - Créer des couleurs custom
 - Utiliser des valeurs arbitraires
 - Oublier le mode sombre
@@ -298,6 +324,7 @@ Active l'agent Aura pour définir le design system.
 ---
 
 **Généré par SMITE Aura Agent**
+
 ```
 
 ---
@@ -326,3 +353,4 @@ Active l'agent Aura pour définir le design system.
 
 **AURA AGENT v2.0**
 *Expert UX/UI en conversation pour définir votre design*
+```

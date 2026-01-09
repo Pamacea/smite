@@ -6,6 +6,7 @@ argument-hint: [--tech=nextjs|rust|python|go] [--design] [--feature=name] [--com
 Build features and components with technology-specific best practices.
 
 **Tech Specialization:**
+
 - `nextjs` - React Server Components, Prisma, PostgreSQL, Server Actions
 - `rust` - Ownership, borrowing, async/await, zero-copy patterns
 - `python` - Type hints, FastAPI, SQLAlchemy 2.0, asyncio
@@ -15,6 +16,7 @@ Build features and components with technology-specific best practices.
 Convert Figma designs and SVG to code components
 
 **Output:**
+
 - Production code with tests
 - Documentation
 

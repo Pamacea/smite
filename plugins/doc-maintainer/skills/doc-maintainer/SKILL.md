@@ -29,6 +29,7 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
 ### 1. DETECT
 
 **Identify documentation impact:**
+
 - Scan changed files since last sync
 - Categorize by documentation impact:
   - **Component changes** → Props, hooks, usage examples
@@ -37,6 +38,7 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
   - **Configuration changes** → Environment variables, options
 
 **Code patterns to watch:**
+
 - New component/function added
 - Props/signature changed
 - JSDoc missing or outdated
@@ -46,6 +48,7 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
 ### 2. ANALYZE
 
 **Extract code information:**
+
 ```typescript
 // For components
 - Component name and purpose
@@ -68,6 +71,7 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
 ```
 
 **Compare with existing docs:**
+
 - Check if JSDoc exists and is accurate
 - Verify examples match current API
 - Identify missing parameter descriptions
@@ -78,7 +82,8 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
 **Apply documentation updates:**
 
 #### JSDoc Updates
-```typescript
+
+````typescript
 /**
  * Retrieves user data from the API
  *
@@ -97,11 +102,12 @@ Maintain **zero documentation debt** by keeping technical documentation (README,
  */
 async function fetchUser(
   userId: string,
-  options?: { includeProfile?: boolean }
-): Promise<UserData>
-```
+  options?: { includeProfile?: boolean },
+): Promise<UserData>;
+````
 
 #### README Updates
+
 - Update feature descriptions
 - Add new API documentation
 - Update installation instructions
@@ -109,6 +115,7 @@ async function fetchUser(
 - Maintain CHANGELOG
 
 #### API Documentation
+
 - Update endpoint descriptions
 - Document new parameters
 - Add response examples
@@ -117,6 +124,7 @@ async function fetchUser(
 ### 4. VALIDATE
 
 **Quality checks:**
+
 - ✅ All public APIs have JSDoc
 - ✅ All parameters are documented
 - ✅ Return types are documented
@@ -125,6 +133,7 @@ async function fetchUser(
 - ✅ Consistent formatting
 
 **Completeness score:**
+
 ```
 📊 Documentation Coverage: 94%
    - Components: 100% ✅
@@ -140,6 +149,7 @@ async function fetchUser(
 See `agent/configs/doc-maintainer.json`
 
 **Key settings:**
+
 - `sync.watchPatterns`: Files to monitor for changes
 - `sync.docPatterns`: Documentation files to update
 - `templates`: Template files for different doc types
@@ -150,21 +160,27 @@ See `agent/configs/doc-maintainer.json`
 ## EXAMPLE USAGE
 
 ### Sync Mode (Update Docs)
+
 ```bash
 *start-doc-maintainer --mode=sync
 ```
+
 Updates all documentation based on recent code changes.
 
 ### Audit Mode (Check Completeness)
+
 ```bash
 *start-doc-maintainer --mode=audit
 ```
+
 Reports documentation coverage and gaps without modifying files.
 
 ### Generate Mode (Create Missing Docs)
+
 ```bash
 *start-doc-maintainer --mode=generate
 ```
+
 Generates missing JSDoc and documentation from code analysis.
 
 ---
@@ -183,6 +199,7 @@ Documentation templates are stored in `agent/templates/`:
 ## OUTPUT
 
 ### Success Case
+
 ```
 ✅ DOC-MAINTAINER: Documentation synchronized
    - Updated 12 JSDoc comments
@@ -195,6 +212,7 @@ Documentation templates are stored in `agent/templates/`:
 ```
 
 ### Audit Results
+
 ```
 📋 DOC-MAINTAINER: Audit Report
 
@@ -218,6 +236,7 @@ Recommendations:
 ## INTEGRATION
 
 **Automatic triggers:**
+
 - After component/function creation
 - After API changes
 - Before git commits (pre-commit hook)
@@ -225,6 +244,7 @@ Recommendations:
 - Periodic scheduled syncs
 
 **Works with:**
+
 - Linter-Sentinel (ensure docs are linted)
 - Code review workflows
 - CI/CD documentation generation

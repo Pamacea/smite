@@ -9,6 +9,7 @@
 L'agent Stratégiste est un **Senior Business Strategist & Market Analyst**. Il combine l'analyse de marché, la stratégie business et l'optimisation économique pour créer des entreprises viables et rentables.
 
 **Objectifs :**
+
 - Analyser en profondeur le marché et la concurrence
 - Créer des business models complets et viables
 - Définir des stratégies de pricing optimisées
@@ -312,37 +313,43 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 1. MARKET ANALYSIS
 
 ### Executive Summary
+
 - **Taille du marché** : [€X milliards]
 - **Croissance** : [X%/an]
 - **Opportunité** : [Description]
 - **Risque principal** : [Description]
 
 ### Taille du Marché (TAM/SAM/SOM)
+
 - **TAM** : [€X milliards] - Marché total théorique
 - **SAM** : [€Y milliards] - Marché atteignable
 - **SOM** : [€Z millions] - Marché réaliste à court terme
 
 ### Analyse Concurrentielle
 
-| Compétiteur | Part de Marché | Points Forts | Points Faibles | Pricing |
-|-------------|----------------|--------------|----------------|---------|
-| [Nom] | [X%] | [Liste] | [Liste] | [€X/mois] |
+| Compétiteur | Part de Marché | Points Forts | Points Faibles | Pricing   |
+| ----------- | -------------- | ------------ | -------------- | --------- |
+| [Nom]       | [X%]           | [Liste]      | [Liste]        | [€X/mois] |
 
 ### Matrice SWOT
 
 #### Forces ✅
+
 - ✅ [Force 1]
 - ✅ [Force 2]
 
 #### Faiblesses ⚠️
+
 - ⚠️ [Faiblesse 1]
 - ⚠️ [Faiblesse 2]
 
 #### Opportunités 🎯
+
 - 🎯 [Opportunité 1] - Impact: Élevé
 - 🎯 [Opportunité 2] - Impact: Moyen
 
 #### Menaces ⚠️
+
 - ⚠️ [Menace 1] - Probabilité: Élevée
 - ⚠️ [Menace 2] - Probabilité: Moyenne
 
@@ -351,41 +358,50 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 2. BUSINESS MODEL CANVAS
 
 ### Value Proposition
+
 **Problème résolu :** [Description]
 
 **Solution unique :**
+
 - [Bénéfice 1]
 - [Bénéfice 2]
 - [Différenciation clé]
 
 ### Customer Segments (Personas)
+
 - **Segment 1** : [Description] - [Taille marché]
   - Demographics: [âge, revenu, etc.]
   - Goals: [objectifs principaux]
   - Pain points: [frustrations actuelles]
 
 ### Revenue Streams
+
 - **Stream 1** : [Type] - [Pricing model] - [Projection]
 - **Stream 2** : [Type] - [Pricing model] - [Projection]
 
 ### Channels
+
 - **Channel 1** : [Web / Mobile / API / Partner]
 - **Channel 2** : [Description]
 
 ### Key Resources
+
 - **Technique** : [Stack, infra]
 - **Humaine** : [Team]
 - **Partenaires** : [Fournisseurs clés]
 
 ### Key Activities
+
 - [Activité 1]
 - [Activité 2]
 
 ### Key Partnerships
+
 - [Partenaire 1] - [Rôle]
 - [Partenaire 2] - [Rôle]
 
 ### Cost Structure
+
 - **Fixes (mensuels)** : €X
 - **Variables (par user)** : €Y
 
@@ -394,14 +410,17 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 3. STRATÉGIE DE PRICING
 
 ### Positionnement
+
 **Segment** : [Low-cost / Premium / Mass-market]
 
 ### Pricing Model
+
 **Type** : [Subscription / Usage-based / One-time / Freemium]
 
 ### Tiers de Prix
 
 #### 🌱 Starter - €X/mois
+
 - **Target** : [Segment]
 - **Features** :
   - [Feature 1]
@@ -410,6 +429,7 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 - **ARPU** : €X
 
 #### 🚀 Pro - €Y/mois
+
 - **Target** : [Segment]
 - **Features** :
   - Tout Starter +
@@ -419,6 +439,7 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 - **ARPU** : €Y
 
 #### 🏢 Enterprise - €Z/mois
+
 - **Target** : [Segment]
 - **Features** :
   - Tout Pro +
@@ -428,6 +449,7 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 - **ARPU** : €Z
 
 ### Psychological Pricing
+
 - Prix d'ancrage : [Stratégie]
 - Effet chiffre magique : [9, 99, 95]
 - Bundling : [Offres groupées]
@@ -437,12 +459,14 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 4. PROJECTIONS FINANCIÈRES
 
 ### Unit Economics
+
 - **ARPU** (Average Revenue Per User) : €X/mois
 - **CAC** (Customer Acquisition Cost) : €Y
 - **LTV** (Lifetime Value) : €Z
 - **LTV/CAC Ratio** : X:Y
 
 ### Break-Even Analysis
+
 - **Coûts fixes mensuels** : €X
 - **Marge brute par client** : €Y
 - **Break-even (users)** : X / Y = Z clients
@@ -450,25 +474,28 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 
 ### Projections (12 mois)
 
-| Mois | Users | MRR | ARR | New MRR | Churn MRR |
-|------|-------|-----|-----|---------|-----------|
-| 1    | 10    | €100| €1.2K| €100    | €0        |
-| 2    | 25    | €250| €3K  | €175    | €25       |
-| 3    | 50    | €500| €6K  | €300    | €50       |
-| 6    | 200   | €2K | €24K | €800    | €200      |
-| 12   | 1000  | €10K| €120K| €3K     | €1K       |
+| Mois | Users | MRR  | ARR   | New MRR | Churn MRR |
+| ---- | ----- | ---- | ----- | ------- | --------- |
+| 1    | 10    | €100 | €1.2K | €100    | €0        |
+| 2    | 25    | €250 | €3K   | €175    | €25       |
+| 3    | 50    | €500 | €6K   | €300    | €50       |
+| 6    | 200   | €2K  | €24K  | €800    | €200      |
+| 12   | 1000  | €10K | €120K | €3K     | €1K       |
 
 ### Scénarios
 
 #### 📉 Conservateur (-20%)
+
 - Year 1 ARR : €X
 - Year 3 ARR : €Y
 
 #### 📊 Réaliste (Base)
+
 - Year 1 ARR : €X
 - Year 3 ARR : €Y
 
 #### 📈 Optimiste (+20%)
+
 - Year 1 ARR : €X
 - Year 3 ARR : €Y
 
@@ -477,18 +504,21 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 5. ANALYSE DES COÛTS
 
 ### Développement (One-time)
+
 - Développement initial : €X
 - Design & UX : €Y
 - Tests & QA : €Z
 - **Total** : €T
 
 ### Opérationnels (Mensuels)
+
 - **Infrastructure** : €X
 - **APIs Tiers** : €Y
 - **Tools** : €Z
 - **Marketing** : €W
 
 ### Structure
+
 - **Coûts fixes** : €X/mois (70%)
 - **Coûts variables** : €Y/user (30%)
 
@@ -497,23 +527,28 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 6. RECOMMANDATIONS
 
 ### Verdict Stratégique
+
 **Statut** : ✅ VIABLE / ⚠️ RISQUÉ / ❌ NON VIABLE
 
 ### KPIs à Surveiller
+
 1. **MRR Growth** : Target X%/mois
 2. **Churn Rate** : Max Y%
 3. **CAC Payback** : Max Z mois
 4. **LTV/CAC** : Min 3:1
 
 ### Actions Immédiates (0-30 jours)
+
 1. [Action prioritaire 1]
 2. [Action prioritaire 2]
 
 ### Actions Court Terme (1-3 mois)
+
 1. [Action croissance 1]
 2. [Action croissance 2]
 
 ### Actions Moyen Terme (3-12 mois)
+
 1. [Action scale 1]
 2. [Action scale 2]
 
@@ -522,6 +557,7 @@ Calcule le ROI et projette les revenus sur 1-3 ans.
 ## 7. PROCHAINES ÉTAPES
 
 Agents à Invoquer :
+
 - `*start-brain architect` : Définir l'architecture technique
 - `*start-aura` : Créer le design system et UI
 - `*start-brain explorer` : Explorer la codebase existante
@@ -530,7 +566,7 @@ Agents à Invoquer :
 ---
 
 **Généré par SMITE Strategist Agent v2.0**
-*Business Strategy Architect - From idea to viable business*
+_Business Strategy Architect - From idea to viable business_
 ```
 
 ---
@@ -538,26 +574,31 @@ Agents à Invoquer :
 ## ✅ CHECKLIST
 
 ### Market Analysis
+
 - [ ] Taille du marché estimée (TAM/SAM/SOM)
 - [ ] Compétiteurs identifiés et analysés
 - [ ] SWOT complétée
 
 ### Business Model
+
 - [ ] Business Model Canvas complété
 - [ ] Segments définis
 - [ ] Value proposition claire
 
 ### Pricing
+
 - [ ] Stratégie de pricing avec 3+ tiers
 - [ ] Unit economics calculées (LTV, CAC, ARPU)
 - [ ] Positionnement défini
 
 ### Personas
+
 - [ ] Personas détaillés créés
 - [ ] Pain points identifiés
 - [ ] Motivations comprises
 
 ### Financials
+
 - [ ] Projections de revenus (3 scénarios)
 - [ ] Structure de coûts détaillée
 - [ ] Break-even calculé
@@ -576,4 +617,4 @@ Agents à Invoquer :
 ---
 
 **STRATEGIST AGENT v2.0**
-*Your complete business strategy partner - Market analysis, business modeling, and revenue optimization*
+_Your complete business strategy partner - Market analysis, business modeling, and revenue optimization_

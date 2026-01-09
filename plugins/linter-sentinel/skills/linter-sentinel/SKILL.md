@@ -27,6 +27,7 @@ Monitor and automatically fix ESLint, TypeScript, and Prettier violations to mai
 ## PROTOCOL (FIX)
 
 ### 1. DETECT
+
 ```bash
 # Run linters and type checker
 pnpm lint
@@ -35,6 +36,7 @@ pnpm format:check
 ```
 
 **Actions:**
+
 - Parse ESLint output for violations
 - Parse TypeScript compiler errors
 - Parse Prettier formatting differences
@@ -43,12 +45,14 @@ pnpm format:check
 ### 2. TRIAGE
 
 **Categorize violations by type:**
+
 - **Type Safety**: `no-explicit-any`, `@ts-ignore`, missing types
 - **Code Quality**: unused vars, unreachable code, console statements
 - **Style**: formatting, naming conventions, import order
 - **Best Practices**: React hooks rules, error handling, async patterns
 
 **Determine fix strategy:**
+
 - ✅ **Auto-fix**: Use ESLint `--fix` or Prettier
 - 🤖 **Intelligent fix**: Refactor with type-safety preservation
 - ⚠️ **Manual**: Requires developer decision (document in report)
@@ -56,12 +60,14 @@ pnpm format:check
 ### 3. FIX
 
 **Apply fixes in priority order:**
+
 1. CRITICAL: Type safety violations first
 2. HIGH: ESLint errors
 3. MEDIUM: Style violations
 4. LOW: Formatting issues
 
 **Fix methods:**
+
 ```bash
 # Auto-fix ESLint
 pnpm lint --fix
@@ -79,6 +85,7 @@ pnpm format
 ### 4. VERIFY
 
 **After each fix:**
+
 - Re-run linting to confirm resolution
 - Check for new violations introduced
 - Run tests to prevent regressions
@@ -91,6 +98,7 @@ pnpm format
 See `agent/configs/linter-sentinel.json`
 
 **Key settings:**
+
 - `detection.enabledRules`: Rules to monitor
 - `fixing.autoFix`: Enable/disable auto-fix mode
 - `fixing.dryRun`: Test mode without making changes
@@ -101,21 +109,27 @@ See `agent/configs/linter-sentinel.json`
 ## EXAMPLE USAGE
 
 ### Watch Mode (Real-time)
+
 ```bash
 *start-linter-sentinel --mode=watch
 ```
+
 Monitors file changes and auto-fixes violations as they occur.
 
 ### Fix Mode (Full Scan)
+
 ```bash
 *start-linter-sentinel --mode=fix
 ```
+
 Scans entire codebase and fixes all violations.
 
 ### Audit Mode (Report Only)
+
 ```bash
 *start-linter-sentinel --mode=audit
 ```
+
 Reports violations without fixing (useful for review).
 
 ---
@@ -123,6 +137,7 @@ Reports violations without fixing (useful for review).
 ## OUTPUT
 
 ### Success Case
+
 ```
 ✅ LINTER-SENTINEL: 47 violations fixed
    - 12 type-safety issues
@@ -133,6 +148,7 @@ Reports violations without fixing (useful for review).
 ```
 
 ### Violations Requiring Manual Attention
+
 ```
 ⚠️ LINTER-SENTINEL: 3 violations require manual review
 
@@ -152,6 +168,7 @@ Fix: Add try/catch or error boundary
 ## INTEGRATION
 
 Can be triggered automatically:
+
 - After git commits (pre-commit hook)
 - Before CI/CD pipeline
 - On file save (watch mode)

@@ -19,10 +19,12 @@ Create cohesive design systems, UI components, and user experiences that are bot
 ### Design System Creation
 
 **Input:**
+
 - `--product-context="[path]"` - Product requirements
 - `--tech-stack="[stack]"` - Target tech stack
 
 **Design Process:**
+
 1. **Analyze**: Understand product and requirements
 2. **Design**: Create design system and components
 3. **Specify**: Document tokens, components, patterns
@@ -30,7 +32,7 @@ Create cohesive design systems, UI components, and user experiences that are bot
 
 ### Output Format
 
-```markdown
+````markdown
 # Aura Design System
 
 **Product:** [product name]
@@ -38,6 +40,7 @@ Create cohesive design systems, UI components, and user experiences that are bot
 **Status:** ✅ Complete
 
 ## Design Tokens
+
 ```json
 {
   "colors": { ... },
@@ -46,32 +49,40 @@ Create cohesive design systems, UI components, and user experiences that are bot
   "shadows": { ... }
 }
 ```
+````
 
 ## Component Library
+
 - **Button** - [description]
 - **Input** - [description]
 - **Card** - [description]
-[... all components]
+  [... all components]
 
 ## Design Patterns
+
 - **Layout:** [patterns used]
 - **Hierarchy:** [information architecture]
 - **Navigation:** [navigation patterns]
 - **Feedback:** [feedback mechanisms]
 
 ## Component Specs
+
 [Detailed specs for each component]
 
 ## Responsive Design
+
 [Breakpoints, adaptations]
 
 ## Accessibility
+
 - **WCAG Level:** [AA/AAA]
 - **Keyboard Nav:** [how it works]
 - **Screen Reader:** [ARIA labels, roles]
 
 ## Implementation Notes
+
 [Guidance for developers]
+
 ```
 
 ## SPECIALIZED MODES
@@ -112,3 +123,4 @@ Create cohesive design systems, UI components, and user experiences that are bot
 ---
 
 **Agent Type:** Task Agent (Parallel Execution)
+```

@@ -6,6 +6,7 @@ argument-hint: [--workflow=full-feature|bugfix|refactor|custom] [--agents=agent1
 Coordinate multi-agent workflows with automatic tracking and suggestions.
 
 **Workflows:**
+
 - `full-feature` - Complete feature development (all agents)
 - `bugfix` - Bug resolution workflow
 - `refactor` - Code refactoring workflow
@@ -18,6 +19,7 @@ Coordinate multi-agent workflows with automatic tracking and suggestions.
 initializer, explorer, strategist, aura, constructor, gatekeeper, handover, surgeon, brainstorm
 
 **Output:**
+
 - `.smite/orchestrator-state.json` - Current workflow state
 - `.smite/workflow/session-info.md` - Progress tracking
 - `docs/MISSION_BRIEF_{AGENT}.md` - Handoff documents

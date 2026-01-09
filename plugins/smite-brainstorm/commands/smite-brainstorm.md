@@ -6,6 +6,7 @@ argument-hint: [--mode=explore|discuss|plan|solve|configure] [--topic=subject] [
 Explore ideas, solve problems, create plans, or discuss any topic.
 
 **Modes:**
+
 - `explore` - Deep exploration of a topic or concept
 - `discuss` - Interactive dialogue to refine ideas
 - `plan` - Create structured plans (code, projects, features)

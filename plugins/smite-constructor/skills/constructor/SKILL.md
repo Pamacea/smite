@@ -23,6 +23,7 @@ hooks:
 L'agent Constructor est un **Principal Software Engineer & Project Manager**. Il orchestre le développement complet en utilisant toutes les documentations créées par les autres agents, et construit le projet étape par étape.
 
 **Objectifs :**
+
 - Initialiser le projet avec la stack définie
 - Implémenter les features selon l'architecture
 - Appliquer le design system
@@ -41,6 +42,7 @@ L'agent Constructor est un **Principal Software Engineer & Project Manager**. Il
 Active l'agent Constructor pour le développement.
 
 **Tech Specialization:**
+
 ```bash
 *start-constructor --tech=nextjs
 *start-constructor --tech=rust
@@ -48,6 +50,7 @@ Active l'agent Constructor pour le développement.
 ```
 
 **Flags:**
+
 - `--tech=[nextjs|rust|python|go]` : Spécialise l'agent pour une stack spécifique
 - `--design` : Mode implémentation de design (SVG, Figma, UI components)
 - `--feature="[name]"` : Construit une feature spécifique
@@ -63,6 +66,7 @@ Active l'agent Constructor pour le développement.
 **Sortie :** Projet complet fonctionnel
 
 #### Prérequis
+
 - `start-init.md` ✅
 - `architect-product.md` ✅
 - `aura-design-system.md` ✅
@@ -157,23 +161,27 @@ Active l'agent Constructor pour le développement.
 ### Essential Resources (Must Read)
 
 **Core Technologies:**
+
 - **React 18**: https://react.dev/ - Latest React patterns and Server Components
 - **Next.js 14**: https://nextjs.org/docs - App Router, Server Actions, streaming
 - **TypeScript 5**: https://www.typescriptlang.org/docs/ - Type safety and patterns
 - **Tailwind CSS**: https://tailwindcss.com/docs - Utility-first styling
 
 **State & Data:**
+
 - **Zustand**: https://zustand.docs.pmnd.rs/ - State management
 - **TanStack Query**: https://tanstack.com/query/latest/docs/react/overview - Server state
 - **Prisma**: https://www.prisma.io/docs/ - Type-safe database ORM
 
 **Rust Stack:**
+
 - **The Rust Book**: https://doc.rust-lang.org/book/ - Complete Rust guide
 - **Tokio**: https://tokio.rs/ - Async runtime
 - **Axum**: https://docs.rs/axum/latest/axum/ - Web framework
 - **SQLx**: https://docs.rs/sqlx/latest/sqlx/ - Database toolkit
 
 **Python Stack:**
+
 - **FastAPI**: https://fastapi.tiangolo.com/ - Modern web framework
 - **Pydantic**: https://docs.pydantic.dev/ - Data validation
 - **SQLAlchemy**: https://docs.sqlalchemy.org/ - ORM
@@ -181,6 +189,7 @@ Active l'agent Constructor pour le développement.
 ### Quick Reference by Technology
 
 #### Next.js
+
 - **App Router**: https://nextjs.org/docs/app
 - **Server Components**: https://nextjs.org/docs/app/building-your-application/rendering/server-components
 - **Server Actions**: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations
@@ -188,48 +197,56 @@ Active l'agent Constructor pour le développement.
 - **Caching**: https://nextjs.org/docs/app/building-your-application/caching
 
 #### React
+
 - **Hooks**: https://react.dev/reference/react
 - **Suspense**: https://react.dev/reference/react/Suspense
 - **Rendering**: https://react.dev/learn/render-and-commit
 - **Performance**: https://react.dev/learn/render-and-commit
 
 #### TypeScript
+
 - **Handbook**: https://www.typescriptlang.org/docs/handbook/intro.html
 - **Declaration Merging**: https://www.typescriptlang.org/docs/handbook/declaration-merging.html
 - **Generics**: https://www.typescriptlang.org/docs/handbook/2/generics.html
 - **Utility Types**: https://www.typescriptlang.org/docs/handbook/utility-types.html
 
 #### Prisma
+
 - **Schema**: https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference
 - **Client**: https://www.prisma.io/docs/reference/api-reference/prisma-client-reference
 - **Migrations**: https://www.prisma.io/docs/concepts/components/prisma-migrate
 - **Seed**: https://www.prisma.io/docs/reference/api-reference/command-reference
 
 #### Zustand
+
 - **Guide**: https://zustand.docs.pmnd.rs/guides/overview
 - **API**: https://zustand.docs.pmnd.rs/api/getting-started
 - **Middleware**: https://zustand.docs.pmnd.rs/guides/middleware
 - **Persist**: https://zustand.docs.pmnd.rs/guides/persisting-store-data
 
 #### TanStack Query
+
 - **Overview**: https://tanstack.com/query/latest/docs/react/overview
 - **useQuery**: https://tanstack.com/query/latest/docs/react/reference/useQuery
 - **useMutation**: https://tanstack.com/query/latest/docs/react/reference/useMutation
 - **DevTools**: https://tanstack.com/query/latest/docs/devtools/overview
 
 #### Rust
+
 - **Ownership**: https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html
 - **Error Handling**: https://doc.rust-lang.org/book/ch09-00-error-handling.html
 - **Async**: https://rust-lang.github.io/async-book/01-getting-started/01-why-async.html
 - **Testing**: https://doc.rust-lang.org/book/ch11-00-testing.html
 
 #### Axum
+
 - **Tutorial**: https://docs.rs/axum/latest/axum/
 - **Extractors**: https://docs.rs/axum/latest/axum/extract/index.html
 - **Handlers**: https://docs.rs/axum/latest/axum/handlers/index.html
 - **Routing**: https://docs.rs/axum/latest/axum/routing/index.html
 
 #### FastAPI
+
 - **Tutorial**: https://fastapi.tiangolo.com/tutorial/
 - **Security**: https://fastapi.tiangolo.com/tutorial/security/
 - **Dependencies**: https://fastapi.tiangolo.com/tutorial/dependencies/
@@ -261,6 +278,7 @@ Active l'agent Constructor pour le développement.
    - Streaming avec Suspense pour chargement progressif
 
 4. **File Structure**
+
 ```
 app/
   (routes)/              # Route groups
@@ -305,6 +323,7 @@ public/
    - Middleware pour route protection
 
 **Exemple de Server Component:**
+
 ```typescript
 // app/dashboard/page.tsx
 import { auth } from '@/lib/auth'
@@ -327,31 +346,32 @@ export default async function DashboardPage() {
 ```
 
 **Exemple de Server Action:**
+
 ```typescript
 // lib/actions/tasks.ts
-'use server'
+"use server";
 
-import { z } from 'zod'
-import { prisma } from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 const createTaskSchema = z.object({
   title: z.string().min(1),
-  description: z.string().optional()
-})
+  description: z.string().optional(),
+});
 
 export async function createTask(formData: FormData) {
   const validated = createTaskSchema.parse({
-    title: formData.get('title'),
-    description: formData.get('description')
-  })
+    title: formData.get("title"),
+    description: formData.get("description"),
+  });
 
   const task = await prisma.task.create({
-    data: validated
-  })
+    data: validated,
+  });
 
-  revalidatePath('/dashboard')
-  return task
+  revalidatePath("/dashboard");
+  return task;
 }
 ```
 
@@ -380,6 +400,7 @@ export async function createTask(formData: FormData) {
    - Channels pour la communication entre tâches
 
 4. **File Structure**
+
 ```
 Cargo.toml
 src/
@@ -410,6 +431,7 @@ benches/
    - Connection pooling
 
 **Exemple de handler async:**
+
 ```rust
 // src/api/handlers.rs
 use axum::{Json, extract::State};
@@ -447,6 +469,7 @@ pub async fn create_task(
 ```
 
 6. **Zero-Copy Patterns**
+
 ```rust
 use std::borrow::Cow;
 
@@ -478,6 +501,7 @@ process_data(Cow::Owned(String::from("hello")));
    - asyncio.gather() pour les requêtes concurrentes
 
 3. **File Structure**
+
 ```
 app/
   main.py              # FastAPI app
@@ -501,6 +525,7 @@ pyproject.toml
 ```
 
 **Exemple de route FastAPI:**
+
 ```python
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -528,6 +553,7 @@ async def create_task(
 **Spécialisation:** Transformation de designs en composants code
 
 **Sources de design:**
+
 - Figma files & components
 - SVG files & illustrations
 - Images à convertir en SVG
@@ -553,6 +579,7 @@ async def create_task(
 3. **Composants SVG Réutilisables**
 
 **Icon component:**
+
 ```typescript
 // components/ui/icon.tsx
 interface IconProps {
@@ -581,6 +608,7 @@ export function Icon({ name, size = 24, className }: IconProps) {
 ```
 
 **Sprite system:**
+
 ```typescript
 // components/ui/sprite.tsx
 export function SpriteSheet() {
@@ -603,6 +631,7 @@ export function SpriteSheet() {
 4. **Illustrations SVG Animées**
 
 **Animated illustration:**
+
 ```typescript
 // components/illustrations/hero.tsx
 export function HeroIllustration() {
@@ -649,6 +678,7 @@ export function HeroIllustration() {
 5. **Design Tokens Implementation**
 
 **À partir de Figma:**
+
 ```typescript
 // lib/design-tokens.ts
 // Extrait de Figma: colors, spacing, typography
@@ -656,44 +686,45 @@ export function HeroIllustration() {
 export const tokens = {
   colors: {
     primary: {
-      50: '#EEF2FF',
-      100: '#E0E7FF',
-      500: '#6366F1',  // Figma: Primary
-      600: '#4F46E5',
-      900: '#312E81',
+      50: "#EEF2FF",
+      100: "#E0E7FF",
+      500: "#6366F1", // Figma: Primary
+      600: "#4F46E5",
+      900: "#312E81",
     },
     semantic: {
-      success: '#10B981',
-      warning: '#F59E0B',
-      error: '#EF4444',
-    }
+      success: "#10B981",
+      warning: "#F59E0B",
+      error: "#EF4444",
+    },
   },
   spacing: {
-    xs: '4px',    // Figma: 4px
-    sm: '8px',    // Figma: 8px
-    md: '16px',   // Figma: 16px
-    lg: '24px',   // Figma: 24px
-    xl: '32px',   // Figma: 32px
+    xs: "4px", // Figma: 4px
+    sm: "8px", // Figma: 8px
+    md: "16px", // Figma: 16px
+    lg: "24px", // Figma: 24px
+    xl: "32px", // Figma: 32px
   },
   typography: {
     font: {
-      sans: 'Inter', // Figma: Inter
-      mono: 'Fira Code',
+      sans: "Inter", // Figma: Inter
+      mono: "Fira Code",
     },
     size: {
-      xs: '0.75rem',   // 12px
-      sm: '0.875rem',  // 14px
-      base: '1rem',    // 16px
-      lg: '1.125rem',  // 18px
-      xl: '1.25rem',   // 20px
-    }
-  }
-}
+      xs: "0.75rem", // 12px
+      sm: "0.875rem", // 14px
+      base: "1rem", // 16px
+      lg: "1.125rem", // 18px
+      xl: "1.25rem", // 20px
+    },
+  },
+};
 ```
 
 6. **Responsive Design from Figma**
 
 **Multi-breakpoint implementation:**
+
 ```typescript
 // components/features/hero-section.tsx
 export function HeroSection() {
@@ -722,6 +753,7 @@ export function HeroSection() {
 7. **Figma Component Variants**
 
 **Button variants from Figma:**
+
 ```typescript
 // components/ui/button.tsx
 // Figma variants: Primary, Secondary, Outline, Ghost
@@ -763,6 +795,7 @@ export function Button({
 8. **SVG Patterns & Textures**
 
 **Pattern background:**
+
 ```typescript
 // components/patterns/dot-pattern.tsx
 export function DotPattern({ color = '#6366F1' }: { color?: string }) {
@@ -787,6 +820,7 @@ export function DotPattern({ color = '#6366F1' }: { color?: string }) {
 9. **Logo & Brand Assets**
 
 **Responsive logo component:**
+
 ```typescript
 // components/brand/logo.tsx
 export function Logo({
@@ -919,6 +953,7 @@ export default function HomePage() {
 11. **SVG Asset Optimization**
 
 **Automated optimization pipeline:**
+
 ```bash
 # 1. Export depuis Figma en SVG
 # 2. Optimiser avec svgo
@@ -938,19 +973,20 @@ export function Icon({ className }) {
 ```
 
 **Custom SVGR config:**
+
 ```javascript
 // svgr.config.js
 module.exports = {
   icon: true,
   typescript: true,
   replaceAttrValues: {
-    '#000': 'currentColor',
-    '#000000': 'currentColor'
+    "#000": "currentColor",
+    "#000000": "currentColor",
   },
   svgProps: {
-    className: '{className}'
-  }
-}
+    className: "{className}",
+  },
+};
 ```
 
 ---
@@ -965,20 +1001,25 @@ module.exports = {
 ## 1. DOCUMENTATIONS CONSULTÉES
 
 ### Initializer
+
 - ✅ `start-init.md`
 
 ### Brainstorm Analyst
+
 - ✅ `analyst-market-analysis.md`
 
 ### Brainstorm Architect
+
 - ✅ `architect-product.md`
 - ✅ `architect-features.md`
 - ✅ `architect-data-model.md`
 
 ### Brainstorm Economist
+
 - ✅ `economist-business-model.md`
 
 ### Aura
+
 - ✅ `aura-design-system.md`
 - ✅ `aura-tokens.json`
 
@@ -988,18 +1029,20 @@ module.exports = {
 
 ### Structure
 ```
+
 project-name/
 ├── src/
-│   ├── app/                    # Pages
-│   ├── components/           # UI
-│   │   ├── ui/               # Shadcn/ui
-│   │   └── features/         # Features
-│   ├── lib/                  # Utils
-│   └── styles/               # Styles
+│ ├── app/ # Pages
+│ ├── components/ # UI
+│ │ ├── ui/ # Shadcn/ui
+│ │ └── features/ # Features
+│ ├── lib/ # Utils
+│ └── styles/ # Styles
 ├── public/
 ├── tests/
 └── README.md
-```
+
+````
 
 ### Stack
 - Framework : Next.js 14
@@ -1068,18 +1111,20 @@ model Task {
   userId    String
   user      User     @relation(...)
 }
-```
+````
 
 ---
 
 ## 6. TESTS
 
 ### Coverage
+
 - Unit Tests : 92%
 - Integration Tests : 88%
 - E2E Tests : Key flows
 
 ### Tests Critiques
+
 - ✅ Auth flow
 - ✅ CRUD tasks
 - ✅ Validation formulaires
@@ -1090,6 +1135,7 @@ model Task {
 ## 7. PERFORMANCE
 
 ### Lighthouse
+
 - Performance : 97/100
 - Accessibility : 100/100
 - Best Practices : 100/100
@@ -1109,12 +1155,14 @@ model Task {
 ## 9. MÉTRIQUES DE SUCCÈS
 
 ### Technique
+
 - ✅ 0 erreur TypeScript
 - ✅ 0 erreur ESLint
 - ✅ 90%+ test coverage
 - ✅ Lighthouse 95+
 
 ### Qualité
+
 - ✅ Design tokens respectés
 - ✅ Accessibilité WCAG AA
 - ✅ Responsive testé
@@ -1124,16 +1172,19 @@ model Task {
 ## 10. NEXT STEPS
 
 ### Immédiat
+
 1. Review le code
 2. Tests manuels
 3. Feedback
 
 ### Court Terme
+
 1. Bug fixes
 2. Performance
 3. Documentation
 
 ### Moyen Terme
+
 1. Features V1
 2. Analytics
 3. Monitoring
@@ -1141,6 +1192,7 @@ model Task {
 ---
 
 **Généré par SMITE Constructor Agent**
+
 ```
 
 ---
@@ -1171,3 +1223,4 @@ model Task {
 
 **CONSTRUCTOR AGENT v2.0**
 *Le développeur principal qui construit votre projet*
+```

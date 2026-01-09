@@ -19,11 +19,13 @@ Automatically synchronize documentation (JSDoc, README, API docs) with code chan
 ### Documentation Sync
 
 **Input:**
+
 - `--mode="sync"` - Synchronize docs with code
 - `--target="[path]"` - Specific file or directory (optional)
 - `--doc-type="[jsdoc|readme|api]"` - Type of documentation (optional)
 
 **Process:**
+
 1. **Analyze Code**: Scan for changes, new functions, types
 2. **Detect Mismatches**: Find outdated or missing documentation
 3. **Generate Docs**: Create/update documentation
@@ -41,39 +43,48 @@ Automatically synchronize documentation (JSDoc, README, API docs) with code chan
 ## Changes Made
 
 ### JSDoc Added
+
 - `src/utils/helper.ts:calculateTotal()` - Added parameter docs
 - `src/components/Button.tsx:Button` - Added props documentation
 
 ### README Updated
+
 - Updated installation instructions
 - Added new usage examples
 - Updated API reference
 
 ### API Documentation
+
 - Generated for 5 new endpoints
 - Updated request/response schemas
 
 ## Quality Metrics
+
 - **Coverage:** [X]% documented
 - **Accuracy:** [X]% accurate
 - **Completeness:** [X]% complete
 
 ## Recommendations
+
 - [Improvement suggestions]
 ```
 
 ## SPECIALIZED MODES
 
 ### Sync Mode
+
 `--mode="sync"` - Full synchronization of all docs
 
 ### Generate Mode
+
 `--mode="generate"` - Generate docs from scratch
 
 ### Validate Mode
+
 `--mode="validate"` - Check doc accuracy without modifying
 
 ### Update Mode
+
 `--mode="update"` - Update existing docs only
 
 ## INPUT FORMAT
@@ -101,7 +112,8 @@ Automatically synchronize documentation (JSDoc, README, API docs) with code chan
 ## DOCUMENTATION TYPES
 
 ### JSDoc Comments
-```typescript
+
+````typescript
 /**
  * Calculates the total price including tax
  * @param {number} basePrice - The base price before tax
@@ -115,25 +127,31 @@ Automatically synchronize documentation (JSDoc, README, API docs) with code chan
 function calculateTotal(basePrice: number, taxRate: number): number {
   return basePrice * (1 + taxRate);
 }
-```
+````
 
 ### README Sections
+
 ```markdown
 ## Installation
+
 [Setup instructions]
 
 ## Usage
+
 [Code examples]
 
 ## API Reference
+
 [Function signatures and descriptions]
 
 ## Contributing
+
 [Guidelines for contributors]
 ```
 
 ### API Documentation
-```markdown
+
+````markdown
 # API Reference
 
 ## POST /api/users
@@ -141,6 +159,7 @@ function calculateTotal(basePrice: number, taxRate: number): number {
 Creates a new user account.
 
 ### Request Body
+
 ```json
 {
   "name": "string",
@@ -148,8 +167,10 @@ Creates a new user account.
   "password": "string"
 }
 ```
+````
 
 ### Response
+
 ```json
 {
   "id": "string",
@@ -159,8 +180,10 @@ Creates a new user account.
 ```
 
 ### Errors
+
 - **400** - Invalid input
 - **409** - Email already exists
+
 ```
 
 ## SYNC STRATEGIES
@@ -203,3 +226,4 @@ Creates a new user account.
 ---
 
 **Agent Type:** Task Agent (Parallel Execution)
+```

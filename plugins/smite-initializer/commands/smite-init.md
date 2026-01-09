@@ -6,17 +6,20 @@ argument-hint: [--workflow=from-scratch|existing|migration] [--type=SaaS|ecommer
 Initialize a new project with optimal technical stack and project structure.
 
 **Workflows:**
+
 - `from-scratch` - Create new project from zero
 - `existing` - Integrate SMITE into existing project
 - `migration` - Migrate from another stack
 
 **Stack presets:**
+
 - `nextjs` - React 18, TypeScript, Next.js 14, Tailwind, Prisma
 - `rust` - Rust, Cargo, Tokio, Sqlx
 - `python` - Python 3.12, FastAPI, SQLAlchemy, Pydantic
 - `go` - Go, standard library, common frameworks
 
 **Project Types:**
+
 - `SaaS` - Business software with auth, DB, payments
 - `ecommerce` - Online store with catalog & checkout
 - `blog` - Content site with CMS
@@ -26,6 +29,7 @@ Initialize a new project with optimal technical stack and project structure.
 - `api` - Backend service only
 
 **Output:**
+
 - `docs/start-init.md` - Project specification
 - Config files (package.json, tsconfig.json, etc.)
 

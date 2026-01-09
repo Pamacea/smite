@@ -34,11 +34,13 @@ hooks:
 Activation avant toute transition Design → Dev ou avant tout commit/merge
 
 **Flags :**
+
 - `--auto` : Déclenchement automatique par ORCHESTRATOR
 - `--artifact="[path]"` : Artefact spécifique à valider
 - `--mode="[pre-dev|commit-validation|test|coverage|performance|security]"` : Type de validation
 
 **Exemples :**
+
 ```bash
 # Manuel - Code review
 *start-gatekeeper
@@ -103,6 +105,7 @@ Activation avant toute transition Design → Dev ou avant tout commit/merge
 **Output :** Test suite complète avec coverage
 
 **Usage:**
+
 ```bash
 *start-gatekeeper --mode=test --tech=nextjs
 *start-gatekeeper --mode=test --tech=rust
@@ -123,18 +126,21 @@ Activation avant toute transition Design → Dev ou avant tout commit/merge
 #### Test Generation par Tech
 
 **Next.js (Jest + Playwright):**
+
 - Unit tests: React Testing Library
 - Integration tests: API routes
 - E2E tests: Playwright
 - Coverage target: 90%+
 
 **Rust:**
+
 - Unit tests: embedded in `src/`
 - Integration tests: `tests/`
 - Doc tests: examples in doc comments
 - Coverage: tarpaulin
 
 **Python:**
+
 - Unit tests: pytest
 - Integration tests: pytest avec fixtures
 - Coverage: pytest-cov
@@ -142,34 +148,39 @@ Activation avant toute transition Design → Dev ou avant tout commit/merge
 
 #### Output
 
-```markdown
+````markdown
 # TEST SUITE REPORT
 
 ## Tests Created
 
 ### Unit Tests
+
 - ✅ Component: Button.test.tsx
 - ✅ Component: TaskCard.test.tsx
 - ✅ API: createTask.test.ts
 - ✅ Service: authService.test.ts
 
 ### Integration Tests
+
 - ✅ Auth flow
 - ✅ CRUD operations
 - ✅ Error handling
 
 ### E2E Tests
+
 - ✅ Login flow
 - ✅ Task creation
 - ✅ Dashboard navigation
 
 ## Coverage
+
 - Statements: 92%
 - Branches: 88%
 - Functions: 95%
 - Lines: 91%
 
 ## CI Integration
+
 ```yaml
 # .github/workflows/test.yml
 name: Tests
@@ -184,7 +195,9 @@ jobs:
       - run: npm test
       - run: npm run test:e2e
 ```
-```
+````
+
+````
 
 ---
 
@@ -238,7 +251,7 @@ jobs:
 1. Add password reset tests (auth.ts)
 2. Add Stripe webhook tests (stripe/route.ts)
 3. Add error boundary tests (task-form.tsx)
-```
+````
 
 ---
 
@@ -250,18 +263,21 @@ jobs:
 #### Test Types
 
 **For Next.js:**
+
 - Lighthouse CI (Performance, SEO, Accessibility)
 - Bundle size analysis
 - Web Vitals (LCP, FID, CLS)
 - Database query analysis
 
 **For Rust:**
+
 - Criterion benchmarks
 - Flame graphs
 - Memory profiling
 - CPU profiling
 
 **For Python:**
+
 - pytest-benchmark
 - Locust load testing
 - Memory profiler
@@ -271,23 +287,23 @@ jobs:
 ```javascript
 // lighthouse.config.js
 module.exports = {
-  extends: 'lighthouse:default',
+  extends: "lighthouse:default",
   settings: {
     onlyAudits: [
-      'first-contentful-paint',
-      'largest-contentful-paint',
-      'cumulative-layout-shift',
-      'total-blocking-time',
-      'speed-index'
-    ]
+      "first-contentful-paint",
+      "largest-contentful-paint",
+      "cumulative-layout-shift",
+      "total-blocking-time",
+      "speed-index",
+    ],
   },
   thresholds: {
     performance: 90,
     accessibility: 100,
-    'best-practices': 95,
-    seo: 95
-  }
-}
+    "best-practices": 95,
+    seo: 95,
+  },
+};
 ```
 
 #### Report Template
@@ -296,28 +312,33 @@ module.exports = {
 # PERFORMANCE ANALYSIS
 
 ## Lighthouse Scores
+
 - Performance: 92/100 ✅
 - Accessibility: 100/100 ✅
 - Best Practices: 98/100 ✅
 - SEO: 95/100 ✅
 
 ## Web Vitals
+
 - LCP: 1.2s ✅ (target: <2.5s)
 - FID: 45ms ✅ (target: <100ms)
 - CLS: 0.02 ✅ (target: <0.1)
 
 ## Bundle Analysis
+
 - Initial JS: 45 KB gzipped ✅
 - Total JS: 180 KB gzipped
 - CSS: 12 KB gzipped
 
 ## Database Queries
+
 - Slow queries: 3 ⚠️
   - `tasks.list`: 450ms (N+1 problem)
   - `users.find`: 120ms (missing index)
   - `audit.logs`: 890ms (full table scan)
 
 ## Recommendations
+
 1. Fix N+1 query in tasks.list (use include)
 2. Add index on users.email
 3. Add composite index on audit.logs
@@ -333,6 +354,7 @@ module.exports = {
 #### Audit Checklist
 
 **OWASP Top 10:**
+
 1. **Injection** (SQL, NoSQL, OS command)
    - ✅ All queries use parameterized queries
    - ✅ Input validation with Zod/Pydantic
@@ -381,40 +403,41 @@ module.exports = {
 // next.config.js
 const securityHeaders = [
   {
-    key: 'X-DNS-Prefetch-Control',
-    value: 'on'
+    key: "X-DNS-Prefetch-Control",
+    value: "on",
   },
   {
-    key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload'
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
   },
   {
-    key: 'X-Frame-Options',
-    value: 'SAMEORIGIN'
+    key: "X-Frame-Options",
+    value: "SAMEORIGIN",
   },
   {
-    key: 'X-Content-Type-Options',
-    value: 'nosniff'
+    key: "X-Content-Type-Options",
+    value: "nosniff",
   },
   {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block'
+    key: "X-XSS-Protection",
+    value: "1; mode=block",
   },
   {
-    key: 'Referrer-Policy',
-    value: 'strict-origin-when-cross-origin'
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
   },
   {
-    key: 'Content-Security-Policy',
-    value: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;"
-  }
-]
+    key: "Content-Security-Policy",
+    value:
+      "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;",
+  },
+];
 
 module.exports = {
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }]
-  }
-}
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
+};
 ```
 
 #### Report Template
@@ -423,11 +446,13 @@ module.exports = {
 # SECURITY AUDIT
 
 ## Overall Score
+
 Security Posture: STRONG ✅
 
 ## Findings
 
 ### ✅ Passed
+
 - [x] SQL Injection protection
 - [x] XSS protection
 - [x] CSRF protection
@@ -436,6 +461,7 @@ Security Posture: STRONG ✅
 - [x] Security headers configured
 
 ### ⚠️ Warnings
+
 1. **Debug logging in production**
    - File: `src/lib/logger.ts:45`
    - Fix: Remove console.log before deploy
@@ -452,6 +478,7 @@ Security Posture: STRONG ✅
    - Priority: MEDIUM
 
 ## Recommendations
+
 1. Add rate limiting to auth endpoints
 2. Restrict CORS to specific origins
 3. Set up security scanning in CI (npm audit)
@@ -475,18 +502,21 @@ Security Posture: STRONG ✅
 ## 🔍 AUDIT
 
 ### Principes CLAUDE.md Applicables
+
 - [x] [Principe 1]
 - [ ] [Principe 2]
 
 ### Violations Détectées
 
 #### 🔴 CRITIQUE
+
 - **Violation** : [Description]
 - **Ligne** : `[file:line]`
 - **Principe** : [Section CLAUDE.md]
 - **Correction** : [Action requise]
 
 #### ⚠️ MODÉRÉE
+
 - **Violation** : [Description]
 - **Ligne** : `[file:line]`
 - **Principe** : [Section CLAUDE.md]
@@ -509,7 +539,7 @@ Security Posture: STRONG ✅
 
 ---
 
-🛡️ *GATEKEEPER v1.0 - Architecture Compliance Enforcement*
+🛡️ _GATEKEEPER v1.0 - Architecture Compliance Enforcement_
 ```
 
 ---
@@ -532,4 +562,4 @@ Security Posture: STRONG ✅
 ---
 
 **🛡️ GATEKEEPER v1.0**
-*"Zero-Debt Engineering - Last Line of Defense"*
+_"Zero-Debt Engineering - Last Line of Defense"_

@@ -36,19 +36,23 @@ Activation automatique au démarrage de tout agent principal
 ### 🔴 TRIGGERS CRITIQUES (Déclenchement Immédiat)
 
 #### GATEKEEPER AUTO-CHECK
+
 **Déclenche quand :**
+
 - Un agent génère un fichier dans `docs/`
 - Constructor termine une implémentation
 - Surgeon termine un refactoring
 - Détection de patterns suspects dans le code
 
 **Action :**
+
 ```bash
 🚀 Running Agent Gatekeeper...
 [Then invoke Skill tool with: skill="smite-gatekeeper:smite:gatekeeper", args="--auto --artifact=..."]
 ```
 
 **Sortie attendue :**
+
 - ✅ PASS → Continue workflow
 - ❌ FAIL → Bloque et demande corrections
 
@@ -57,7 +61,9 @@ Activation automatique au démarrage de tout agent principal
 ### 🟡 TRIGGERS MODÉRÉS (Suggestion avec Confirmation)
 
 #### HANDOVER SUGGESTION
+
 **Déclenche quand :**
+
 - Strategist termine son analyse → Suggère transition vers Architect
 - Explorer termine son exploration → Suggère transition vers Architect/Surgeon
 - Architect termine → Suggère transition vers Aura
@@ -65,12 +71,14 @@ Activation automatique au démarrage de tout agent principal
 - Tout changement de phase entre agents
 
 **Action :**
+
 ```bash
 🚀 Running Agent Handover...
 [Then invoke Skill tool with: skill="smite-handover:smite:handover", args="--from=... --to=..."]
 ```
 
 **Prompt à l'utilisateur :**
+
 ```
 🔄 [Agent Source] a terminé. Voulez-vous créer un artefact de transition ?
 - MISSION_BRIEF.md
@@ -83,7 +91,9 @@ Activation automatique au démarrage de tout agent principal
 ---
 
 #### SURGEON SUGGESTION
+
 **Déclenche quand :**
+
 - Détection de `any` dans TypeScript
 - Détection de TODO/FIXME dans le code
 - Détection de fonctions trop complexes (> 50 lignes)
@@ -91,12 +101,14 @@ Activation automatique au démarrage de tout agent principal
 - Performance métrique sous le seuil
 
 **Action :**
+
 ```bash
 🚀 Running Agent Surgeon...
 [Then invoke Skill tool with: skill="smite-surgeon:\smite:surgeon", args="--auto-target=... --reason=..."]
 ```
 
 **Prompt à l'utilisateur :**
+
 ```
 🔪 Détection de dette technique potentielle :
 - Fichier : src/components/Button.tsx:42
@@ -112,7 +124,9 @@ Voulez-vous lancer SURGEON pour un audit chirurgical ?
 ### 🟢 TRIGGERS PASSIFS (Logging & Reporting)
 
 #### ACTIVITY LOGGING
+
 **Trace en continu :**
+
 - Chronologie d'exécution des agents
 - Temps passé par agent
 - Artefacts générés
@@ -141,6 +155,7 @@ Voulez-vous lancer SURGEON pour un audit chirurgical ?
 **Agent Files Location:** Each smite agent has a Task agent definition in `plugins/[agent-name]/agents/[agent].task.md`
 
 **Example - Parallel Validation:**
+
 ```
 User request: "Validate and document this feature"
 
@@ -155,6 +170,7 @@ Task(subagent_type="general-purpose", prompt="Read plugins/smite-handover/agents
 ```
 
 **Benefits of Task Tool:**
+
 - ✅ Native "Running x Agents" UI message
 - ✅ Real-time progress tracking
 - ✅ Task IDs for monitoring
@@ -180,26 +196,28 @@ Task(subagent_type="general-purpose", prompt="Read plugins/smite-handover/agents
 
 ### Available Task Agents
 
-| Agent | Task File | Purpose |
-|-------|-----------|---------|
-| **Initializer** | `plugins/smite-initializer/agents/initializer.task.md` | Project initialization |
-| **Explorer** | `plugins/smite-explorer/agents/explorer.task.md` | Codebase analysis |
-| **Strategist** | `plugins/smite-strategist/agents/strategist.task.md` | Business strategy |
-| **Aura** | `plugins/smite-aura/agents/aura.task.md` | Design systems |
-| **Constructor** | `plugins/smite-constructor/agents/constructor.task.md` | Implementation |
-| **Gatekeeper** | `plugins/smite-gatekeeper/agents/gatekeeper.task.md` | Code review & validation |
-| **Handover** | `plugins/smite-handover/agents/handover.task.md` | Knowledge transfer |
-| **Surgeon** | `plugins/smite-surgeon/agents/surgeon.task.md` | Refactoring |
-| **Brainstorm** | `plugins/smite-brainstorm/agents/brainstorm.task.md` | Creative problem-solving |
+| Agent           | Task File                                              | Purpose                  |
+| --------------- | ------------------------------------------------------ | ------------------------ |
+| **Initializer** | `plugins/smite-initializer/agents/initializer.task.md` | Project initialization   |
+| **Explorer**    | `plugins/smite-explorer/agents/explorer.task.md`       | Codebase analysis        |
+| **Strategist**  | `plugins/smite-strategist/agents/strategist.task.md`   | Business strategy        |
+| **Aura**        | `plugins/smite-aura/agents/aura.task.md`               | Design systems           |
+| **Constructor** | `plugins/smite-constructor/agents/constructor.task.md` | Implementation           |
+| **Gatekeeper**  | `plugins/smite-gatekeeper/agents/gatekeeper.task.md`   | Code review & validation |
+| **Handover**    | `plugins/smite-handover/agents/handover.task.md`       | Knowledge transfer       |
+| **Surgeon**     | `plugins/smite-surgeon/agents/surgeon.task.md`         | Refactoring              |
+| **Brainstorm**  | `plugins/smite-brainstorm/agents/brainstorm.task.md`   | Creative problem-solving |
 
 ### Choosing Between Skill vs Task
 
 **Use SKILL tool when:**
+
 - Running single agents
 - Sequential workflow
 - User directly invokes agent via `/smite-[agent]` command
 
 **Use TASK tool when:**
+
 - Running 2+ agents in parallel
 - Real-time progress tracking needed
 - Orchestrator coordinates workflow
@@ -318,6 +336,7 @@ User runs: /smite-constructor
 ### DÉTECTION GATEKEEPER
 
 **Critères de validation auto :**
+
 - Fichier créé dans `docs/` → Validation structure
 - Fichiers `.ts`/`.tsx` modifiés → Validation type-safety
 - Fichiers `.md` modifiés → Validation documentation
@@ -325,6 +344,7 @@ User runs: /smite-constructor
 ### DÉTECTION HANDOVER
 
 **Transitions détectées :**
+
 ```
 Strategist → Architect : MARKET_ANALYSIS.md → MISSION_BRIEF.md
 Explorer → Architect : CODEBASE_MAP.md → TECHNICAL_CONTEXT.md
@@ -337,6 +357,7 @@ Constructor → Surgeon : CODE → AUDIT_REPORT.md
 ### DÉTECTION SURGEON
 
 **Patterns anti-dette technique :**
+
 ```typescript
 // DÉTECTION : Type unsafe
 let data: any; → Trigger Surgeon
@@ -378,12 +399,14 @@ const copy2 = /* même code */; → Trigger Surgeon
 ## 📋 CHRONOLOGIE
 
 ### [HH:mm:ss] - Agent Started
+
 **Agent :** [Agent Name]
 **Durée estimée :** [X min]
 
 ---
 
 ### [HH:mm:ss] - File Created
+
 **Fichier :** `docs/[filename].md`
 **Par :** [Agent Name]
 
@@ -394,6 +417,7 @@ const copy2 = /* même code */; → Trigger Surgeon
 ---
 
 ### [HH:mm:ss] - Agent Completed
+
 **Agent :** [Agent Name]
 **Durée réelle :** [X min]
 
@@ -404,6 +428,7 @@ const copy2 = /* même code */; → Trigger Surgeon
 ---
 
 ### [HH:mm:ss] - Technical Debt Detected
+
 **Fichier :** `[file:line]`
 **Problème :** [Description]
 **Sévérité :** 🔴 Critique / 🟡 Modérée / 🟢 Faible
@@ -428,7 +453,7 @@ const copy2 = /* même code */; → Trigger Surgeon
 
 ---
 
-🎭 *ORCHESTRATOR LOG - Session [UUID]*
+🎭 _ORCHESTRATOR LOG - Session [UUID]_
 ```
 
 ---
@@ -496,21 +521,25 @@ const copy2 = /* même code */; → Trigger Surgeon
 ### Séquence logique recommandée
 
 **Pour un développement complet:**
+
 ```
 explorer → strategist → aura → constructor → gatekeeper → handover
 ```
 
 **Pour un quick fix:**
+
 ```
 explorer → constructor → gatekeeper
 ```
 
 **Pour du refactoring:**
+
 ```
 explorer → surgeon → gatekeeper
 ```
 
 **Pour de la stratégie pure:**
+
 ```
 brainstorm → strategist → handover
 ```
@@ -536,6 +565,7 @@ Completed: 2/6 (33%)
 ### Transitions automatiques
 
 L'orchestrator continue de déclencher automatiquement:
+
 - **Gatekeeper** après chaque agent qui produit des artefacts
 - **Handover** suggère la transition vers l'agent suivant
 - **Surgeon** si de la dette technique est détectée
@@ -568,21 +598,25 @@ Mais suit **votre séquence custom** plutôt que le workflow standard.
 ### NIVEAUX DE SENSIBILITÉ
 
 **Mode PARANOID (tous les triggers) :**
+
 - Gatekeeper : À chaque fichier créé/modifié
 - Handover : À chaque transition d'agent
 - Surgeon : À toute détection de dette
 
 **Mode BALANCED (recommandé) :**
+
 - Gatekeeper : Artefacts docs + commits
 - Handover : Transitions majeures uniquement
 - Surgeon : Dette critique seulement
 
 **Mode CHILL (minimal) :**
+
 - Gatekeeper : Commits uniquement
 - Handover : Off (manuel uniquement)
 - Surgeon : Off (manuel uniquement)
 
 **Activation :**
+
 ```bash
 *start-orchestrator --mode=[paranoid|balanced|chill]
 ```
@@ -592,6 +626,7 @@ Mais suit **votre séquence custom** plutôt que le workflow standard.
 ## 🛡️ PROTÔLE CIRCUIT BREAKER
 
 **En cas de boucle infinie ou spam :**
+
 ```bash
 *orchestrator-stop
 # Désactive temporairement tous les triggers
@@ -601,4 +636,4 @@ Mais suit **votre séquence custom** plutôt que le workflow standard.
 ---
 
 **🎭 ORCHESTRATOR v1.0**
-*"Automatic Coordination - Zero Manual Overhead"*
+_"Automatic Coordination - Zero Manual Overhead"_

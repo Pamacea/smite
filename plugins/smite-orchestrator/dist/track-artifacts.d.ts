@@ -8,12 +8,12 @@
  * Usage:
  *   ts-node track-artifacts.ts <file_path> [agent_name] [project_dir]
  */
-import { Artifact } from './state-manager';
+import { Artifact } from "./state-manager";
 interface TrackResult {
-    success: boolean;
-    artifact?: Artifact;
-    total_artifacts?: number;
-    error?: string;
+  success: boolean;
+  artifact?: Artifact;
+  total_artifacts?: number;
+  error?: string;
 }
 /**
  * Determine artifact category from path
@@ -22,6 +22,10 @@ declare function getArtifactCategory(filePath: string): string;
 /**
  * Track artifact and update state
  */
-declare function trackArtifact(filePath: string, agentName?: string | null, projectDir?: string): TrackResult;
+declare function trackArtifact(
+  filePath: string,
+  agentName?: string | null,
+  projectDir?: string,
+): TrackResult;
 export { trackArtifact, getArtifactCategory };
 //# sourceMappingURL=track-artifacts.d.ts.map

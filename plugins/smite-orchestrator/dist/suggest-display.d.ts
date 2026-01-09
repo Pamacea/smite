@@ -9,10 +9,10 @@
  *   ts-node suggest-display.ts [project_dir]
  */
 interface SuggestionDisplay {
-    show: boolean;
-    type: 'next-agent' | 'technical-debt' | 'workflow-complete' | 'none';
-    content?: string;
-    priority: 'high' | 'medium' | 'low';
+  show: boolean;
+  type: "next-agent" | "technical-debt" | "workflow-complete" | "none";
+  content?: string;
+  priority: "high" | "medium" | "low";
 }
 /**
  * Get current suggestion to display
@@ -26,5 +26,10 @@ declare function formatSuggestion(suggestion: SuggestionDisplay): string;
  * Display suggestion if available
  */
 declare function displaySuggestion(projectDir?: string): void;
-export { getCurrentSuggestion, formatSuggestion, displaySuggestion, SuggestionDisplay };
+export {
+  getCurrentSuggestion,
+  formatSuggestion,
+  displaySuggestion,
+  SuggestionDisplay,
+};
 //# sourceMappingURL=suggest-display.d.ts.map

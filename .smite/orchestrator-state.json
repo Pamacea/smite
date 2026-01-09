@@ -1,0 +1,14 @@
+{
+  "session_id": "388c9d46-01db-4cea-9238-ee0468238d87",
+  "created_at": "2026-01-09T17:21:40.535Z",
+  "updated_at": "2026-01-09T17:37:23.735Z",
+  "project_dir": "C:\\Users\\Yanis\\Projects\\smite-marketplace",
+  "current_agent": null,
+  "phase": "init",
+  "artifacts": [],
+  "agents_called": [
+    "surgeon"
+  ],
+  "workflow_complete": false,
+  "last_completed_agent": "surgeon"
+}

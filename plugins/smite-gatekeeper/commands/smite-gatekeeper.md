@@ -6,6 +6,7 @@ argument-hint: [--mode=commit-validation|test|coverage|performance|security] [--
 Validate code quality, generate tests, and analyze performance/security.
 
 **Modes:**
+
 - `commit-validation` - Review code for type-safety, architecture, debt
 - `test` - Generate test suite (unit, integration, E2E)
 - `coverage` - Analyze test coverage gaps
@@ -13,6 +14,7 @@ Validate code quality, generate tests, and analyze performance/security.
 - `security` - OWASP Top 10 audit, vulnerability scan
 
 **Output:**
+
 - `docs/VALIDATION_COMMIT.md`
 - `docs/TEST_SUITE_REPORT.md`
 - `docs/COVERAGE_ANALYSIS.md`

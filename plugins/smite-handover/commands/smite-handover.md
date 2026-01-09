@@ -10,5 +10,6 @@ Create documentation and facilitate knowledge transfer between agents.
 /smite-handover --artifact="docs/constructor-report.md"
 
 **Output:**
+
 - `docs/MISSION_BRIEF.md` - Handoff documentation
 - README, API docs, onboarding guides

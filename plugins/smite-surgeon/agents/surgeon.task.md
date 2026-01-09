@@ -19,10 +19,12 @@ Perform surgical refactoring to improve type-safety, performance, and code quali
 ### Auto-Targeted Refactoring
 
 **Input:**
+
 - `--auto-target="[file:line]"` - Specific code location
 - `--reason="[detection-reason]"` - Why this needs refactoring
 
 **Detection Triggers:**
+
 - Type `any` usage → Add proper types
 - TODO/FIXME comments → Resolve or create tickets
 - Complex functions (>50 lines) → Extract smaller functions
@@ -30,6 +32,7 @@ Perform surgical refactoring to improve type-safety, performance, and code quali
 - Performance issues → Optimize
 
 **Refactoring Process:**
+
 1. **Analyze**: Understand code context and dependencies
 2. **Plan**: Design refactoring approach
 3. **Execute**: Apply precise changes
@@ -38,7 +41,7 @@ Perform surgical refactoring to improve type-safety, performance, and code quali
 
 ### Output Format
 
-```markdown
+````markdown
 # Surgeon Refactoring Report
 
 **Target:** [file:line]
@@ -46,24 +49,31 @@ Perform surgical refactoring to improve type-safety, performance, and code quali
 **Status:** ✅ Completed / ⚠️ Requires Review
 
 ## Analysis
+
 [What was wrong]
 
 ## Refactoring Applied
+
 [Changes made]
 
 ## Before/After
+
 ```diff
 [code diff]
 ```
+````
 
 ## Impact Assessment
+
 - **Type Safety:** Improved / Maintained
 - **Performance:** Impact description
 - **Complexity:** Reduced / Maintained
 
 ## Notes
+
 [Additional context]
-```
+
+````
 
 ## INPUT FORMAT
 
@@ -95,12 +105,15 @@ const data: any = await fetch('/api');
 
 // After ✅
 const data = ApiResponseSchema.parse(await fetch('/api'));
-```
+````
 
 ### Complexity Reduction
+
 ```typescript
 // Before ❌ (80 lines)
-function processEverything() { /* ... */ }
+function processEverything() {
+  /* ... */
+}
 
 // After ✅
 function processEverything() {
@@ -111,6 +124,7 @@ function processEverything() {
 ```
 
 ### DRY Violation
+
 ```typescript
 // Before ❌
 const format1 = (x) => x.toFixed(2);

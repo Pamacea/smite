@@ -19,10 +19,12 @@ Explore and analyze codebases to understand architecture, patterns, dependencies
 ### Full Codebase Exploration
 
 **Input:**
+
 - `--focus="[area]"` - Specific area to explore (optional)
 - `--depth="[shallow|deep]"` - Exploration depth
 
 **Exploration Process:**
+
 1. **Structure**: Map directory organization
 2. **Dependencies**: Identify internal/external dependencies
 3. **Patterns**: Find architectural patterns
@@ -39,17 +41,21 @@ Explore and analyze codebases to understand architecture, patterns, dependencies
 **Exploration Depth:** [shallow/deep]
 
 ## Tech Stack
+
 - **Frontend:** [frameworks]
 - **Backend:** [frameworks]
 - **Build:** [tools]
 - **Testing:** [frameworks]
 
 ## Architecture
+
 [Overall structure description]
 
 ## Directory Structure
 ```
+
 [tree view]
+
 ```
 
 ## Key Patterns
@@ -76,15 +82,19 @@ Explore and analyze codebases to understand architecture, patterns, dependencies
 ## SPECIALIZED MODES
 
 ### Dependency Mapping
+
 `--mode="dependencies"` - Focus on dependency graph
 
 ### Pattern Discovery
+
 `--mode="patterns"` - Find architectural patterns
 
 ### Tech Audit
+
 `--mode="tech-audit"` - Analyze technology choices
 
 ### Impact Analysis
+
 `--mode="impact" --target="[file]"` - Analyze impact of changes
 
 ## INPUT FORMAT

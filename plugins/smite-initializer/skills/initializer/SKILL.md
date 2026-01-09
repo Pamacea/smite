@@ -9,6 +9,7 @@
 L'agent Initializer est le **premier contact** pour tout nouveau projet. Il guide la conversation pour définir la stack technique, la structure du projet, et préparer la documentation initiale.
 
 **Objectifs :**
+
 - Comprendre le contexte du projet
 - Définir la stack technique adaptée
 - Créer la structure de base
@@ -69,6 +70,7 @@ Choisissez parmi ces catégories ou décrivez votre projet :
 **Attente réponse utilisateur**
 
 **Analyse :**
+
 - Catégoriser le projet
 - Identifier les besoins implicites
 - Adapter les questions suivantes
@@ -393,11 +395,13 @@ Contenu :
 ## 1. CONTEXTE
 
 ### Type de Projet
+
 - **Catégorie** : [SaaS / E-commerce / Blog / etc.]
 - **Description** : [Description courte]
 - **Objectifs** : [Objectifs principaux]
 
 ### Stack Technique
+
 - **Framework** : [Next.js 14 / Vue 3 / etc.]
 - **Language** : [TypeScript / JavaScript]
 - **UI Library** : [Tailwind + Shadcn/ui / etc.]
@@ -408,6 +412,7 @@ Contenu :
 - **Hosting** : [Vercel / Netlify / AWS / etc.]
 
 ### Contraintes
+
 - **Budget** : [€€€]
 - **Timeline** : [X semaines/mois]
 - **Équipe** : [X personnes]
@@ -416,19 +421,20 @@ Contenu :
 ---
 
 ## 2. STRUCTURE DU PROJET
-
 ```
+
 project-name/
 ├── src/
-│   ├── app/              # Pages
-│   ├── components/       # Composants UI
-│   ├── lib/              # Utilities
-│   ├── styles/           # Styles globaux
-│   └── types/            # Types TypeScript
-├── public/               # Assets statiques
-├── tests/                # Tests
-└── docs/                 # Documentation
-```
+│ ├── app/ # Pages
+│ ├── components/ # Composants UI
+│ ├── lib/ # Utilities
+│ ├── styles/ # Styles globaux
+│ └── types/ # Types TypeScript
+├── public/ # Assets statiques
+├── tests/ # Tests
+└── docs/ # Documentation
+
+````
 
 ---
 
@@ -445,9 +451,10 @@ project-name/
   "zustand": "4.x",
   "@tanstack/react-query": "5.x"
 }
-```
+````
 
 ### Development
+
 ```json
 {
   "@testing-library/react": "14.x",
@@ -462,11 +469,13 @@ project-name/
 ## 4. NEXT STEPS
 
 1. **Initialiser le projet**
+
    ```bash
    npx create-next-app@latest --typescript --tailwind --app
    ```
 
 2. **Installer les dépendances**
+
    ```bash
    npm install [dependencies list]
    ```
@@ -493,8 +502,9 @@ project-name/
 ---
 
 **Généré par SMITE Initializer**
-*Workflow : [nom du workflow]*
-*Date : [date]*
+_Workflow : [nom du workflow]_
+_Date : [date]_
+
 ```
 
 ---
@@ -502,10 +512,11 @@ project-name/
 ## 🎓 EXEMPLE DE CONVERSATION
 
 ```
+
 User: /smite-init
 
 Initializer: Bienvenue ! Je suis l'agent Initializer de SMITE.
-           Je vais vous aider à définir la stack technique de votre projet.
+Je vais vous aider à définir la stack technique de votre projet.
 
            Quel type de projet souhaitez-vous créer ?
            (SaaS, E-commerce, Blog, Portfolio, Dashboard, App)
@@ -513,7 +524,7 @@ Initializer: Bienvenue ! Je suis l'agent Initializer de SMITE.
 User: Je veux créer une landing page pour un SaaS de CRM
 
 Initializer: Excellent ! Un SaaS CRM.
-           Quelle stack technique préférez-vous ?
+Quelle stack technique préférez-vous ?
 
            1. Next.js 14 + TypeScript + Tailwind (Recommandé)
            2. Vue 3 + Nuxt + Tailwind
@@ -523,20 +534,11 @@ Initializer: Excellent ! Un SaaS CRM.
 User: Je prends l'option 1, Next.js
 
 Initializer: Parfait choix ! Next.js 14 est idéal pour un SaaS.
-           Avez-vous besoin de :
-           - Authentification ?
-           - Database ?
-           - Paiements (Stripe) ?
-           - Email notifications ?
+Avez-vous besoin de : - Authentification ? - Database ? - Paiements (Stripe) ? - Email notifications ?
 
 User: Oui, j'ai besoin de tout ça
 
-Initializer: Compris. Stack complète :
-           - Next.js 14 (App Router)
-           - Supabase (Auth + Database)
-           - Stripe (Paiements)
-           - Resend (Emails)
-           - Shadcn/ui (Components)
+Initializer: Compris. Stack complète : - Next.js 14 (App Router) - Supabase (Auth + Database) - Stripe (Paiements) - Resend (Emails) - Shadcn/ui (Components)
 
            Quelle est votre timeline ?
            (MVP 2 semaines, Produit complet 1-2 mois, Autre)
@@ -550,6 +552,7 @@ Initializer: Parfait. Focus MVP donc.
 
            ✅ Documentation créée : docs/start-init.md
            📋 Next step : /smite-brain analyst pour analyser le marché CRM
+
 ```
 
 ---
@@ -580,3 +583,4 @@ Avant de terminer, l'initializer vérifie :
 
 **INITIALIZER AGENT v2.0**
 *Le point de départ de tout projet SMITE*
+```

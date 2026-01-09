@@ -19,6 +19,7 @@ Analyser automatiquement le contexte du projet et la demande de l'utilisateur po
 Active le routeur intelligent pour sélectionner automatiquement le bon agent.
 
 **Usage**:
+
 ```
 User: "Implémenter une fonctionnalité d'auth"
 → Router analyse le projet
@@ -73,32 +74,32 @@ if (has("migrations/")) → "Full-stack Application"
 
 ### Implémentation
 
-| Langage | Framework | Agent | Mode |
-|---------|-----------|-------|------|
-| TypeScript | Next.js | smite-constructor | `--tech=nextjs` |
-| TypeScript | React | smite-constructor | `--tech=react` |
-| TypeScript | Angular | smite-constructor | `--tech=angular` |
-| Rust | Axum | smite-constructor | `--tech=rust` |
-| Rust | Actix | smite-constructor | `--tech=rust` |
-| Python | FastAPI | smite-constructor | `--tech=python` |
-| Go | - | smite-constructor | `--tech=go` |
+| Langage    | Framework | Agent             | Mode             |
+| ---------- | --------- | ----------------- | ---------------- |
+| TypeScript | Next.js   | smite-constructor | `--tech=nextjs`  |
+| TypeScript | React     | smite-constructor | `--tech=react`   |
+| TypeScript | Angular   | smite-constructor | `--tech=angular` |
+| Rust       | Axum      | smite-constructor | `--tech=rust`    |
+| Rust       | Actix     | smite-constructor | `--tech=rust`    |
+| Python     | FastAPI   | smite-constructor | `--tech=python`  |
+| Go         | -         | smite-constructor | `--tech=go`      |
 
 ### Refactoring
 
-| Scénario | Agent | Trigger |
-|----------|-------|---------|
-| `any` types détectés | smite-surgeon | Auto-suggéré |
-| TODO/FIXME dans code | smite-surgeon | Auto-suggéré |
-| Fonctions > 50 lignes | smite-surgeon | Auto-suggéré |
-| Lint errors | linter-sentinel | Auto-suggéré |
+| Scénario              | Agent           | Trigger      |
+| --------------------- | --------------- | ------------ |
+| `any` types détectés  | smite-surgeon   | Auto-suggéré |
+| TODO/FIXME dans code  | smite-surgeon   | Auto-suggéré |
+| Fonctions > 50 lignes | smite-surgeon   | Auto-suggéré |
+| Lint errors           | linter-sentinel | Auto-suggéré |
 
 ### Documentation
 
-| Scénario | Agent | Trigger |
-|----------|-------|---------|
-| Docs/*.md modifié | smite-gatekeeper | Auto-suggéré |
-| README manquant | doc-maintainer | Auto-suggéré |
-| API docs manquants | doc-maintainer | Auto-suggéré |
+| Scénario           | Agent            | Trigger      |
+| ------------------ | ---------------- | ------------ |
+| Docs/\*.md modifié | smite-gatekeeper | Auto-suggéré |
+| README manquant    | doc-maintainer   | Auto-suggéré |
+| API docs manquants | doc-maintainer   | Auto-suggéré |
 
 ---
 
@@ -140,11 +141,13 @@ if (has("migrations/")) → "Full-stack Application"
 ### Exemple 1: Détection Automatique Next.js
 
 **Entrée:**
+
 ```
 User: "Ajoute une page profile"
 ```
 
 **Analyse du Router:**
+
 ```json
 {
   "detected": {
@@ -157,6 +160,7 @@ User: "Ajoute une page profile"
 ```
 
 **Sortie:**
+
 ```
 🔀 Routeur: Projet Next.js détecté
 
@@ -176,11 +180,13 @@ Lancer smite-constructor? [Y]es
 ### Exemple 2: Détection Automatique Rust
 
 **Entrée:**
+
 ```
 User: "Crée un endpoint API"
 ```
 
 **Analyse du Router:**
+
 ```json
 {
   "detected": {
@@ -193,6 +199,7 @@ User: "Crée un endpoint API"
 ```
 
 **Sortie:**
+
 ```
 🔀 Routeur: Projet Rust Actix détecté
 
@@ -211,11 +218,13 @@ Lancer smite-constructor? [Y]es
 ### Exemple 3: Contexte Mixte
 
 **Entrée:**
+
 ```
 User: "Analyse ce code"
 ```
 
 **Analyse du Router:**
+
 ```json
 {
   "file_analyzed": "src/utils/api.ts",
@@ -227,6 +236,7 @@ User: "Analyse ce code"
 ```
 
 **Sortie:**
+
 ```
 🔀 Routeur: Analyse de code requise
 
@@ -276,38 +286,43 @@ Lancer séquence? [Y]es
 ```typescript
 // detectors/language-detector.ts
 export function detectLanguage(projectDir: string): Language {
-  if (fs.existsSync(path.join(projectDir, 'tsconfig.json'))) {
-    return 'typescript';
+  if (fs.existsSync(path.join(projectDir, "tsconfig.json"))) {
+    return "typescript";
   }
-  if (fs.existsSync(path.join(projectDir, 'Cargo.toml'))) {
-    return 'rust';
+  if (fs.existsSync(path.join(projectDir, "Cargo.toml"))) {
+    return "rust";
   }
-  if (fs.existsSync(path.join(projectDir, 'pyproject.toml'))) {
-    return 'python';
+  if (fs.existsSync(path.join(projectDir, "pyproject.toml"))) {
+    return "python";
   }
-  return 'javascript';
+  return "javascript";
 }
 
 // detectors/framework-detector.ts
-export function detectFramework(projectDir: string, language: string): Framework {
-  if (language === 'typescript') {
-    if (fs.existsSync(path.join(projectDir, 'next.config.js'))) {
-      return 'nextjs';
+export function detectFramework(
+  projectDir: string,
+  language: string,
+): Framework {
+  if (language === "typescript") {
+    if (fs.existsSync(path.join(projectDir, "next.config.js"))) {
+      return "nextjs";
     }
-    if (fs.existsSync(path.join(projectDir, 'angular.json'))) {
-      return 'angular';
-    }
-  }
-  if (language === 'rust') {
-    const cargo = JSON.parse(fs.readFileSync(path.join(projectDir, 'Cargo.toml'), 'utf8'));
-    if (cargo.dependencies?.['axum']) {
-      return 'axum';
-    }
-    if (cargo.dependencies?.['actix-web']) {
-      return 'actix';
+    if (fs.existsSync(path.join(projectDir, "angular.json"))) {
+      return "angular";
     }
   }
-  return 'vanilla';
+  if (language === "rust") {
+    const cargo = JSON.parse(
+      fs.readFileSync(path.join(projectDir, "Cargo.toml"), "utf8"),
+    );
+    if (cargo.dependencies?.["axum"]) {
+      return "axum";
+    }
+    if (cargo.dependencies?.["actix-web"]) {
+      return "actix";
+    }
+  }
+  return "vanilla";
 }
 ```
 
@@ -317,22 +332,22 @@ export function detectFramework(projectDir: string, language: string): Framework
 
 ### Language Detection
 
-| Fichier | Détecte | Langage |
-|--------|---------|---------|
-| `tsconfig.json` | ✅ | TypeScript |
-| `Cargo.toml` | ✅ | Rust |
-| `pyproject.toml` | ✅ | Python |
-| `go.mod` | ✅ | Go |
-| `Gemfile` | ✅ | Ruby |
+| Fichier          | Détecte | Langage    |
+| ---------------- | ------- | ---------- |
+| `tsconfig.json`  | ✅      | TypeScript |
+| `Cargo.toml`     | ✅      | Rust       |
+| `pyproject.toml` | ✅      | Python     |
+| `go.mod`         | ✅      | Go         |
+| `Gemfile`        | ✅      | Ruby       |
 
 ### Framework Detection
 
-| Fichier | Détecte | Framework |
-|--------|---------|-----------|
-| `next.config.js` | ✅ | Next.js |
-| `nuxt.config.ts` | ✅ | Nuxt |
-| `angular.json` | ✅ | Angular |
-| `vite.config.ts` | ✅ | Vite |
+| Fichier          | Détecte | Framework |
+| ---------------- | ------- | --------- |
+| `next.config.js` | ✅      | Next.js   |
+| `nuxt.config.ts` | ✅      | Nuxt      |
+| `angular.json`   | ✅      | Angular   |
+| `vite.config.ts` | ✅      | Vite      |
 
 ---
 
@@ -374,6 +389,7 @@ export function detectFramework(projectDir: string, language: string): Framework
 ## 🔗 INTÉGRATION
 
 Compatible avec:
+
 - smite-orchestrator (workflow state)
 - Claude Code 2.1.0 hooks
 - Tous les agents smite
@@ -381,4 +397,4 @@ Compatible avec:
 ---
 
 **🔀 SMITE ROUTER v1.0**
-*"Le bon agent, au bon moment, automatiquement"*
+_"Le bon agent, au bon moment, automatiquement"_

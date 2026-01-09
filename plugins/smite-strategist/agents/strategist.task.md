@@ -19,11 +19,13 @@ Analyze business requirements, market opportunities, and create strategic plans 
 ### Market Analysis
 
 **Input:**
+
 - `--product="[description]"` - Product or feature description
 - `--target-audience="[audience]"` - Target market (optional)
 - `--competitors="[competitors]"` - Known competitors (optional)
 
 **Analysis Process:**
+
 1. **Market Research**: Analyze market size and trends
 2. **Competitor Analysis**: Study competitive landscape
 3. **User Personas**: Define target users
@@ -40,37 +42,44 @@ Analyze business requirements, market opportunities, and create strategic plans 
 **Date:** [timestamp]
 
 ## Market Overview
+
 - **Market Size:** [TAM/SAM/SOM]
 - **Growth Rate:** [CAGR]
 - **Trends:** [key market trends]
 
 ## Competitor Analysis
+
 | Competitor | Strengths | Weaknesses | Market Share |
-|------------|-----------|------------|--------------|
-| [Comp 1] | ... | ... | ... |
-| [Comp 2] | ... | ... | ... |
+| ---------- | --------- | ---------- | ------------ |
+| [Comp 1]   | ...       | ...        | ...          |
+| [Comp 2]   | ...       | ...        | ...          |
 
 ## Target Audience
+
 **Primary Persona:** [name, demographics, pain points]
 **Secondary Persona:** [name, demographics, pain points]
 
 ## Value Proposition
+
 - **For:** [target audience]
 - **Who:** [pain point]
 - **Our Product:** [solution]
 - **That:** [key benefits]
 
 ## Strategic Recommendations
+
 1. [Priority 1]
 2. [Priority 2]
 3. [Priority 3]
 
 ## Growth Strategy
+
 - **Short-term:** [0-6 months]
 - **Mid-term:** [6-18 months]
 - **Long-term:** [18+ months]
 
 ## KPIs to Track
+
 - [Metric 1]
 - [Metric 2]
 - [Metric 3]
@@ -79,10 +88,12 @@ Analyze business requirements, market opportunities, and create strategic plans 
 ### Business Model Canvas
 
 **Input:**
+
 - `--mode="business-model"`
 - `--product="[description]"`
 
 **Output Sections:**
+
 1. **Value Propositions** - What value do we deliver?
 2. **Customer Segments** - Who do we serve?
 3. **Channels** - How do we reach them?
@@ -96,18 +107,23 @@ Analyze business requirements, market opportunities, and create strategic plans 
 ## SPECIALIZED MODES
 
 ### Market Analysis
+
 `--mode="market-analysis"` - Comprehensive market research
 
 ### Business Model
+
 `--mode="business-model"` - Business model canvas
 
 ### Competitive Intelligence
+
 `--mode="competitive"` - Deep competitor analysis
 
 ### Revenue Optimization
+
 `--mode="revenue"` - Revenue strategy and pricing
 
 ### Product Strategy
+
 `--mode="product"` - Product roadmap and feature prioritization
 
 ## INPUT FORMAT
@@ -137,27 +153,33 @@ Analyze business requirements, market opportunities, and create strategic plans 
 ## ANALYSIS FRAMEWORKS
 
 ### SWOT Analysis
+
 ```markdown
 ## SWOT Analysis
 
 **Strengths:**
+
 - [Internal strength 1]
 - [Internal strength 2]
 
 **Weaknesses:**
+
 - [Internal weakness 1]
 - [Internal weakness 2]
 
 **Opportunities:**
+
 - [External opportunity 1]
 - [External opportunity 2]
 
 **Threats:**
+
 - [External threat 1]
 - [External threat 2]
 ```
 
 ### Porter's Five Forces
+
 1. **Competitive Rivalry** - How intense is competition?
 2. **Supplier Power** - How much power do suppliers have?
 3. **Buyer Power** - How much power do customers have?
@@ -165,6 +187,7 @@ Analyze business requirements, market opportunities, and create strategic plans 
 5. **Threat of New Entry** - How easy is it to enter the market?
 
 ### Product Prioritization (RICE Score)
+
 - **Reach**: How many users will this impact?
 - **Impact**: How much will this impact goals?
 - **Confidence**: How confident are we in estimates?

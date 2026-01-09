@@ -19,11 +19,13 @@ Initialize new projects with proper technical stack, directory structure, and ar
 ### New Project Initialization
 
 **Input:**
+
 - `--project-type="[web|mobile|api|library]"` - Type of project
 - `--tech-stack="[stack]"` - Preferred tech stack (optional)
 - `--features="[features]"` - Required features (optional)
 
 **Setup Process:**
+
 1. **Analyze Requirements**: Understand project needs
 2. **Define Stack**: Select optimal technologies
 3. **Create Structure**: Set up directory layout
@@ -42,7 +44,9 @@ Initialize new projects with proper technical stack, directory structure, and ar
 
 ## Directory Structure
 ```
+
 [directory tree]
+
 ```
 
 ## Tech Stack Choices
@@ -70,15 +74,19 @@ Initialize new projects with proper technical stack, directory structure, and ar
 ## SPECIALIZED MODES
 
 ### Web Application
+
 `--project-type="web"` - Full-stack web app with Next.js/React
 
 ### Mobile Application
+
 `--project-type="mobile"` - React Native or Flutter app
 
 ### API/Backend
+
 `--project-type="api"` - RESTful or GraphQL API
 
 ### Library/Package
+
 `--project-type="library"` - Reusable library or package
 
 ## INPUT FORMAT
@@ -107,6 +115,7 @@ Initialize new projects with proper technical stack, directory structure, and ar
 ## TECH STACK DEFAULTS
 
 ### Web Projects
+
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS
@@ -116,6 +125,7 @@ Initialize new projects with proper technical stack, directory structure, and ar
 - **CI**: GitHub Actions
 
 ### API Projects
+
 - **Framework**: Fastify (Node) or FastAPI (Python)
 - **Language**: TypeScript or Python
 - **Validation**: Zod or Pydantic
@@ -124,6 +134,7 @@ Initialize new projects with proper technical stack, directory structure, and ar
 - **Docs**: OpenAPI/Swagger
 
 ### Rust Projects
+
 - **Framework**: Axum or Actix-web
 - **Database**: SQLx
 - **Async**: Tokio

@@ -6,6 +6,7 @@ argument-hint: [--task=find-function|find-component|find-bug|find-deps|map-archi
 Explore and understand the codebase structure.
 
 **Tasks:**
+
 - `find-function` - Locate specific functions and their usage across the codebase
 - `find-component` - Find React/Vue/Angular components and their relationships
 - `find-bug` - Investigate potential bugs or error patterns
@@ -14,10 +15,12 @@ Explore and understand the codebase structure.
 - `analyze-impacts` - Analyze impact of changes (blast radius)
 
 **Scopes:**
+
 - `module` - Explore specific module or directory
 - `full` - Explore entire codebase
 
 **Output:**
+
 - `docs/explorer-findings.md` - Exploration results
 - `docs/explorer-dependencies.md` - Dependency mapping
 - `docs/explorer-architecture.md` - Architecture overview

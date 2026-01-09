@@ -15,104 +15,118 @@ exports.generateSuggestion = generateSuggestion;
 const state_manager_1 = require("./state-manager");
 // Agent descriptions and expected deliverables
 const AGENT_INFO = {
-    initializer: {
-        description: 'Initialize project with technical stack',
-        deliverables: 'Technical stack definition, project structure, initial configuration'
-    },
-    explorer: {
-        description: 'Explore codebase and map architecture',
-        deliverables: 'Codebase map, dependency graph, architecture overview, pattern analysis'
-    },
-    strategist: {
-        description: 'Business strategy, market analysis & revenue optimization',
-        deliverables: 'Market analysis, business model, pricing strategy, personas, financial projections'
-    },
-    aura: {
-        description: 'Create design system and UI components',
-        deliverables: 'Design tokens, component library, style guide'
-    },
-    constructor: {
-        description: 'Implement features and write code',
-        deliverables: 'Production code, tests, documentation'
-    },
-    gatekeeper: {
-        description: 'Review code quality and enforce standards',
-        deliverables: 'Code review report, quality metrics, recommendations'
-    },
-    handover: {
-        description: 'Create documentation and knowledge transfer',
-        deliverables: 'API documentation, README, onboarding guide'
-    },
-    surgeon: {
-        description: 'Refactor and optimize code',
-        deliverables: 'Refactored code, performance improvements, debt reduction'
-    }
+  initializer: {
+    description: "Initialize project with technical stack",
+    deliverables:
+      "Technical stack definition, project structure, initial configuration",
+  },
+  explorer: {
+    description: "Explore codebase and map architecture",
+    deliverables:
+      "Codebase map, dependency graph, architecture overview, pattern analysis",
+  },
+  strategist: {
+    description: "Business strategy, market analysis & revenue optimization",
+    deliverables:
+      "Market analysis, business model, pricing strategy, personas, financial projections",
+  },
+  aura: {
+    description: "Create design system and UI components",
+    deliverables: "Design tokens, component library, style guide",
+  },
+  constructor: {
+    description: "Implement features and write code",
+    deliverables: "Production code, tests, documentation",
+  },
+  gatekeeper: {
+    description: "Review code quality and enforce standards",
+    deliverables: "Code review report, quality metrics, recommendations",
+  },
+  handover: {
+    description: "Create documentation and knowledge transfer",
+    deliverables: "API documentation, README, onboarding guide",
+  },
+  surgeon: {
+    description: "Refactor and optimize code",
+    deliverables: "Refactored code, performance improvements, debt reduction",
+  },
 };
 exports.AGENT_INFO = AGENT_INFO;
 /**
  * Generate suggestion for next agent
  */
 function generateSuggestion(projectDir = process.cwd()) {
-    const state = (0, state_manager_1.loadState)(projectDir);
-    if (!state) {
-        return {
-            next: 'initializer',
-            reason: 'No session found. Start with initializer.',
-            workflow_progress: generateWorkflowProgress([]),
-            deliverables: AGENT_INFO.initializer.deliverables
-        };
-    }
-    const result = (0, state_manager_1.getNext)(projectDir);
-    if (!result) {
-        return {
-            next: null,
-            workflow_progress: generateWorkflowProgress(state.agents_called),
-            deliverables: 'All agents completed'
-        };
-    }
-    const nextAgent = result.next;
+  const state = (0, state_manager_1.loadState)(projectDir);
+  if (!state) {
     return {
-        next: nextAgent,
-        reason: generateReason(state, nextAgent),
-        workflow_progress: generateWorkflowProgress(state.agents_called),
-        deliverables: nextAgent ? AGENT_INFO[nextAgent].deliverables : 'All complete'
+      next: "initializer",
+      reason: "No session found. Start with initializer.",
+      workflow_progress: generateWorkflowProgress([]),
+      deliverables: AGENT_INFO.initializer.deliverables,
     };
+  }
+  const result = (0, state_manager_1.getNext)(projectDir);
+  if (!result) {
+    return {
+      next: null,
+      workflow_progress: generateWorkflowProgress(state.agents_called),
+      deliverables: "All agents completed",
+    };
+  }
+  const nextAgent = result.next;
+  return {
+    next: nextAgent,
+    reason: generateReason(state, nextAgent),
+    workflow_progress: generateWorkflowProgress(state.agents_called),
+    deliverables: nextAgent
+      ? AGENT_INFO[nextAgent].deliverables
+      : "All complete",
+  };
 }
 /**
  * Generate reason for suggestion
  */
 function generateReason(state, nextAgent) {
-    if (!nextAgent) {
-        return 'Workflow is complete!';
-    }
-    const completed = state.agents_called.length;
-    const total = 7; // Total agents in workflow
-    const progress = Math.round((completed / total) * 100);
-    return `${progress}% complete. ${total - completed} agent(s) remaining.`;
+  if (!nextAgent) {
+    return "Workflow is complete!";
+  }
+  const completed = state.agents_called.length;
+  const total = 7; // Total agents in workflow
+  const progress = Math.round((completed / total) * 100);
+  return `${progress}% complete. ${total - completed} agent(s) remaining.`;
 }
 /**
  * Generate workflow progress string
  */
 function generateWorkflowProgress(calledAgents) {
-    const agents = ['initializer', 'explorer', 'strategist', 'aura', 'constructor', 'gatekeeper', 'handover'];
-    let progress = 'initializer → explorer → strategist → aura → constructor → gatekeeper → handover\n';
-    agents.forEach(agent => {
-        const called = calledAgents.includes(agent);
-        progress += called ? ' [✓]' : ' [ ]';
-    });
-    return progress;
+  const agents = [
+    "initializer",
+    "explorer",
+    "strategist",
+    "aura",
+    "constructor",
+    "gatekeeper",
+    "handover",
+  ];
+  let progress =
+    "initializer → explorer → strategist → aura → constructor → gatekeeper → handover\n";
+  agents.forEach((agent) => {
+    const called = calledAgents.includes(agent);
+    progress += called ? " [✓]" : " [ ]";
+  });
+  return progress;
 }
 /**
  * CLI interface
  */
 function main() {
-    const args = process.argv.slice(2);
-    const projectDir = args[0] || process.cwd();
-    const suggestion = generateSuggestion(projectDir);
-    console.log(JSON.stringify(suggestion, null, 2));
+  const args = process.argv.slice(2);
+  const projectDir = args[0] || process.cwd();
+  const suggestion = generateSuggestion(projectDir);
+  console.log(JSON.stringify(suggestion, null, 2));
 }
 // Run if called directly
 if (require.main === module) {
-    main();
+  main();
 }
 //# sourceMappingURL=suggest-next.js.map
