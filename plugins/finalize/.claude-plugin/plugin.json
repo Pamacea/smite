@@ -1,0 +1,10 @@
+{
+  "name": "finalize",
+  "description": "SMITE Finalize - Unified quality assurance, code review, and documentation agent (merged gatekeeper+surgeon+linter+handover+doc-maintainer)",
+  "version": "3.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/",
+  "skills": "./skills/"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "ralph",
+  "description": "SMITE Ralph - Multi-agent orchestrator with parallel execution (Ralph Wiggum technique enhanced)",
+  "version": "3.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/",
+  "skills": "./skills/",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node plugins/smite-ralph/dist/stop-hook.js"
+          }
+        ]
+      }
+    ]
+  }
+}

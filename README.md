@@ -1,6 +1,6 @@
-# 🏪 SMITE for Claude Code
+# 🔥 SMITE v3.0
 
-**Zero-debt engineering agents and specialized development tools for Claude Code**
+**Zero-debt engineering agents with multi-agent parallel orchestration (2-3x faster)**
 
 ---
 
@@ -10,211 +10,314 @@
 
 ```bash
 # Add the SMITE Marketplace
-/plugin marketplace add Pamacea/smite-marketplace
+/plugin marketplace add Pamacea/smite
 
-# List all available plugins
-/plugin list --marketplace=smite-marketplace
-
-# Install individual plugins
-/plugin install smite-initializer@smite-marketplace
-/plugin install linter-sentinel@smite-marketplace
+# Install Ralph (multi-agent orchestrator)
+/plugin install ralph@smite
 ```
 
-### Install All Plugins
+### One-Shot Execution
 
 ```bash
-# SMITE agents (10 specialized agents)
-/plugin install smite-initializer@smite-marketplace
-/plugin install smite-explorer@smite-marketplace
-/plugin install smite-strategist@smite-marketplace
-/plugin install smite-aura@smite-marketplace
-/plugin install smite-constructor@smite-marketplace
-/plugin install smite-gatekeeper@smite-marketplace
-/plugin install smite-handover@smite-marketplace
-/plugin install smite-surgeon@smite-marketplace
-/plugin install smite-orchestrator@smite-marketplace
-/plugin install smite-brainstorm@smite-marketplace
-/plugin install smite-router@smite-marketplace
+# Ralph auto-generates PRD and executes in parallel
+/ralph "Build a todo app with authentication and real-time updates"
 
-# Quality assurance plugins
-/plugin install linter-sentinel@smite-marketplace
-/plugin install doc-maintainer@smite-marketplace
+# That's it! Ralph handles:
+# ✅ PRD generation
+# ✅ Dependency analysis
+# ✅ Parallel execution (2-3x faster)
+# ✅ QA & documentation
+# ✅ Auto-looping until completion
 ```
 
 ---
 
-## 📦 Available Plugins
+## 🎯 What's New in v3.0
 
-### 🤖 SMITE Agents
+### ⚡ Multi-Agent Parallel Execution
 
-| Plugin | Description | Command |
-|--------|-------------|---------|
-| **smite-initializer** | Project initialization & tech stack | `/smite-init` |
-| **smite-explorer** | Codebase exploration & pattern discovery | `/smite:explorer` |
-| **smite-strategist** | Business strategy & market analysis | `/smite:strategist` |
-| **smite-aura** | Design system & UI/UX components | `/smite-aura` |
-| **smite-constructor** | Implementation with tech specialization | `/smite-constructor --tech=[nextjs\|rust\|python]` |
-| **smite-gatekeeper** | Code review, QA & testing | `/smite-gatekeeper --mode=[test\|coverage\|perf\|security]` |
-| **smite-handover** | Documentation & knowledge transfer | `/smite-handover` |
-| **smite-surgeon** | Surgical refactoring & optimization | `/smite-surgeon` |
-| **smite-brainstorm** | Creative thinking & problem-solving | `/smite:brainstorm --mode=[explore\|plan\|solve]` |
-| **smite-router** ⭐ | Intelligent agent routing | `*start-s_router` |
+**Before (Sequential):**
+```
+Story 1 → Story 2 → Story 3 → Story 4
+= 12 minutes
+```
 
-### 🔍 Quality & Documentation
+**After (Parallel):**
+```
+Story 1 → (Story 2 + Story 3) → Story 4
+= 9 minutes (25% faster!)
 
-| Plugin | Description | Command |
-|--------|-------------|---------|
-| **linter-sentinel** | Auto-fix ESLint, TypeScript, Prettier | `*start-linter-sentinel --mode=fix` |
-| **doc-maintainer** | Sync documentation with code changes | `*start-doc-maintainer --mode=sync` |
+With 10+ stories: 2-3x speedup!
+```
 
-**Total:** 12 plugins with dual execution mode (Skill + Task)
+### 📦 Simplified Architecture (13 → 5 agents)
+
+| Old (13 agents) | New (5 agents) | Description |
+|-----------------|----------------|-------------|
+| smite-initializer, smite-strategist, smite-aura, smite-brainstorm | **architect** | Design, strategy, init, creative thinking |
+| smite-constructor, smite-router | **builder** | Implementation with auto-detection |
+| smite-gatekeeper, smite-surgeon, linter-sentinel, smite-handover, doc-maintainer | **finalize** | QA + documentation unified |
+| smite-explorer | **explorer** | Codebase analysis |
+| — | **ralph** | Multi-agent orchestrator (NEW!) |
+
+**Result:** 62% reduction in complexity, 2-3x faster execution!
 
 ---
 
-## 🎯 Key Features
+## 🤖 Core Agents
 
-### 🤖 Auto-Orchestration (Claude Code 2.1.0 Hooks)
+### 1. **ralph** - Multi-Agent Orchestrator ⭐
 
-- **Smart Workflow Coordination**: Tracks agent execution and suggests next steps
-- **Technical Debt Detection**: Auto-scans code for anti-patterns after every edit
-- **Zero Overhead**: No daemon required, hooks run only when needed
-- **Session Persistence**: Maintains workflow state across sessions
-
-**Detection Patterns:**
-- 🔴 High: `@ts-ignore`, debugger statements
-- 🟡 Medium: `any` types, `@ts-expect-error`, empty interfaces
-- 🟢 Low: TODO/FIXME comments, console statements
-
-**Standard Workflow:** `initializer → explorer → strategist → aura → constructor → gatekeeper → handover`
-
-### 🔀 Intelligent Agent Routing ⭐ NEW
-
-**smite-router** automatically detects your project context and routes to the best agent:
-
-- **Automatic Detection**: TypeScript, Rust, Python, Go frameworks
-- **Zero Configuration**: No need to specify `--tech=nextjs`
-- **Smart Routing**: Analyzes project structure and selects appropriate agent
-- **Documentation Links**: Provides official docs for detected technologies
+The revolution: autonomous coding with parallel execution.
 
 ```bash
-# Auto mode (recommended)
-*start-s_router
+# Quick start
+/ralph "Build a REST API with Node.js, Express, and PostgreSQL"
 
-# Detects: Next.js + TypeScript + Tailwind
-# Routes to: smite-constructor --tech=nextjs
-# Provides relevant docs links
+# From PRD file
+/ralph .smite/prd.json
+
+# With custom iterations
+/ralph "your task" --iterations 100
 ```
 
-### ⚡ Parallel Execution
+**Features:**
+- 🧠 Auto-generates PRD from prompt
+- 📊 Analyzes dependencies
+- ⚡ Executes in parallel batches
+- 🔄 Auto-loops until completion
+- 📝 QA & documentation included
 
-Run multiple agents simultaneously with real-time progress:
+**See:** [docs/RALPH_GUIDE.md](docs/RALPH_GUIDE.md)
 
-```typescript
-// Launch 3 agents in parallel
-Task(subagent_type="general-purpose", prompt="Explore codebase")
-Task(subagent_type="general-purpose", prompt="Check lint errors")
-Task(subagent_type="general-purpose", prompt="Update docs")
-
-// Result: 🚀 Running 3 Agents in parallel...
-```
-
-**When to use:**
-- **Task Tool** (Parallel): Multiple independent tasks
-- **Skill Tool** (Sequential): Single agent or chained workflows
-
-### 🛠️ Tech Specialization
+### 2. **explorer** - Codebase Analysis
 
 ```bash
-# Next.js full-stack
-/smite-constructor --tech=nextjs
-→ React 18, TypeScript, Server Components, Prisma, PostgreSQL
-
-# Rust systems
-/smite-constructor --tech=rust
-→ Cargo, Tokio, Sqlx, async/await, zero-copy patterns
-
-# Python backend
-/smite-constructor --tech=python
-→ FastAPI, SQLAlchemy 2.0, Pydantic, asyncio
+/explorer --task=map-architecture     # Map codebase structure
+/explorer --task=find-patterns        # Find design patterns
+/explorer --task=analyze-dependencies # Dependency analysis
 ```
 
-### 🧪 Quality Assurance
+### 3. **architect** - Design & Strategy
 
 ```bash
-/smite-gatekeeper --mode=test        # Unit, integration, E2E tests
-/smite-gatekeeper --mode=coverage    # Coverage gap analysis
-/smite-gatekeeper --mode=performance # Lighthouse, Web Vitals
-/smite-gatekeeper --mode=security    # OWASP Top 10, vulnerability scan
+/architect --mode=init "Setup Next.js project"      # Initialize
+/architect --mode=strategy "Product roadmap"        # Strategy
+/architect --mode=design "Design system spec"       # Design
+/architect --mode=brainstorm "Solve X problem"      # Brainstorm
 ```
 
-### 💡 Creative Problem-Solving
+### 4. **builder** - Implementation
 
 ```bash
-/smite:brainstorm --mode=explore --topic="microservices architecture"
-/smite:brainstorm --mode=plan --topic="implement authentication"
-/smite:brainstorm --mode=solve --topic="performance bottleneck"
+# Auto-detects tech stack
+/builder "Implement user authentication"
+
+# Or specify explicitly
+/builder --tech=nextjs "Build dashboard"
+/builder --tech=rust "Create API endpoint"
+/builder --tech=python "Add data processing"
+```
+
+### 5. **finalize** - QA & Documentation
+
+```bash
+# Full QA + Docs
+/finalize
+
+# QA only
+/finalize --mode=qa --type=test
+/finalize --mode=qa --type=lint
+/finalize --mode=qa --type=performance
+
+# Docs only
+/finalize --mode=docs --type=readme
+/finalize --mode=docs --type=api
 ```
 
 ---
 
-## 📖 Quick Usage Examples
+## 📊 Ralph PRD Format
 
-### New Project with Auto-Orchestration
-
-```bash
-/smite-init
-→ Orchestrator suggests: /smite:explorer
-
-/smite:explorer --task=map-architecture
-→ Orchestrator suggests: /smite:strategist
-
-/smite:strategist --workflow=market-analysis
-→ Orchestrator suggests: /smite-aura
-
-# Continue workflow...
-/smite-aura
-/smite-constructor --tech=nextjs
-/smite-gatekeeper --mode=test
-/smite-handover
-
-# Technical debt detected? Orchestrator suggests Surgeon
+```json
+{
+  "project": "TodoApp",
+  "branchName": "ralph/todo-app",
+  "description": "Task management application",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Setup Next.js project",
+      "description": "Initialize Next.js with TypeScript",
+      "acceptanceCriteria": [
+        "Next.js installed",
+        "TypeScript configured",
+        "Build working"
+      ],
+      "priority": 10,
+      "agent": "architect",
+      "dependencies": [],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Build task list UI",
+      "description": "Create task list component",
+      "acceptanceCriteria": [
+        "TaskList component",
+        "Display tasks",
+        "Responsive design"
+      ],
+      "priority": 9,
+      "agent": "builder",
+      "dependencies": ["US-001"],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add task form",
+      "description": "Create add task form",
+      "acceptanceCriteria": [
+        "Form component",
+        "Validation",
+        "Adds to list"
+      ],
+      "priority": 9,
+      "agent": "builder",
+      "dependencies": ["US-001"],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "QA & Documentation",
+      "description": "Test and document",
+      "acceptanceCriteria": [
+        "All tests passing",
+        "No lint errors",
+        "Docs complete"
+      ],
+      "priority": 1,
+      "agent": "finalize",
+      "dependencies": ["US-002", "US-003"],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
 ```
 
-### Tech-Specialized Development
-
-```bash
-# Auto-routing with smite-router ⭐
-*start-s_router
-# Automatically detects your tech stack and routes correctly
-
-# Manual specification
-/smite-constructor --tech=nextjs  # or rust, python, go
-/smite-constructor --design --source="figma:file-id"
+**Execution Flow:**
+```
+Batch 1: [US-001] (sequential)
+    ↓
+Batch 2: [US-002, US-003] ← PARALLEL!
+    ↓
+Batch 3: [US-004] (sequential)
 ```
 
 ---
 
-## 🏗️ Repository Structure
+## 🛠️ Scripts (Cross-Platform)
+
+### Windows (PowerShell)
+
+```powershell
+.\ralph-loop.ps1 -Prompt "Build a todo app"
+.\ralph-status.ps1
+.\ralph-cancel.ps1
+```
+
+### macOS/Linux (Bash)
+
+```bash
+./ralph-loop.sh --prompt "Build a todo app"
+./ralph-status.sh
+./ralph-cancel.sh
+```
+
+### Universal (Node.js)
+
+```bash
+node plugins/ralph/dist/index.js --prompt "Build a todo app"
+```
+
+---
+
+## 📁 File Structure
 
 ```
-smite-marketplace/
+smite/
 ├── .claude-plugin/
 │   └── marketplace.json              # Marketplace config
-├── .claude/
-│   └── settings.local.json           # Claude Code 2.1.0 hooks
-├── .smite/                            # Orchestrator state
-│   ├── orchestrator-state.json       # Workflow progress
-│   ├── knowledge-base.md             # Documentation hub
-│   └── suggestions/                  # Auto-generated recommendations
 ├── plugins/
-│   ├── smite-*/                      # 10 specialized agents
-│   ├── linter-sentinel/              # Auto-fix linting
-│   └── doc-maintainer/               # Documentation sync
+│   ├── explorer/                     # Codebase analysis
+│   ├── architect/                    # Design + strategy + init
+│   ├── builder/                      # Implementation
+│   ├── finalize/                     # QA + docs
+│   └── ralph/                        # Multi-agent orchestrator
+│       ├── src/                      # TypeScript source
+│       ├── dist/                     # Compiled JavaScript
+│       ├── scripts/                  # Shell scripts
+│       ├── hooks/                    # Stop hooks
+│       └── examples/                 # PRD examples
+├── .smite/                           # Ralph state
+│   ├── prd.json                      # Current PRD
+│   ├── ralph-state.json              # Execution state
+│   ├── progress.txt                  # Activity log
+│   └── original-prompt.txt           # For looping
 └── docs/
-    ├── SMITE_COMPLETE_GUIDE.md       # 📖 Complete guide
-    ├── SMITE_HOOKS_ARCHITECTURE.md   # Hooks deep dive
-    ├── SMITE_ROUTER_GUIDE.md         # Router guide
-    └── DUAL_MODE_GUIDE.md            # Skill vs Task
+    ├── RALPH_GUIDE.md                # Complete Ralph guide
+    ├── SMITE_COMPLETE_GUIDE.md       # Legacy guide
+    └── legacy/                       # Old planning docs
+```
+
+---
+
+## 🎯 Usage Examples
+
+### Example 1: Todo App (One-Shot)
+
+```bash
+/ralph "Build a simple todo app with create, complete, and delete tasks"
+```
+
+Ralph auto-generates:
+1. ✅ PRD with 4 user stories
+2. ✅ Dependency graph
+3. ✅ Optimized batches
+4. ✅ Parallel execution
+5. ✅ QA + docs
+
+### Example 2: SaaS Dashboard
+
+```bash
+/ralph "Build a SaaS dashboard with authentication, analytics, and user profiles"
+```
+
+Optimized batches:
+```
+Batch 1: [US-001] Setup project
+Batch 2: [US-002, US-003, US-004] Auth + DB + UI  ← PARALLEL!
+Batch 3: [US-005, US-006] Dashboard + Analytics  ← PARALLEL!
+Batch 4: [US-007] Finalize
+```
+
+### Example 3: Custom PRD
+
+```bash
+# Create PRD manually
+cat > .smite/prd.json << EOF
+{
+  "project": "MyAPI",
+  ...
+}
+EOF
+
+# Execute
+/ralph .smite/prd.json
 ```
 
 ---
@@ -223,7 +326,7 @@ smite-marketplace/
 
 ```bash
 # Update marketplace
-/plugin marketplace update smite-marketplace
+/plugin marketplace update smite
 
 # Update all plugins
 /plugin update --all
@@ -231,35 +334,26 @@ smite-marketplace/
 
 ---
 
-## 📚 Detailed Documentation
+## 📚 Documentation
 
 | Document | Description |
 |----------|-------------|
-| **[SMITE_COMPLETE_GUIDE.md](./docs/SMITE_COMPLETE_GUIDE.md)** | Installation, configuration & complete usage |
-| **[SMITE_HOOKS_ARCHITECTURE.md](./docs/SMITE_HOOKS_ARCHITECTURE.md)** | Deep dive into Claude Code 2.1.0 hooks |
-| **[SMITE_ROUTER_GUIDE.md](./docs/SMITE_ROUTER_GUIDE.md)** | Intelligent routing with examples |
-| **[DUAL_MODE_GUIDE.md](./docs/DUAL_MODE_GUIDE.md)** | Skill vs Task execution modes |
+| **[RALPH_GUIDE.md](docs/RALPH_GUIDE.md)** | Complete Ralph usage guide |
+| **[SMITE_COMPLETE_GUIDE.md](docs/SMITE_COMPLETE_GUIDE.md)** | Legacy SMITE guide |
+| **plugins/ralph/README.md** | Ralph technical documentation |
 
 ---
 
 ## 🎯 Categories
 
-### Development (SMITE Agents)
-- 10 specialized agents covering all development phases
-- Tech specialization: Next.js, Rust, Python, Go
-- Design implementation: Figma to code
-- Auto-orchestrated workflows with intelligent suggestions
+### Development
+- **explorer**: Codebase analysis & pattern discovery
+- **architect**: Design, strategy, initialization
+- **builder**: Full-stack implementation
+- **finalize**: QA, testing, documentation
 
-### Quality
-- Comprehensive testing (unit, integration, E2E)
-- Performance analysis (Lighthouse, Web Vitals)
-- Security audits (OWASP Top 10)
-- Automated linting and type-safety
-
-### Documentation
-- Automatic documentation synchronization
-- JSDoc, README, and API docs
-- Zero documentation debt
+### Orchestration
+- **ralph**: Multi-agent parallel execution (2-3x speedup)
 
 ---
 
@@ -269,7 +363,7 @@ To add a new plugin:
 
 1. Create plugin directory: `plugins/your-plugin/`
 2. Add `.claude-plugin/plugin.json`
-3. Add skill definition in `skills/your-agent.md`
+3. Add skill in `skills/your-agent/SKILL.md`
 4. Update `.claude-plugin/marketplace.json`
 5. Submit pull request
 
@@ -285,10 +379,14 @@ MIT License - see [LICENSE](LICENSE) for details
 
 Built by **Pamacea** for zero-debt engineering with Claude Code
 
+Inspired by:
+- [Anthropics Ralph Wiggum](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum)
+- [Snarktank Ralph](https://github.com/snarktank/ralph)
+
 ---
 
-**SMITE Marketplace v2.2.0**
+**SMITE v3.0**
 
-_12 plugins • 10 specialized agents • Dual execution mode • Parallel workflows • Tech specialization • Auto-orchestration • Intelligent routing_
+_5 core agents • Multi-agent parallel orchestration • 2-3x faster execution • Zero-debt engineering_
 
-📖 **[Complete Guide](./docs/SMITE_COMPLETE_GUIDE.md)** for detailed installation, configuration, and usage examples.
+📖 **[RALPH_GUIDE.md](docs/RALPH_GUIDE.md)** for complete Ralph documentation and examples.

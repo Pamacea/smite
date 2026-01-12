@@ -1,128 +1,56 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "smite-marketplace",
-  "version": "1.0.0",
-  "description": "SMITE Marketplace - Zero-debt engineering agents and specialized development tools",
+  "name": "smite",
+  "version": "3.0.0",
+  "description": "SMITE - Zero-debt engineering agents with multi-agent parallel orchestration",
   "owner": {
     "name": "Pamacea"
   },
   "plugins": [
     {
-      "name": "smite-initializer",
-      "source": "./plugins/smite-initializer",
-      "description": "Project initialization and technical stack definition agent",
+      "name": "explorer",
+      "source": "./plugins/explorer",
+      "description": "Codebase exploration, dependency mapping & pattern discovery",
       "author": {
         "name": "Pamacea"
       },
       "category": "development"
     },
     {
-      "name": "smite-explorer",
-      "source": "./plugins/smite-explorer",
-      "description": "Codebase exploration, dependency mapping & pattern discovery agent",
+      "name": "architect",
+      "source": "./plugins/architect",
+      "description": "Unified design, strategy, initialization & creative thinking (init+strategy+design+brainstorm)",
       "author": {
         "name": "Pamacea"
       },
       "category": "development"
     },
     {
-      "name": "smite-strategist",
-      "source": "./plugins/smite-strategist",
-      "description": "Business strategy, market analysis & revenue optimization agent (merged analyst+economist)",
+      "name": "builder",
+      "source": "./plugins/builder",
+      "description": "Implementation agent with auto-detection & tech specialization (constructor+router)",
       "author": {
         "name": "Pamacea"
       },
       "category": "development"
     },
     {
-      "name": "smite-aura",
-      "source": "./plugins/smite-aura",
-      "description": "Design system and UI/UX component creation agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-constructor",
-      "source": "./plugins/smite-constructor",
-      "description": "Implementation and coding agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-gatekeeper",
-      "source": "./plugins/smite-gatekeeper",
-      "description": "Code review and quality assurance agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-handover",
-      "source": "./plugins/smite-handover",
-      "description": "Documentation and knowledge transfer agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-surgeon",
-      "source": "./plugins/smite-surgeon",
-      "description": "Surgical code refactoring and optimization agent",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-orchestrator",
-      "source": "./plugins/smite-orchestrator",
-      "description": "Multi-agent coordination and workflow management",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-brainstorm",
-      "source": "./plugins/smite-brainstorm",
-      "description": "Creative thinking, ideation & problem-solving partner for any topic",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "smite-router",
-      "source": "./plugins/smite-router",
-      "description": "Intelligent agent routing based on automatic project context detection",
-      "author": {
-        "name": "Pamacea"
-      },
-      "category": "development"
-    },
-    {
-      "name": "linter-sentinel",
-      "source": "./plugins/linter-sentinel",
-      "description": "Auto-fix ESLint, TypeScript, and Prettier violations with surgical precision",
+      "name": "finalize",
+      "source": "./plugins/finalize",
+      "description": "Unified quality assurance, code review, refactoring, linting & documentation (gatekeeper+surgeon+linter+handover+doc-maintainer)",
       "author": {
         "name": "Pamacea"
       },
       "category": "quality"
     },
     {
-      "name": "doc-maintainer",
-      "source": "./plugins/doc-maintainer",
-      "description": "Automatically synchronize documentation with code changes",
+      "name": "ralph",
+      "source": "./plugins/ralph",
+      "description": "Multi-agent orchestrator with parallel execution for 2-3x speedup",
       "author": {
         "name": "Pamacea"
       },
-      "category": "documentation"
+      "category": "development"
     }
   ]
 }

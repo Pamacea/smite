@@ -1,0 +1,10 @@
+{
+  "name": "builder",
+  "description": "SMITE Builder - Implementation agent with auto-detection and tech specialization (merged constructor+router)",
+  "version": "3.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/",
+  "skills": "./skills/"
+}

@@ -41,7 +41,8 @@
       "Skill(smite-handover:smite:handover)",
       "Skill(smite-surgeon:smite:surgeon)",
       "Bash(echo:*)",
-      "Bash(done:*)"
+      "Bash(done:*)",
+      "Bash(git remote get-url:*)"
     ]
   },
   "hooks": {
