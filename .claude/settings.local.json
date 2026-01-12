@@ -42,7 +42,10 @@
       "Skill(smite-surgeon:smite:surgeon)",
       "Bash(echo:*)",
       "Bash(done:*)",
-      "Bash(git remote get-url:*)"
+      "Bash(git remote get-url:*)",
+      "Skill(ralph:ralph)",
+      "Bash(node:*)",
+      "Bash(head:*)"
     ]
   },
   "hooks": {

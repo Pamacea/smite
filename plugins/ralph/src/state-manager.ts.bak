@@ -1,18 +1,23 @@
+// SMITE Ralph - State Manager
+// Manage Ralph execution state in .smite/ralph-state.json
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { RalphState } from './types';
 
 export class StateManager {
-  private readonly statePath: string;
-  private readonly progressPath: string;
-  private static readonly MINUTES_MS = 60000;
+  private statePath: string;
+  private progressPath: string;
 
   constructor(smiteDir: string) {
     this.statePath = path.join(smiteDir, 'ralph-state.json');
     this.progressPath = path.join(smiteDir, 'progress.txt');
   }
 
+  /**
+   * Initialize new Ralph session
+   */
   initialize(maxIterations: number): RalphState {
     const state: RalphState = {
       sessionId: uuidv4(),
@@ -29,25 +34,36 @@ export class StateManager {
     };
 
     this.save(state);
-    this.logProgress(`\n🚀 Ralph session started: ${state.sessionId}`, `Max iterations: ${maxIterations}\n`);
+    this.appendProgress(`\n🚀 Ralph session started: ${state.sessionId}`);
+    this.appendProgress(`Max iterations: ${maxIterations}\n`);
 
     return state;
   }
 
+  /**
+   * Load current state
+   */
   load(): RalphState | null {
     if (!fs.existsSync(this.statePath)) return null;
 
     try {
-      return JSON.parse(fs.readFileSync(this.statePath, 'utf-8')) as RalphState;
+      const content = fs.readFileSync(this.statePath, 'utf-8');
+      return JSON.parse(content) as RalphState;
     } catch {
       return null;
     }
   }
 
+  /**
+   * Save state
+   */
   save(state: RalphState): void {
     fs.writeFileSync(this.statePath, JSON.stringify(state, null, 2));
   }
 
+  /**
+   * Update state
+   */
   update(updates: Partial<RalphState>): RalphState | null {
     const state = this.load();
     if (!state) return null;
@@ -57,17 +73,16 @@ export class StateManager {
     return updated;
   }
 
-  markStoryResult(storyId: string, success: boolean, error?: string): RalphState | null {
+  /**
+   * Mark story as completed
+   */
+  markCompleted(storyId: string): RalphState | null {
     const state = this.load();
     if (!state) return null;
 
-    const array = success ? state.completedStories : state.failedStories;
-    const emoji = success ? '✅' : '❌';
-    const status = success ? 'PASSED' : `FAILED: ${error}`;
-
-    if (!array.includes(storyId)) {
-      array.push(storyId);
-      this.logProgress(`${emoji} ${storyId} - ${status}`);
+    if (!state.completedStories.includes(storyId)) {
+      state.completedStories.push(storyId);
+      this.appendProgress(`✅ ${storyId} - PASSED`);
     }
 
     state.currentIteration++;
@@ -77,18 +92,56 @@ export class StateManager {
     return state;
   }
 
+  /**
+   * Mark story as failed
+   */
+  markFailed(storyId: string, error: string): RalphState | null {
+    const state = this.load();
+    if (!state) return null;
+
+    if (!state.failedStories.includes(storyId)) {
+      state.failedStories.push(storyId);
+      this.appendProgress(`❌ ${storyId} - FAILED: ${error}`);
+    }
+
+    state.currentIteration++;
+    state.lastActivity = Date.now();
+    this.save(state);
+
+    return state;
+  }
+
+  /**
+   * Set in-progress story
+   */
   setInProgress(storyId: string | null): RalphState | null {
     return this.update({ inProgressStory: storyId });
   }
 
+  /**
+   * Set status
+   */
   setStatus(status: RalphState['status']): RalphState | null {
     const state = this.update({ status });
     if (state) {
-      this.logProgress(`\n📊 Status changed to: ${status}`);
+      this.appendProgress(`\n📊 Status changed to: ${status}`);
     }
     return state;
   }
 
+  /**
+   * Append to progress log
+   */
+  appendProgress(message: string): void {
+    const timestamp = new Date().toISOString();
+    const logEntry = `[${timestamp}] ${message}\n`;
+
+    fs.appendFileSync(this.progressPath, logEntry);
+  }
+
+  /**
+   * Read progress log
+   */
   readProgress(): string {
     if (!fs.existsSync(this.progressPath)) return '';
 
@@ -99,23 +152,25 @@ export class StateManager {
     }
   }
 
+  /**
+   * Clear state
+   */
   clear(): void {
-    [this.statePath, this.progressPath].forEach(filePath => {
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    });
+    if (fs.existsSync(this.statePath)) {
+      fs.unlinkSync(this.statePath);
+    }
+    if (fs.existsSync(this.progressPath)) {
+      fs.unlinkSync(this.progressPath);
+    }
   }
 
+  /**
+   * Get session duration
+   */
   getDuration(state: RalphState): string {
     const duration = Date.now() - state.startTime;
-    const minutes = Math.floor(duration / StateManager.MINUTES_MS);
-    const seconds = Math.floor((duration % StateManager.MINUTES_MS) / 1000);
+    const minutes = Math.floor(duration / 60000);
+    const seconds = Math.floor((duration % 60000) / 1000);
     return `${minutes}m ${seconds}s`;
-  }
-
-  private logProgress(...messages: string[]): void {
-    const timestamp = new Date().toISOString();
-    fs.appendFileSync(this.progressPath, messages.map(m => `[${timestamp}] ${m}`).join('\n') + '\n');
   }
 }

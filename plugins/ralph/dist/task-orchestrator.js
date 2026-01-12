@@ -11,37 +11,44 @@ class TaskOrchestrator {
         this.dependencyGraph = new dependency_graph_1.DependencyGraph(prd);
         this.stateManager = new state_manager_1.StateManager(smiteDir);
     }
-    /**
-     * Execute all stories with parallel optimization
-     */
-    async execute(maxIterations = 50) {
-        // Initialize state
+    async execute(maxIterations = TaskOrchestrator.DEFAULT_MAX_ITERATIONS) {
         const state = this.stateManager.initialize(maxIterations);
-        // Generate execution batches
         const batches = this.dependencyGraph.generateBatches();
-        console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
-        console.log(`📊 Optimized into ${batches.length} batches (parallel execution)\n`);
-        // Execute each batch
+        this.logExecutionStart(batches.length);
         for (const batch of batches) {
-            if (state.currentIteration >= state.maxIterations) {
-                console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
-                state.status = 'failed';
+            if (this.shouldStopExecution(state, maxIterations))
                 break;
-            }
-            console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
-            if (batch.canRunInParallel) {
-                console.log(`⚡ Running in PARALLEL: ${batch.stories.map(s => s.id).join(', ')}`);
-                await this.executeBatchParallel(batch.stories, state);
-            }
-            else {
-                const story = batch.stories[0];
-                console.log(`📝 Running sequential: ${story.id}`);
-                await this.executeStory(story, state);
-            }
-            state.currentBatch = batch.batchNumber;
-            this.stateManager.save(state);
+            await this.executeBatch(batch, state);
         }
-        // Finalize
+        this.finalizeExecution(state, maxIterations);
+        return state;
+    }
+    logExecutionStart(batchCount) {
+        console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
+        console.log(`📊 Optimized into ${batchCount} batches (parallel execution)\n`);
+    }
+    shouldStopExecution(state, maxIterations) {
+        if (state.currentIteration < state.maxIterations)
+            return false;
+        console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
+        state.status = 'failed';
+        return true;
+    }
+    async executeBatch(batch, state) {
+        console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
+        if (batch.canRunInParallel) {
+            console.log(`⚡ Running in PARALLEL: ${batch.stories.map(s => s.id).join(', ')}`);
+            await this.executeBatchParallel(batch.stories, state);
+        }
+        else {
+            const story = batch.stories[0];
+            console.log(`📝 Running sequential: ${story.id}`);
+            await this.executeStory(story, state);
+        }
+        state.currentBatch = batch.batchNumber;
+        this.stateManager.save(state);
+    }
+    finalizeExecution(state, maxIterations) {
         if (state.status === 'running') {
             state.status = state.failedStories.length === 0 ? 'completed' : 'failed';
         }
@@ -50,7 +57,6 @@ class TaskOrchestrator {
         console.log(`   Completed: ${state.completedStories.length}/${this.prd.userStories.length}`);
         console.log(`   Failed: ${state.failedStories.length}`);
         console.log(`   Iterations: ${state.currentIteration}/${maxIterations}\n`);
-        return state;
     }
     /**
      * Execute batch of stories in parallel
@@ -63,38 +69,28 @@ class TaskOrchestrator {
         const promises = stories.map(story => this.executeStory(story, state));
         await Promise.all(promises);
     }
-    /**
-     * Execute single story
-     */
     async executeStory(story, state) {
         state.inProgressStory = story.id;
         state.lastActivity = Date.now();
         console.log(`   → Executing ${story.id}: ${story.title}`);
         console.log(`      Agent: ${story.agent}`);
-        try {
-            // Simulate execution (in real implementation, this would invoke the agent)
-            const result = await this.invokeAgent(story);
-            if (result.success) {
-                state.completedStories.push(story.id);
-                story.passes = true;
-                story.notes = result.output;
-                console.log(`      ✅ PASSED`);
-            }
-            else {
-                state.failedStories.push(story.id);
-                story.passes = false;
-                story.notes = result.error || 'Unknown error';
-                console.log(`      ❌ FAILED: ${result.error}`);
-            }
-        }
-        catch (error) {
-            state.failedStories.push(story.id);
-            story.passes = false;
-            story.notes = error instanceof Error ? error.message : 'Unknown error';
-            console.log(`      ❌ ERROR: ${story.notes}`);
-        }
+        const result = await this.invokeAgent(story);
+        this.processStoryResult(story, state, result);
         state.inProgressStory = null;
         state.currentIteration++;
+    }
+    processStoryResult(story, state, result) {
+        if (result.success) {
+            state.completedStories.push(story.id);
+            story.passes = true;
+            story.notes = result.output;
+            console.log('      ✅ PASSED');
+            return;
+        }
+        state.failedStories.push(story.id);
+        story.passes = false;
+        story.notes = result.error ?? 'Unknown error';
+        console.log(`      ❌ FAILED: ${result.error}`);
     }
     /**
      * Invoke Claude Code agent for story execution
@@ -157,4 +153,5 @@ Last Activity: ${new Date(state.lastActivity).toISOString()}
     }
 }
 exports.TaskOrchestrator = TaskOrchestrator;
+TaskOrchestrator.DEFAULT_MAX_ITERATIONS = 50;
 //# sourceMappingURL=task-orchestrator.js.map

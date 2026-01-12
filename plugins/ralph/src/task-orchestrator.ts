@@ -1,7 +1,7 @@
 // SMITE Ralph - Task Orchestrator
 // Parallel execution engine using Claude Code Task tool
 
-import { PRD, UserStory, TaskResult, RalphState } from './types';
+import { PRD, UserStory, TaskResult, RalphState, StoryBatch } from './types';
 import { DependencyGraph } from './dependency-graph';
 import { StateManager } from './state-manager';
 import * as path from 'path';
@@ -17,43 +17,53 @@ export class TaskOrchestrator {
     this.stateManager = new StateManager(smiteDir);
   }
 
-  /**
-   * Execute all stories with parallel optimization
-   */
-  async execute(maxIterations: number = 50): Promise<RalphState> {
-    // Initialize state
-    const state = this.stateManager.initialize(maxIterations);
+  private static readonly DEFAULT_MAX_ITERATIONS = 50;
 
-    // Generate execution batches
+  async execute(maxIterations = TaskOrchestrator.DEFAULT_MAX_ITERATIONS): Promise<RalphState> {
+    const state = this.stateManager.initialize(maxIterations);
     const batches = this.dependencyGraph.generateBatches();
 
-    console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
-    console.log(`📊 Optimized into ${batches.length} batches (parallel execution)\n`);
+    this.logExecutionStart(batches.length);
 
-    // Execute each batch
     for (const batch of batches) {
-      if (state.currentIteration >= state.maxIterations) {
-        console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
-        state.status = 'failed';
-        break;
-      }
-
-      console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
-
-      if (batch.canRunInParallel) {
-        console.log(`⚡ Running in PARALLEL: ${batch.stories.map(s => s.id).join(', ')}`);
-        await this.executeBatchParallel(batch.stories, state);
-      } else {
-        const story = batch.stories[0];
-        console.log(`📝 Running sequential: ${story.id}`);
-        await this.executeStory(story, state);
-      }
-
-      state.currentBatch = batch.batchNumber;
-      this.stateManager.save(state);
+      if (this.shouldStopExecution(state, maxIterations)) break;
+      await this.executeBatch(batch, state);
     }
 
-    // Finalize
+    this.finalizeExecution(state, maxIterations);
+    return state;
+  }
+
+  private logExecutionStart(batchCount: number): void {
+    console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
+    console.log(`📊 Optimized into ${batchCount} batches (parallel execution)\n`);
+  }
+
+  private shouldStopExecution(state: RalphState, maxIterations: number): boolean {
+    if (state.currentIteration < state.maxIterations) return false;
+
+    console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
+    state.status = 'failed';
+    return true;
+  }
+
+  private async executeBatch(batch: StoryBatch, state: RalphState): Promise<void> {
+    console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
+
+    if (batch.canRunInParallel) {
+      console.log(`⚡ Running in PARALLEL: ${batch.stories.map(s => s.id).join(', ')}`);
+      await this.executeBatchParallel(batch.stories, state);
+    } else {
+      const story = batch.stories[0];
+      console.log(`📝 Running sequential: ${story.id}`);
+      await this.executeStory(story, state);
+    }
+
+    state.currentBatch = batch.batchNumber;
+    this.stateManager.save(state);
+  }
+
+  private finalizeExecution(state: RalphState, maxIterations: number): void {
     if (state.status === 'running') {
       state.status = state.failedStories.length === 0 ? 'completed' : 'failed';
     }
@@ -64,8 +74,6 @@ export class TaskOrchestrator {
     console.log(`   Completed: ${state.completedStories.length}/${this.prd.userStories.length}`);
     console.log(`   Failed: ${state.failedStories.length}`);
     console.log(`   Iterations: ${state.currentIteration}/${maxIterations}\n`);
-
-    return state;
   }
 
   /**
@@ -81,9 +89,6 @@ export class TaskOrchestrator {
     await Promise.all(promises);
   }
 
-  /**
-   * Execute single story
-   */
   private async executeStory(story: UserStory, state: RalphState): Promise<void> {
     state.inProgressStory = story.id;
     state.lastActivity = Date.now();
@@ -91,30 +96,26 @@ export class TaskOrchestrator {
     console.log(`   → Executing ${story.id}: ${story.title}`);
     console.log(`      Agent: ${story.agent}`);
 
-    try {
-      // Simulate execution (in real implementation, this would invoke the agent)
-      const result = await this.invokeAgent(story);
-
-      if (result.success) {
-        state.completedStories.push(story.id);
-        story.passes = true;
-        story.notes = result.output;
-        console.log(`      ✅ PASSED`);
-      } else {
-        state.failedStories.push(story.id);
-        story.passes = false;
-        story.notes = result.error || 'Unknown error';
-        console.log(`      ❌ FAILED: ${result.error}`);
-      }
-    } catch (error) {
-      state.failedStories.push(story.id);
-      story.passes = false;
-      story.notes = error instanceof Error ? error.message : 'Unknown error';
-      console.log(`      ❌ ERROR: ${story.notes}`);
-    }
+    const result = await this.invokeAgent(story);
+    this.processStoryResult(story, state, result);
 
     state.inProgressStory = null;
     state.currentIteration++;
+  }
+
+  private processStoryResult(story: UserStory, state: RalphState, result: TaskResult): void {
+    if (result.success) {
+      state.completedStories.push(story.id);
+      story.passes = true;
+      story.notes = result.output;
+      console.log('      ✅ PASSED');
+      return;
+    }
+
+    state.failedStories.push(story.id);
+    story.passes = false;
+    story.notes = result.error ?? 'Unknown error';
+    console.log(`      ❌ FAILED: ${result.error}`);
   }
 
   /**
