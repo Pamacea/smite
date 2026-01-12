@@ -1,0 +1,11 @@
+{
+  "name": "simplifier",
+  "description": "SMITE Simplifier - Code simplification and refactoring agent for clarity, consistency, and maintainability",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": "./skills/"
+}

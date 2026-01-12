@@ -182,7 +182,37 @@ ralph-cancel
 | `explorer` | Codebase analysis               | Understanding patterns |
 | `architect` | Design & strategy               | Project setup          |
 | `builder`  | Implementation                  | Feature development    |
+| `simplifier` | Code simplification            | Refactoring & cleanup  |
 | `finalize` | QA + Documentation              | Testing & docs         |
+
+### Using Simplifier in Ralph
+
+The simplifier agent can be used for code refactoring tasks:
+
+```json
+{
+  "id": "US-005",
+  "title": "Simplify and refactor code",
+  "description": "Apply code simplification to recent changes",
+  "acceptanceCriteria": [
+    "Code complexity reduced",
+    "Functionality preserved",
+    "All tests passing"
+  ],
+  "priority": 2,
+  "agent": "simplifier",
+  "dependencies": ["US-002", "US-003"],
+  "passes": false,
+  "notes": ""
+}
+```
+
+The simplifier will automatically:
+- Analyze code for complexity and inconsistencies
+- Apply project-specific best practices
+- Reduce nesting and redundancy
+- Improve clarity and maintainability
+- Preserve exact functionality
 
 ## ⚡ Performance
 

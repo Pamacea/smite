@@ -51,6 +51,15 @@
         "name": "Pamacea"
       },
       "category": "development"
+    },
+    {
+      "name": "simplifier",
+      "source": "./plugins/simplifier",
+      "description": "Code simplification and refactoring agent for clarity, consistency, and maintainability (based on Anthropic's code-simplifier)",
+      "author": {
+        "name": "Pamacea"
+      },
+      "category": "quality"
     }
   ]
 }

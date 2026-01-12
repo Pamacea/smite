@@ -50,14 +50,15 @@ Story 1 → (Story 2 + Story 3) → Story 4
 With 10+ stories: 2-3x speedup!
 ```
 
-### 📦 Simplified Architecture (13 → 5 agents)
+### 📦 Simplified Architecture (13 → 6 agents)
 
-| Old (13 agents) | New (5 agents) | Description |
+| Old (13 agents) | New (6 agents) | Description |
 |-----------------|----------------|-------------|
 | smite-initializer, smite-strategist, smite-aura, smite-brainstorm | **architect** | Design, strategy, init, creative thinking |
 | smite-constructor, smite-router | **builder** | Implementation with auto-detection |
 | smite-gatekeeper, smite-surgeon, linter-sentinel, smite-handover, doc-maintainer | **finalize** | QA + documentation unified |
 | smite-explorer | **explorer** | Codebase analysis |
+| — | **simplifier** | Code simplification & refactoring (NEW!) |
 | — | **ralph** | Multi-agent orchestrator (NEW!) |
 
 **Result:** 62% reduction in complexity, 2-3x faster execution!
@@ -134,6 +135,31 @@ The revolution: autonomous coding with parallel execution.
 /finalize --mode=docs --type=readme
 /finalize --mode=docs --type=api
 ```
+
+### 6. **simplifier** - Code Simplification ⭐
+
+```bash
+# Simplify recent changes
+/simplifier
+
+# Simplify specific file
+/simplifier --scope=file src/components/Button.tsx
+
+# Simplify directory
+/simplifier --scope=directory src/components
+
+# Simplify entire project
+/simplifier --scope=all
+```
+
+**Features:**
+- 🧹 Automatic code refactoring
+- 📊 Complexity reduction
+- ✅ Functionality preservation
+- 🎯 Project standards integration
+- 🚫 Anti-pattern detection
+
+**See:** [plugins/simplifier/README.md](plugins/simplifier/README.md)
 
 ---
 
@@ -256,6 +282,7 @@ smite/
 │   ├── explorer/                     # Codebase analysis
 │   ├── architect/                    # Design + strategy + init
 │   ├── builder/                      # Implementation
+│   ├── simplifier/                   # Code simplification
 │   ├── finalize/                     # QA + docs
 │   └── ralph/                        # Multi-agent orchestrator
 │       ├── src/                      # TypeScript source
@@ -350,6 +377,9 @@ EOF
 - **explorer**: Codebase analysis & pattern discovery
 - **architect**: Design, strategy, initialization
 - **builder**: Full-stack implementation
+
+### Quality
+- **simplifier**: Code simplification & refactoring
 - **finalize**: QA, testing, documentation
 
 ### Orchestration
@@ -387,6 +417,6 @@ Inspired by:
 
 **SMITE v3.0**
 
-_5 core agents • Multi-agent parallel orchestration • 2-3x faster execution • Zero-debt engineering_
+_6 core agents • Multi-agent parallel orchestration • 2-3x faster execution • Zero-debt engineering_
 
 📖 **[RALPH_GUIDE.md](docs/RALPH_GUIDE.md)** for complete Ralph documentation and examples.
