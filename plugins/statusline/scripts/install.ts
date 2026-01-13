@@ -10,6 +10,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { existsSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 // ============ Types ============
 
@@ -170,9 +171,16 @@ async function configureSettings(
 // ============ Config File Creation ============
 
 async function createDefaultConfig(platform: Platform, options: InstallOptions): Promise<void> {
-  const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+  // Get the script directory, handling both file:// and direct paths
+  const scriptPath = fileURLToPath(import.meta.url);
+  const scriptDir = path.dirname(scriptPath);
   const defaultsPath = path.join(scriptDir, 'statusline', 'data', 'defaults.json');
   const configPath = path.join(platform.home, '.claude', 'statusline.config.json');
+
+  if (options.verbose) {
+    log.info(`Script directory: ${scriptDir}`);
+    log.info(`Defaults path: ${defaultsPath}`);
+  }
 
   if (options.dryRun) {
     log.dry(`Would create ${configPath} from ${defaultsPath}`);
@@ -180,6 +188,19 @@ async function createDefaultConfig(platform: Platform, options: InstallOptions):
   }
 
   try {
+    // Check if defaults.json exists
+    if (!existsSync(defaultsPath)) {
+      // Try alternative location (when installed)
+      const altDefaultsPath = path.join(platform.pluginCache, 'scripts', 'statusline', 'data', 'defaults.json');
+      if (existsSync(altDefaultsPath)) {
+        const defaults = await fs.readFile(altDefaultsPath, 'utf-8');
+        await atomicWrite(configPath, defaults);
+        log.success(`Created config file: ${configPath}`);
+        return;
+      }
+      throw new Error(`Defaults file not found at ${defaultsPath} or ${altDefaultsPath}`);
+    }
+
     const defaults = await fs.readFile(defaultsPath, 'utf-8');
     await atomicWrite(configPath, defaults);
     log.success(`Created config file: ${configPath}`);
