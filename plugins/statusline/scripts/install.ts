@@ -69,10 +69,18 @@ async function detectPlatform(): Promise<Platform> {
     os = 'linux';
   }
 
-  // Detect runtime
-  const hasBunEnv = process.env.BUN_INSTALL != null;
-  const hasBunGlobal = typeof (globalThis as any).Bun !== 'undefined';
-  const runtime = hasBunEnv || hasBunGlobal ? 'bun' : 'node';
+  // Detect runtime - prefer bun if available, check if bun command exists
+  let runtime: 'bun' | 'node' = 'node'; // default to node
+
+  try {
+    // Try to execute bun --version to check if it's available
+    const { execSync } = await import('node:child_process');
+    execSync('bun --version', { stdio: 'ignore' });
+    runtime = 'bun';
+  } catch {
+    // bun not found, use node
+    runtime = 'node';
+  }
 
   // Resolve paths
   const home = process.env.HOME || process.env.USERPROFILE || '';
@@ -138,8 +146,15 @@ async function writeSettings(
   await atomicWrite(settingsPath, content);
 }
 
-function createStatuslineCommand(pluginCache: string, runtime: 'bun' | 'node'): string {
+function createStatuslineCommand(pluginCache: string, runtime: 'bun' | 'node', platform: Platform): string {
   const scriptPath = path.join(pluginCache, 'scripts', 'statusline', 'dist', 'index.js');
+
+  // On Windows with bun, use full path for reliability
+  if (platform.os === 'windows' && runtime === 'bun') {
+    const bunPath = path.join(platform.home, '.bun', 'bin', 'bun');
+    return `"${bunPath}" ${scriptPath}`;
+  }
+
   return `${runtime} ${scriptPath}`;
 }
 
@@ -149,7 +164,7 @@ async function configureSettings(
   options: InstallOptions
 ): Promise<ClaudeSettings> {
   const currentSettings = settings || {};
-  const command = createStatuslineCommand(platform.pluginCache, platform.runtime);
+  const command = createStatuslineCommand(platform.pluginCache, platform.runtime, platform);
 
   const newSettings: ClaudeSettings = {
     ...currentSettings,
