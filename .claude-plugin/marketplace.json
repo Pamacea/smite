@@ -69,6 +69,15 @@
         "name": "Pamacea"
       },
       "category": "development"
+    },
+    {
+      "name": "smite",
+      "source": "./plugins/smite",
+      "description": "Essential Claude commands for rapid development (oneshot, explore, debug, commit, claude-memory, epct, apex, and more)",
+      "author": {
+        "name": "Melvynx"
+      },
+      "category": "development"
     }
   ]
 }

@@ -55,7 +55,8 @@
       "Bash(git rm:*)",
       "Skill(statusline:statusline)",
       "Bash(bun:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Skill(commit)"
     ]
   },
   "hooks": {

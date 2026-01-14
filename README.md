@@ -17,6 +17,9 @@
 
 # Optional: Install statusline plugin
 /plugin install statusline@smite
+
+# Optional: Install essential commands (oneshot, explore, debug, commit, etc.)
+/plugin install smite@smite
 ```
 
 ### One-Shot Execution
@@ -223,6 +226,51 @@ main • $0.15 • 3m0s • [████████░░] 11%
 - Falls back gracefully on errors
 
 **See:** [plugins/statusline/README.md](plugins/statusline/README.md)
+
+### 8. **smite** - Essential Development Commands ⚡
+
+```bash
+# Install all essential commands
+/plugin install smite@smite
+
+# After installation, commands are available:
+/oneshot "Add user login"
+/explore "How does auth work?"
+/debug "Fix memory leak"
+/commit
+```
+
+**Installed Commands:**
+- 🚀 `/oneshot` - Ultra-fast feature implementation (Explore → Code → Test)
+- 🔍 `/explore` - Deep codebase exploration with parallel agents
+- 🐛 `/debug` - Systematic bug debugging with root cause analysis
+- 📝 `/commit` - Quick commit & push with conventional format
+- 🧠 `/claude-memory` - CLAUDE.md management and best practices
+- 📋 `/epct` - Systematic implementation (Explore → Plan → Code → Test)
+- 🎯 `/apex` - Quality-focused workflow (Analyze → Plan → Execute → eXamine)
+- 🏗️ `/explain-architecture` - Architecture analysis and pattern documentation
+- 🧹 `/cleanup-context` - Memory bank optimization and token reduction
+- 🔀 `/create-pull-request` - PR creation with auto-generated descriptions
+- 📋 `/run-tasks` - GitHub issue execution with full EPCT workflow
+
+**Features:**
+- ⚡ Proven workflows for rapid development
+- 🎯 Clear purpose and use cases for each command
+- 📊 Structured methodologies (oneshot, epct, apex)
+- 🔧 Seamless integration with SMITE agents
+- 📚 Comprehensive documentation included
+
+**Workflow Guide:**
+```
+Quick feature     → /oneshot
+Complex feature   → /epct
+Production code   → /apex
+Understand code   → /explore
+Fix bug           → /debug
+Commit changes    → /commit
+```
+
+**See:** [plugins/smite/README.md](plugins/smite/README.md)
 
 ---
 

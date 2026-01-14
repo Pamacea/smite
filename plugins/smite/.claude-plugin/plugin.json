@@ -1,0 +1,11 @@
+{
+  "name": "smite",
+  "description": "Essential Claude commands for rapid development - oneshot, explore, debug, commit, claude-memory, and more",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "hooks": {
+    "PostPluginInstall": "./hooks/install.js"
+  }
+}
