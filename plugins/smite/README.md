@@ -4,13 +4,21 @@ Essential Claude Code commands for rapid, systematic development.
 
 ## Overview
 
-This plugin installs a collection of high-quality, battle-tested commands directly into your `~/.claude/commands/` directory. These are the default SMITE commands that complement SMITE agents and provide proven workflows for common development tasks.
+This plugin provides a collection of high-quality, battle-tested commands for your `~/.claude/commands/` directory. These are the default SMITE commands that complement SMITE agents and provide proven workflows for common development tasks.
 
 ## Installation
 
 ```bash
+# 1. Install the plugin
 /plugin install smite@smite
+
+# 2. Run the installer command
+/smite
 ```
+
+That's it! The `/smite` command automatically installs all 11 development commands to your `~/.claude/commands/` directory.
+
+**Cross-platform:** Works on Windows, macOS, and Linux.
 
 ## Installed Commands
 
@@ -193,13 +201,17 @@ After installation, commands are available at:
 
 ## Updating
 
-To update commands, reinstall the plugin:
+To update commands:
 
 ```bash
+# 1. Update the plugin
 /plugin update smite@smite
+
+# 2. Reinstall commands
+/smite
 ```
 
-**Note**: Existing commands will not be overwritten. Delete manually first if needed.
+**Note**: Existing commands will be overwritten with the latest versions.
 
 ## Removing
 

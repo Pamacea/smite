@@ -20,6 +20,9 @@
 
 # Optional: Install essential commands (oneshot, explore, debug, commit, etc.)
 /plugin install smite@smite
+
+# Then run the installer
+/smite
 ```
 
 ### One-Shot Execution
@@ -230,10 +233,11 @@ main • $0.15 • 3m0s • [████████░░] 11%
 ### 8. **smite** - Essential Development Commands ⚡
 
 ```bash
-# Install all essential commands
+# Install plugin and commands
 /plugin install smite@smite
+/smite
 
-# After installation, commands are available:
+# Commands are now available:
 /oneshot "Add user login"
 /explore "How does auth work?"
 /debug "Fix memory leak"
