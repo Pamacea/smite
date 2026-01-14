@@ -2,6 +2,10 @@
 
 **Zero-debt engineering agents with multi-agent parallel orchestration (2-3x faster)**
 
+[![Contributors](https://img.shields.io/github/contributors/Pamacea/smite)](https://github.com/Pamacea/smite/graphs/contributors)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/Pamacea/smite)](https://github.com/Pamacea/smite/commits/main)
+[![License](https://img.shields.io/github/license/Pamacea/smite)](LICENSE)
+
 ---
 
 ## 🚀 Quick Start
