@@ -52,8 +52,14 @@ try {
   const empty = 10 - filled;
   const bar = '█'.repeat(filled) + '░'.repeat(empty);
 
+  // Get model name
+  const modelName = data.model?.display_name || 'Claude';
+
+  // Format tokens in K
+  const tokensK = (currentUsage / 1000).toFixed(1);
+
   // Output the statusline
-  console.log(`${branch} • $${cost} • ${mins}m${secs}s • [${bar}] ${percentage}%`);
+  console.log(`${branch} • ${modelName} • $${cost} • ${mins}m${secs}s • ${tokensK}K tokens • [${bar}] ${percentage}%`);
 
 } catch (error) {
   // Fallback output on any error
