@@ -43,7 +43,9 @@ export class DependencyGraph {
 
   getExecutionSummary() {
     const batches = this.generateBatches();
-    const maxParallel = Math.max(...batches.map(b => b.stories.length));
+    const maxParallel = batches.length > 0
+      ? Math.max(...batches.map(b => b.stories.length))
+      : 0;
 
     return {
       totalStories: this.prd.userStories.length,

@@ -23,32 +23,37 @@ import * as fs from 'fs';
  * By default, executes ALL stories (no limit). Use maxIterations to limit.
  */
 export async function execute(prompt: string, options?: { maxIterations?: number }) {
-  const smiteDir = path.join(process.cwd(), '.smite');
+  try {
+    const smiteDir = path.join(process.cwd(), '.smite');
 
-  // Generate PRD from prompt
-  const newPrd = PRDGenerator.generateFromPrompt(prompt);
+    // Generate PRD from prompt
+    const newPrd = PRDGenerator.generateFromPrompt(prompt);
 
-  // Merge with existing PRD (preserves completed stories)
-  const prdPath = PRDParser.mergePRD(newPrd);
+    // Merge with existing PRD (preserves completed stories)
+    const prdPath = PRDParser.mergePRD(newPrd);
 
-  // Load merged PRD for execution
-  const mergedPrd = PRDParser.loadFromSmiteDir();
-  if (!mergedPrd) {
-    throw new Error('Failed to load merged PRD');
+    // Load merged PRD for execution
+    const mergedPrd = PRDParser.loadFromSmiteDir();
+    if (!mergedPrd) {
+      throw new Error('Failed to load merged PRD');
+    }
+
+    console.log(`\n✅ PRD ready at: ${prdPath}`);
+    console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
+
+    // Execute (no limit by default - completes all stories)
+    const orchestrator = new TaskOrchestrator(mergedPrd, smiteDir);
+    const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
+
+    if (maxIterations !== Infinity) {
+      console.log(`⚠️  Limited to ${maxIterations} stories`);
+    }
+
+    return await orchestrator.execute(maxIterations);
+  } catch (error) {
+    console.error('❌ Ralph execution failed:', error);
+    throw error; // Re-throw for caller to handle
   }
-
-  console.log(`\n✅ PRD ready at: ${prdPath}`);
-  console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
-
-  // Execute (no limit by default - completes all stories)
-  const orchestrator = new TaskOrchestrator(mergedPrd, smiteDir);
-  const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
-
-  if (maxIterations !== Infinity) {
-    console.log(`⚠️  Limited to ${maxIterations} stories`);
-  }
-
-  return await orchestrator.execute(maxIterations);
 }
 
 /**

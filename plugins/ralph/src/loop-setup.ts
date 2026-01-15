@@ -309,7 +309,15 @@ export async function setupAndExecuteLoop(
     if (maxIterations !== Infinity) {
       console.log(`⚠️  Limited to ${maxIterations} stories`);
     } else {
-      console.log(`✅ Will execute all ${setupResult.prd!.userStories.length} stories`);
+      if (!setupResult.prd) {
+        return {
+          success: false,
+          loopFilePath: '',
+          prdPath: '',
+          error: 'PRD not loaded after setup'
+        };
+      }
+      console.log(`✅ Will execute all ${setupResult.prd.userStories.length} stories`);
     }
     console.log();
 
