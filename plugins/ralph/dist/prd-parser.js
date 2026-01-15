@@ -39,12 +39,14 @@ exports.PRDParser = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const crypto = __importStar(require("crypto"));
+const path_utils_1 = require("./path-utils");
 class PRDParser {
     /**
-     * Parse PRD from JSON file (async) with caching
+     * Parse PRD from JSON file (async) with caching and path sanitization
      */
     static async parseFromFile(filePath) {
-        const fullPath = path.resolve(filePath);
+        // Sanitize path to prevent traversal attacks
+        const fullPath = (0, path_utils_1.sanitizePath)(filePath, process.cwd());
         // Check cache first (70-90% I/O reduction)
         const cached = this.prdCache.get(fullPath);
         if (cached) {

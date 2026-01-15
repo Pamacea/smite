@@ -4,7 +4,7 @@ export declare class PRDParser {
     private static prdCache;
     private static readonly CACHE_TTL_MS;
     /**
-     * Parse PRD from JSON file (async) with caching
+     * Parse PRD from JSON file (async) with caching and path sanitization
      */
     static parseFromFile(filePath: string): Promise<PRD>;
     /**

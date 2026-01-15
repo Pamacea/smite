@@ -6,6 +6,9 @@ export { DependencyGraph } from "./dependency-graph";
 export { TaskOrchestrator } from "./task-orchestrator";
 export { StateManager } from "./state-manager";
 export { PRDGenerator } from "./prd-generator";
+export { SpecGenerator } from "./spec-generator";
+export { SpecLock } from "./spec-lock";
+export * from "./path-utils";
 export {
   setupRalphLoop,
   setupAndExecuteLoop,

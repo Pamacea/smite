@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as crypto from "crypto";
 import { PRD, UserStory } from "./types";
+import { sanitizePath } from "./path-utils";
 
 export class PRDParser {
   // Standard PRD location - SINGLE SOURCE OF TRUTH
@@ -15,10 +16,11 @@ export class PRDParser {
   private static readonly CACHE_TTL_MS = 5000; // 5 seconds cache TTL
 
   /**
-   * Parse PRD from JSON file (async) with caching
+   * Parse PRD from JSON file (async) with caching and path sanitization
    */
   static async parseFromFile(filePath: string): Promise<PRD> {
-    const fullPath = path.resolve(filePath);
+    // Sanitize path to prevent traversal attacks
+    const fullPath = sanitizePath(filePath, process.cwd());
 
     // Check cache first (70-90% I/O reduction)
     const cached = this.prdCache.get(fullPath);
