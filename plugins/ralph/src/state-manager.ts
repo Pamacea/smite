@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import * as crypto from 'crypto';
 import { RalphState } from './types';
 import { PRDParser } from './prd-parser';
 
@@ -24,7 +24,7 @@ export class StateManager {
     }
 
     const state: RalphState = {
-      sessionId: uuidv4(),
+      sessionId: crypto.randomUUID(),
       startTime: Date.now(),
       currentIteration: 0,
       maxIterations,

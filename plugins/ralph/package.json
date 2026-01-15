@@ -19,12 +19,9 @@
   ],
   "author": "Pamacea",
   "license": "MIT",
-  "dependencies": {
-    "uuid": "^10.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/uuid": "^10.0.0",
     "typescript": "^5.3.0"
   }
 }
