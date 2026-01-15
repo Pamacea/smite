@@ -131,22 +131,24 @@ export class TaskOrchestrator {
   private processStoryResult(story: UserStory, state: RalphState, result: TaskResult): void {
     if (result.success) {
       state.completedStories.push(story.id);
-      story.passes = true;
-      story.notes = result.output;
+      this.updateStoryStatus(story, true, result.output);
       console.log('      ✅ PASSED');
-
-      // Save story status to PRD file
-      PRDParser.updateStory(story.id, { passes: true, notes: result.output });
       return;
     }
 
     state.failedStories.push(story.id);
-    story.passes = false;
-    story.notes = result.error ?? 'Unknown error';
+    this.updateStoryStatus(story, false, result.error ?? 'Unknown error');
     console.log(`      ❌ FAILED: ${result.error}`);
+  }
 
-    // Save story status to PRD file
-    PRDParser.updateStory(story.id, { passes: false, notes: result.error ?? 'Unknown error' });
+  /**
+   * Update story status in memory and persist to PRD file
+   * Consolidates duplicate PRD update logic
+   */
+  private updateStoryStatus(story: UserStory, passes: boolean, notes: string): void {
+    story.passes = passes;
+    story.notes = notes;
+    PRDParser.updateStory(story.id, { passes, notes });
   }
 
   /**
