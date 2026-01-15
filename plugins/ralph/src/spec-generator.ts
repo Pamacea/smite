@@ -1,9 +1,9 @@
 // SMITE Ralph - Spec Generator
 // Decouples thinking from action by creating technical specifications before coding
 
-import { UserStory } from './types';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import { UserStory } from "./types";
+import * as fs from "fs/promises";
+import * as path from "path";
 
 export interface SpecStep {
   description: string;
@@ -34,7 +34,7 @@ export class SpecGenerator {
 
   constructor(smiteDir: string) {
     this.smiteDir = smiteDir;
-    this.specsDir = path.join(smiteDir, 'specs');
+    this.specsDir = path.join(smiteDir, "specs");
   }
 
   /**
@@ -61,14 +61,14 @@ export class SpecGenerator {
   async writeSpec(spec: TechnicalSpec): Promise<string> {
     await this.ensureDirectories();
 
-    const currentSpecPath = path.join(this.smiteDir, 'current_spec.md');
+    const currentSpecPath = path.join(this.smiteDir, "current_spec.md");
     const content = this.formatSpec(spec);
 
-    await fs.writeFile(currentSpecPath, content, 'utf-8');
+    await fs.writeFile(currentSpecPath, content, "utf-8");
 
     // Archive copy with story ID
     const archivePath = path.join(this.specsDir, `${spec.storyId}-spec.md`);
-    await fs.writeFile(archivePath, content, 'utf-8');
+    await fs.writeFile(archivePath, content, "utf-8");
 
     return currentSpecPath;
   }
@@ -82,17 +82,17 @@ export class SpecGenerator {
 
     // Check 1: Has clear objective
     if (!spec.objective || spec.objective.length < 20) {
-      gaps.push('Objective is unclear or too vague');
+      gaps.push("Objective is unclear or too vague");
     }
 
     // Check 2: Has defined approach
     if (!spec.approach || spec.approach.length < 30) {
-      gaps.push('Technical approach is not well defined');
+      gaps.push("Technical approach is not well defined");
     }
 
     // Check 3: Has implementation steps
     if (!spec.steps || spec.steps.length === 0) {
-      gaps.push('No implementation steps defined');
+      gaps.push("No implementation steps defined");
     }
 
     // Check 4: Each step has required fields
@@ -107,14 +107,14 @@ export class SpecGenerator {
 
     // Check 5: Has validation criteria
     if (!spec.validationCriteria || spec.validationCriteria.length === 0) {
-      gaps.push('No validation criteria defined');
+      gaps.push("No validation criteria defined");
     }
 
     // Check 6: Dependencies are satisfied
     const stepIds = spec.steps.map((_, i) => i);
     spec.steps.forEach((step, index) => {
       step.dependencies.forEach((dep) => {
-        const depIndex = parseInt(dep.replace(/\D/g, '')) - 1;
+        const depIndex = parseInt(dep.replace(/\D/g, "")) - 1;
         if (depIndex >= index) {
           gaps.push(`Step ${index + 1}: Invalid dependency on future step ${dep}`);
         }
@@ -132,10 +132,10 @@ export class SpecGenerator {
    * Load current spec if it exists
    */
   async loadCurrentSpec(): Promise<TechnicalSpec | null> {
-    const currentSpecPath = path.join(this.smiteDir, 'current_spec.md');
+    const currentSpecPath = path.join(this.smiteDir, "current_spec.md");
 
     try {
-      const content = await fs.readFile(currentSpecPath, 'utf-8');
+      const content = await fs.readFile(currentSpecPath, "utf-8");
       return this.parseSpec(content);
     } catch {
       return null;
@@ -154,14 +154,14 @@ export class SpecGenerator {
    */
   private determineApproach(story: UserStory): string {
     const agentApproaches: Record<string, string> = {
-      'builder:task': `Implementation using ${story.tech} stack following project conventions`,
-      'explorer:task': 'Codebase analysis using grep and file search patterns',
-      'architect:task': 'Architecture design with technical specifications',
-      'finalize:task': 'Quality assurance with testing and documentation',
-      'simplifier:task': 'Code refactoring while preserving functionality',
+      "builder:task": `Implementation using ${story.tech} stack following project conventions`,
+      "explorer:task": "Codebase analysis using grep and file search patterns",
+      "architect:task": "Architecture design with technical specifications",
+      "finalize:task": "Quality assurance with testing and documentation",
+      "simplifier:task": "Code refactoring while preserving functionality",
     };
 
-    return agentApproaches[story.agent] || 'Standard implementation approach';
+    return agentApproaches[story.agent] || "Standard implementation approach";
   }
 
   /**
@@ -173,22 +173,22 @@ export class SpecGenerator {
     // an LLM call to analyze the story and generate detailed steps
     return [
       {
-        description: 'Analyze existing codebase patterns',
+        description: "Analyze existing codebase patterns",
         files: [],
         signatures: [],
         dependencies: [],
       },
       {
-        description: 'Implement core functionality',
+        description: "Implement core functionality",
         files: [],
         signatures: [],
-        dependencies: ['1'],
+        dependencies: ["1"],
       },
       {
-        description: 'Validate against acceptance criteria',
+        description: "Validate against acceptance criteria",
         files: [],
         signatures: [],
-        dependencies: ['2'],
+        dependencies: ["2"],
       },
     ];
   }
@@ -201,15 +201,15 @@ export class SpecGenerator {
 
     if (story.dependencies.length > 0) {
       risks.push({
-        risk: 'Dependency stories may not be complete',
-        mitigation: 'Verify all dependency stories have passes=true',
+        risk: "Dependency stories may not be complete",
+        mitigation: "Verify all dependency stories have passes=true",
       });
     }
 
-    if (story.tech === 'rust') {
+    if (story.tech === "rust") {
       risks.push({
-        risk: 'Ownership and borrowing complexity',
-        mitigation: 'Follow Rust best practices and use clippy',
+        risk: "Ownership and borrowing complexity",
+        mitigation: "Follow Rust best practices and use clippy",
       });
     }
 
@@ -222,56 +222,56 @@ export class SpecGenerator {
   private formatSpec(spec: TechnicalSpec): string {
     const lines: string[] = [
       `# Technical Specification: ${spec.storyId}`,
-      '',
+      "",
       `**Created:** ${new Date(spec.createdAt).toISOString()}`,
-      '',
-      '## Objective',
+      "",
+      "## Objective",
       spec.objective,
-      '',
-      '## Approach',
+      "",
+      "## Approach",
       spec.approach,
-      '',
-      '## Implementation Steps',
-      '',
+      "",
+      "## Implementation Steps",
+      "",
     ];
 
     spec.steps.forEach((step, index) => {
       lines.push(`### Step ${index + 1}: ${step.description}`);
-      lines.push('');
+      lines.push("");
 
       if (step.files.length > 0) {
-        lines.push('- **Files:**');
+        lines.push("- **Files:**");
         step.files.forEach((file) => lines.push(`  - ${file}`));
-        lines.push('');
+        lines.push("");
       }
 
       if (step.signatures.length > 0) {
-        lines.push('- **Function Signatures:**');
+        lines.push("- **Function Signatures:**");
         step.signatures.forEach((sig) => lines.push(`  \`\`\`typescript\n  ${sig}\n  \`\`\``));
-        lines.push('');
+        lines.push("");
       }
 
       if (step.dependencies.length > 0) {
-        lines.push(`- **Dependencies:** Step ${step.dependencies.join(', ')}`);
-        lines.push('');
+        lines.push(`- **Dependencies:** Step ${step.dependencies.join(", ")}`);
+        lines.push("");
       }
     });
 
-    lines.push('## Validation Criteria');
+    lines.push("## Validation Criteria");
     spec.validationCriteria.forEach((criterion, index) => {
       lines.push(`- [ ] ${criterion}`);
     });
-    lines.push('');
+    lines.push("");
 
     if (spec.risks.length > 0) {
-      lines.push('## Known Risks');
+      lines.push("## Known Risks");
       spec.risks.forEach((risk) => {
         lines.push(`- **${risk.risk}**: ${risk.mitigation}`);
       });
-      lines.push('');
+      lines.push("");
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   /**
@@ -284,8 +284,8 @@ export class SpecGenerator {
 
     return {
       storyId: match[1],
-      objective: '',
-      approach: '',
+      objective: "",
+      approach: "",
       steps: [],
       validationCriteria: [],
       risks: [],
@@ -300,7 +300,7 @@ export class SpecGenerator {
     try {
       await fs.mkdir(this.specsDir, { recursive: true });
     } catch (error) {
-      console.error('Failed to create specs directory:', error);
+      console.error("Failed to create specs directory:", error);
     }
   }
 }

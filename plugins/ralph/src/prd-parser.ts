@@ -1,14 +1,14 @@
 // SMITE Ralph - PRD Parser
 // Parse and validate PRD files
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
-import { PRD, UserStory } from './types';
+import * as fs from "fs";
+import * as path from "path";
+import * as crypto from "crypto";
+import { PRD, UserStory } from "./types";
 
 export class PRDParser {
   // Standard PRD location - SINGLE SOURCE OF TRUTH
-  private static readonly STANDARD_PRD_PATH = path.join('.smite', 'prd.json');
+  private static readonly STANDARD_PRD_PATH = path.join(".smite", "prd.json");
 
   // PRD cache for I/O optimization (70-90% reduction in file reads)
   private static prdCache = new Map<string, { prd: PRD; mtime: number }>();
@@ -52,7 +52,7 @@ export class PRDParser {
     }
 
     try {
-      const content = await fs.promises.readFile(fullPath, 'utf-8');
+      const content = await fs.promises.readFile(fullPath, "utf-8");
       const prd = this.parseFromString(content);
 
       // Add to cache
@@ -61,7 +61,9 @@ export class PRDParser {
 
       return prd;
     } catch (error) {
-      throw new Error(`Failed to read PRD file at ${fullPath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to read PRD file at ${fullPath}: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -83,7 +85,9 @@ export class PRDParser {
       this.validate(prd);
       return prd;
     } catch (error) {
-      throw new Error(`Failed to parse PRD: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to parse PRD: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 
@@ -91,14 +95,14 @@ export class PRDParser {
    * Validate PRD structure
    */
   static validate(prd: PRD): void {
-    if (!prd.project) throw new Error('PRD must have a project name');
-    if (!prd.branchName) throw new Error('PRD must have a branch name');
-    if (!prd.description) throw new Error('PRD must have a description');
+    if (!prd.project) throw new Error("PRD must have a project name");
+    if (!prd.branchName) throw new Error("PRD must have a branch name");
+    if (!prd.description) throw new Error("PRD must have a description");
     if (!prd.userStories || !Array.isArray(prd.userStories)) {
-      throw new Error('PRD must have userStories array');
+      throw new Error("PRD must have userStories array");
     }
     if (prd.userStories.length === 0) {
-      throw new Error('PRD must have at least one user story');
+      throw new Error("PRD must have at least one user story");
     }
 
     // Validate each user story
@@ -107,9 +111,9 @@ export class PRDParser {
     });
 
     // Validate dependencies exist
-    const storyIds = new Set(prd.userStories.map(s => s.id));
+    const storyIds = new Set(prd.userStories.map((s) => s.id));
     prd.userStories.forEach((story) => {
-      story.dependencies.forEach(dep => {
+      story.dependencies.forEach((dep) => {
         if (!storyIds.has(dep)) {
           throw new Error(`Story ${story.id} depends on non-existent story ${dep}`);
         }
@@ -130,14 +134,14 @@ export class PRDParser {
     if (story.acceptanceCriteria.length === 0) {
       throw new Error(`Story ${story.id} must have at least one acceptance criterion`);
     }
-    if (typeof story.priority !== 'number' || story.priority < 1 || story.priority > 10) {
+    if (typeof story.priority !== "number" || story.priority < 1 || story.priority > 10) {
       throw new Error(`Story ${story.id} must have priority between 1-10`);
     }
     if (!story.agent) throw new Error(`Story ${story.id} must specify an agent`);
     if (!Array.isArray(story.dependencies)) {
       throw new Error(`Story ${story.id} must have dependencies array`);
     }
-    if (typeof story.passes !== 'boolean') {
+    if (typeof story.passes !== "boolean") {
       throw new Error(`Story ${story.id} must have passes boolean`);
     }
   }
@@ -160,21 +164,25 @@ export class PRDParser {
    * WARNING: This OVERWRITES the existing PRD. Use mergePRD() instead to preserve existing stories.
    */
   static async saveToSmiteDir(prd: PRD): Promise<string> {
-    const smiteDir = path.join(process.cwd(), '.smite');
+    const smiteDir = path.join(process.cwd(), ".smite");
     try {
       await fs.promises.mkdir(smiteDir, { recursive: true });
     } catch (error) {
-      throw new Error(`Failed to create .smite directory: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to create .smite directory: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
 
     const prdPath = path.join(process.cwd(), this.STANDARD_PRD_PATH);
     try {
-      await fs.promises.writeFile(prdPath, JSON.stringify(prd, null, 2), 'utf-8');
+      await fs.promises.writeFile(prdPath, JSON.stringify(prd, null, 2), "utf-8");
 
       // Invalidate cache after writing
       this.prdCache.delete(prdPath);
     } catch (error) {
-      throw new Error(`Failed to write PRD file at ${prdPath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to write PRD file at ${prdPath}: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
 
     // Clean up any phantom PRD files
@@ -192,7 +200,7 @@ export class PRDParser {
 
     if (!existingPrd) {
       // No existing PRD, just save the new one
-      console.log('📄 Creating new PRD');
+      console.log("📄 Creating new PRD");
       return await this.saveToSmiteDir(newPrd);
     }
 
@@ -238,12 +246,12 @@ export class PRDParser {
     const storyMap = new Map<string, UserStory>();
 
     // Add existing stories first (preserves completed status)
-    existing.forEach(story => {
+    existing.forEach((story) => {
       storyMap.set(story.id, story);
     });
 
     // Add/update new stories
-    newStories.forEach(story => {
+    newStories.forEach((story) => {
       const existingStory = storyMap.get(story.id);
 
       if (!existingStory) {
@@ -281,7 +289,7 @@ export class PRDParser {
     const prd = await this.loadFromSmiteDir();
     if (!prd) return false;
 
-    const storyIndex = prd.userStories.findIndex(s => s.id === storyId);
+    const storyIndex = prd.userStories.findIndex((s) => s.id === storyId);
     if (storyIndex === -1) return false;
 
     // Update story
@@ -300,7 +308,7 @@ export class PRDParser {
    */
   static generateHash(prd: PRD): string {
     const content = JSON.stringify(prd);
-    return crypto.createHash('md5').update(content).digest('hex');
+    return crypto.createHash("md5").update(content).digest("hex");
   }
 
   /**
@@ -309,7 +317,7 @@ export class PRDParser {
    */
   private static async cleanupPhantomPRDs(): Promise<void> {
     try {
-      const smiteDir = path.join(process.cwd(), '.smite');
+      const smiteDir = path.join(process.cwd(), ".smite");
       const rootDir = process.cwd();
 
       // Clean .smite directory
@@ -340,7 +348,9 @@ export class PRDParser {
       }
     } catch (error) {
       // Non-critical: log but don't fail
-      console.warn(`Could not cleanup phantom PRDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.warn(
+        `Could not cleanup phantom PRDs: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   }
 

@@ -1,4 +1,4 @@
-import { PRD } from './types';
+import { PRD } from "./types";
 export declare class PRDGenerator {
     private static readonly PROJECT_PATTERNS;
     private static readonly ACTION_WORDS;
@@ -13,6 +13,7 @@ export declare class PRDGenerator {
     private static createDefaultStory;
     private static createFinalizeStory;
     private static createStory;
+    private static extractTechFromAgent;
     static suggestImprovements(prd: PRD): string[];
 }
 //# sourceMappingURL=prd-generator.d.ts.map

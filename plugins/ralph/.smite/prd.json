@@ -1,0 +1,41 @@
+{
+  "project": "Fais Une Analyse",
+  "branchName": "ralph/fais-une-analyse",
+  "description": "Fais une analyse complète du repository smite, trouve les bugs, marque les points d'optimisation, les points d'améliorations, ce qu'il manque.. La manière dont fonctrionne les agents.. Et trouve au moins 3 idées revolutionnaires pour optimiser l'intelligence des models, même des models pas top 2..\n\nSMITE quick wins: fix 3 high-severity bugs, replace 25 synchronous file operations with async, add PRD caching (70-90% I/O reduction), remove uuid dependency (27MB saved), add ESLint + Prettier, optimize string concatenation, memoize dependency graph, replace any types, add logging framework, add error context, add path sanitization, remove duplicate code\n\nExecute the last 8 users stories in prd.json",
+  "userStories": [
+    {
+      "id": "US-002",
+      "title": "Finalize and document",
+      "description": "finalize and document implementation",
+      "acceptanceCriteria": [
+        "All tests passing",
+        "No linting errors",
+        "Documentation complete",
+        "Code reviewed"
+      ],
+      "priority": 1,
+      "agent": "finalize:task",
+      "dependencies": [
+        "US-001"
+      ],
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-001",
+      "title": "Initialize project",
+      "description": "initialize project implementation",
+      "acceptanceCriteria": [
+        "Project created",
+        "Dependencies installed",
+        "Basic configuration done",
+        "Build system working"
+      ],
+      "priority": 10,
+      "agent": "architect:task",
+      "dependencies": [],
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

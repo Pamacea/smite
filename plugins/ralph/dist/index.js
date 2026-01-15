@@ -72,44 +72,53 @@ const fs = __importStar(require("fs"));
  * By default, executes ALL stories (no limit). Use maxIterations to limit.
  */
 async function execute(prompt, options) {
-    const smiteDir = path.join(process.cwd(), '.smite');
-    // Generate PRD from prompt
-    const newPrd = prd_generator_2.PRDGenerator.generateFromPrompt(prompt);
-    // Merge with existing PRD (preserves completed stories)
-    const prdPath = prd_parser_2.PRDParser.mergePRD(newPrd);
-    // Load merged PRD for execution
-    const mergedPrd = prd_parser_2.PRDParser.loadFromSmiteDir();
-    if (!mergedPrd) {
-        throw new Error('Failed to load merged PRD');
+    try {
+        const smiteDir = path.join(process.cwd(), ".smite");
+        // Generate PRD from prompt
+        const newPrd = prd_generator_2.PRDGenerator.generateFromPrompt(prompt);
+        // Merge with existing PRD (preserves completed stories)
+        const prdPath = await prd_parser_2.PRDParser.mergePRD(newPrd);
+        // Load merged PRD for execution
+        const mergedPrd = await prd_parser_2.PRDParser.loadFromSmiteDir();
+        if (!mergedPrd) {
+            throw new Error("Failed to load merged PRD");
+        }
+        console.log(`\n✅ PRD ready at: ${prdPath}`);
+        console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
+        // Execute (no limit by default - completes all stories)
+        const orchestrator = new task_orchestrator_2.TaskOrchestrator(mergedPrd, smiteDir);
+        const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
+        if (maxIterations !== Infinity) {
+            console.log(`⚠️  Limited to ${maxIterations} stories`);
+        }
+        return await orchestrator.execute(maxIterations);
     }
-    console.log(`\n✅ PRD ready at: ${prdPath}`);
-    console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
-    // Execute (no limit by default - completes all stories)
-    const orchestrator = new task_orchestrator_2.TaskOrchestrator(mergedPrd, smiteDir);
-    const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
-    if (maxIterations !== Infinity) {
-        console.log(`⚠️  Limited to ${maxIterations} stories`);
+    catch (error) {
+        console.error("❌ Ralph execution failed:", error);
+        throw error; // Re-throw for caller to handle
     }
-    return await orchestrator.execute(maxIterations);
 }
 /**
  * Execute Ralph from existing PRD file
  */
 async function executeFromPRD(prdPath, options) {
-    const smiteDir = path.join(process.cwd(), '.smite');
+    const smiteDir = path.join(process.cwd(), ".smite");
     // Validate PRD exists
-    if (!fs.existsSync(prdPath)) {
+    try {
+        await fs.promises.access(prdPath, fs.constants.F_OK);
+    }
+    catch {
         throw new Error(`PRD file not found: ${prdPath}`);
     }
     // Load PRD
-    const prd = prd_parser_2.PRDParser.parseFromFile(prdPath);
+    const prd = await prd_parser_2.PRDParser.parseFromFile(prdPath);
     // Merge with existing PRD at standard location (preserves completed stories)
-    const standardPath = prd_parser_2.PRDParser.mergePRD(prd);
+    const standardPath = await prd_parser_2.PRDParser.mergePRD(prd);
     console.log(`\n✅ PRD merged to standard location: ${standardPath}`);
     // Load merged PRD for execution
-    const mergedPrd = prd_parser_2.PRDParser.loadFromSmiteDir();
+    const mergedPrd = await prd_parser_2.PRDParser.loadFromSmiteDir();
     if (!mergedPrd) {
-        throw new Error('Failed to load merged PRD');
+        throw new Error("Failed to load merged PRD");
     }
     console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
     // Execute (no limit by default)

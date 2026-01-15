@@ -3,8 +3,8 @@
 // SMITE Ralph - Stop Hook
 // Intercepts Claude Code exit to create looping behavior (like Ralph Wiggum)
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
 interface LoopConfig {
   active: boolean;
@@ -16,20 +16,20 @@ interface LoopConfig {
 }
 
 interface HookResponse {
-  decision: 'allow' | 'block';
+  decision: "allow" | "block";
   reason?: string;
   systemMessage?: string;
 }
 
 function readLoopConfig(loopFilePath?: string): LoopConfig | null {
-  const filePath = loopFilePath || path.join(process.cwd(), '.claude', 'loop.md');
+  const filePath = loopFilePath || path.join(process.cwd(), ".claude", "loop.md");
 
   if (!fs.existsSync(filePath)) {
     return null;
   }
 
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, "utf-8");
     const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
 
     if (!match) {
@@ -39,40 +39,42 @@ function readLoopConfig(loopFilePath?: string): LoopConfig | null {
     const yaml = match[1];
     const config: Partial<LoopConfig> = {};
 
-    yaml.split('\n').forEach(line => {
-      const colonIndex = line.indexOf(':');
+    yaml.split("\n").forEach((line) => {
+      const colonIndex = line.indexOf(":");
       if (colonIndex === -1) return;
 
       const key = line.substring(0, colonIndex).trim();
       const value = line.substring(colonIndex + 1).trim();
 
       switch (key) {
-        case 'active':
-          config.active = value === 'true';
+        case "active":
+          config.active = value === "true";
           break;
-        case 'iteration':
+        case "iteration":
           config.iteration = parseInt(value, 10);
           break;
-        case 'max_iterations':
+        case "max_iterations":
           config.max_iterations = parseInt(value, 10);
           break;
-        case 'completion_promise':
-          if (value !== 'null' && value !== '""' && value !== "''") {
-            config.completion_promise = value.replace(/^["']|["']$/g, '');
+        case "completion_promise":
+          if (value !== "null" && value !== '""' && value !== "''") {
+            config.completion_promise = value.replace(/^["']|["']$/g, "");
           }
           break;
-        case 'started_at':
+        case "started_at":
           config.started_at = value;
           break;
-        case 'prd_path':
+        case "prd_path":
           config.prd_path = value;
           break;
       }
     });
 
-    if (config.active === undefined ||
-        config.iteration === undefined ||
-        config.max_iterations === undefined) {
+    if (
+      config.active === undefined ||
+      config.iteration === undefined ||
+      config.max_iterations === undefined
+    ) {
       return null;
     }
 
@@ -83,14 +85,14 @@ function readLoopConfig(loopFilePath?: string): LoopConfig | null {
 }
 
 function incrementLoopIteration(loopFilePath?: string): boolean {
-  const filePath = loopFilePath || path.join(process.cwd(), '.claude', 'loop.md');
+  const filePath = loopFilePath || path.join(process.cwd(), ".claude", "loop.md");
 
   if (!fs.existsSync(filePath)) {
     return false;
   }
 
   try {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, "utf-8");
     const match = content.match(/^(iteration:\s*)(\d+)$/m);
 
     if (!match) {
@@ -100,12 +102,9 @@ function incrementLoopIteration(loopFilePath?: string): boolean {
     const currentIteration = parseInt(match[2], 10);
     const nextIteration = currentIteration + 1;
 
-    const updatedContent = content.replace(
-      /^(iteration:\s*)(\d+)$/m,
-      `$1${nextIteration}`
-    );
+    const updatedContent = content.replace(/^(iteration:\s*)(\d+)$/m, `$1${nextIteration}`);
 
-    fs.writeFileSync(filePath, updatedContent, 'utf-8');
+    fs.writeFileSync(filePath, updatedContent, "utf-8");
     return true;
   } catch {
     return false;
@@ -113,7 +112,7 @@ function incrementLoopIteration(loopFilePath?: string): boolean {
 }
 
 function deleteLoopFile(loopFilePath?: string): boolean {
-  const filePath = loopFilePath || path.join(process.cwd(), '.claude', 'loop.md');
+  const filePath = loopFilePath || path.join(process.cwd(), ".claude", "loop.md");
 
   if (!fs.existsSync(filePath)) {
     return true;
@@ -130,60 +129,60 @@ function deleteLoopFile(loopFilePath?: string): boolean {
 function checkCompletionPromise(output: string, promise: string): boolean {
   if (!promise) return false;
 
-  const regex = new RegExp(`<promise>\\s*${escapeRegExp(promise)}\\s*</promise>`, 'i');
+  const regex = new RegExp(`<promise>\\s*${escapeRegExp(promise)}\\s*</promise>`, "i");
   return regex.test(output);
 }
 
 function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getPromptFromLoopFile(loopFilePath: string): string {
   if (!fs.existsSync(loopFilePath)) {
-    return '';
+    return "";
   }
 
   try {
-    const content = fs.readFileSync(loopFilePath, 'utf-8');
+    const content = fs.readFileSync(loopFilePath, "utf-8");
     const match = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n([\s\S]*)$/);
 
     if (match) {
       return match[1].trim();
     }
 
-    return '';
+    return "";
   } catch {
-    return '';
+    return "";
   }
 }
 
 // Main hook logic
 function main(): HookResponse {
-  const loopFile = path.join(process.cwd(), '.claude', 'loop.md');
+  const loopFile = path.join(process.cwd(), ".claude", "loop.md");
   const config = readLoopConfig(loopFile);
 
   // No active loop, allow exit
   if (!config || !config.active) {
-    return { decision: 'allow' };
+    return { decision: "allow" };
   }
 
   // Get last assistant output from environment
-  const lastOutput = process.env.LAST_ASSISTANT_OUTPUT || '';
+  const lastOutput = process.env.LAST_ASSISTANT_OUTPUT || "";
 
   // Check for completion promise
   if (config.completion_promise && checkCompletionPromise(lastOutput, config.completion_promise)) {
-    console.error('✅ Ralph loop: Detected completion promise');
+    console.error("✅ Ralph loop: Detected completion promise");
 
     deleteLoopFile(loopFile);
-    return { decision: 'allow' };
+    return { decision: "allow" };
   }
 
   // Check max iterations
   if (config.iteration >= config.max_iterations) {
-    console.error('⚠️  Ralph loop: Max iterations reached');
+    console.error("⚠️  Ralph loop: Max iterations reached");
 
     deleteLoopFile(loopFile);
-    return { decision: 'allow' };
+    return { decision: "allow" };
   }
 
   // Continue loop - increment iteration
@@ -201,9 +200,9 @@ Continue from where you left off.
 ${promptContent}`;
 
   return {
-    decision: 'block',
+    decision: "block",
     reason: responseMsg,
-    systemMessage: `🔄 Ralph Loop: Starting iteration ${nextIteration} of ${config.max_iterations}`
+    systemMessage: `🔄 Ralph Loop: Starting iteration ${nextIteration} of ${config.max_iterations}`,
   };
 }
 
@@ -211,7 +210,7 @@ ${promptContent}`;
 try {
   const result = main();
 
-  if (result.decision === 'block') {
+  if (result.decision === "block") {
     // Output JSON to stdout for Claude Code to parse
     console.log(JSON.stringify(result));
     process.exit(1); // Non-zero exit means "block"
@@ -219,6 +218,6 @@ try {
     process.exit(0); // Zero exit means "allow"
   }
 } catch (error) {
-  console.error('Error in Ralph stop hook:', error);
+  console.error("Error in Ralph stop hook:", error);
   process.exit(0); // On error, allow exit to avoid infinite loops
 }

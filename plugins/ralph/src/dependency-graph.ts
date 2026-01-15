@@ -1,4 +1,4 @@
-import { PRD, UserStory, StoryBatch } from './types';
+import { PRD, UserStory, StoryBatch } from "./types";
 
 export class DependencyGraph {
   private readonly storyMap: Map<string, UserStory>;
@@ -6,7 +6,7 @@ export class DependencyGraph {
   private cachedPrdHash: string | null = null;
 
   constructor(private prd: PRD) {
-    this.storyMap = new Map(prd.userStories.map(s => [s.id, s]));
+    this.storyMap = new Map(prd.userStories.map((s) => [s.id, s]));
   }
 
   generateBatches(): StoryBatch[] {
@@ -26,7 +26,7 @@ export class DependencyGraph {
       const readyStories = this.getReadyStories(completed, inProgress);
 
       if (readyStories.length === 0) {
-        throw new Error('Unable to resolve dependencies - possible circular dependency');
+        throw new Error("Unable to resolve dependencies - possible circular dependency");
       }
 
       batches.push({
@@ -36,7 +36,7 @@ export class DependencyGraph {
         dependenciesMet: true,
       });
 
-      readyStories.forEach(s => inProgress.add(s.id));
+      readyStories.forEach((s) => inProgress.add(s.id));
       batchNumber++;
     }
 
@@ -50,22 +50,20 @@ export class DependencyGraph {
   private hashPRD(): string {
     // Simple hash based on story count and passes status
     const storyCount = this.prd.userStories.length;
-    const completedCount = this.prd.userStories.filter(s => s.passes).length;
+    const completedCount = this.prd.userStories.filter((s) => s.passes).length;
     return `${storyCount}-${completedCount}`;
   }
 
   private getReadyStories(completed: Set<string>, inProgress: Set<string>): UserStory[] {
     return this.prd.userStories
-      .filter(story => !completed.has(story.id) && !inProgress.has(story.id))
-      .filter(story => story.dependencies.every(dep => completed.has(dep)))
+      .filter((story) => !completed.has(story.id) && !inProgress.has(story.id))
+      .filter((story) => story.dependencies.every((dep) => completed.has(dep)))
       .sort((a, b) => b.priority - a.priority);
   }
 
   getExecutionSummary() {
     const batches = this.generateBatches();
-    const maxParallel = batches.length > 0
-      ? Math.max(...batches.map(b => b.stories.length))
-      : 0;
+    const maxParallel = batches.length > 0 ? Math.max(...batches.map((b) => b.stories.length)) : 0;
 
     return {
       totalStories: this.prd.userStories.length,
@@ -85,15 +83,16 @@ export class DependencyGraph {
       const story = this.storyMap.get(storyId);
       if (!story) return 0;
 
-      const depth = story.dependencies.length === 0
-        ? 1
-        : Math.max(...story.dependencies.map(dep => getDepth(dep))) + 1;
+      const depth =
+        story.dependencies.length === 0
+          ? 1
+          : Math.max(...story.dependencies.map((dep) => getDepth(dep))) + 1;
 
       memo.set(storyId, depth);
       return depth;
     };
 
-    this.prd.userStories.forEach(story => depths.set(story.id, getDepth(story.id)));
+    this.prd.userStories.forEach((story) => depths.set(story.id, getDepth(story.id)));
 
     return this.buildCriticalPath(depths);
   }
@@ -108,7 +107,7 @@ export class DependencyGraph {
       if (!story || story.dependencies.length === 0) break;
 
       const nextDep = story.dependencies
-        .map(dep => ({ id: dep, depth: depths.get(dep) ?? 0 }))
+        .map((dep) => ({ id: dep, depth: depths.get(dep) ?? 0 }))
         .sort((a, b) => b.depth - a.depth)[0];
 
       current = nextDep.id;
@@ -121,19 +120,20 @@ export class DependencyGraph {
     const summary = this.getExecutionSummary();
 
     return [
-      'Dependency Graph:',
-      '',
-      ...this.prd.userStories.map(story =>
-        `  ${story.id}: ${story.title} (priority: ${story.priority})${
-          story.dependencies.length > 0 ? ` <- [${story.dependencies.join(', ')}]` : ''
-        }`
+      "Dependency Graph:",
+      "",
+      ...this.prd.userStories.map(
+        (story) =>
+          `  ${story.id}: ${story.title} (priority: ${story.priority})${
+            story.dependencies.length > 0 ? ` <- [${story.dependencies.join(", ")}]` : ""
+          }`
       ),
-      '',
-      'Summary:',
+      "",
+      "Summary:",
       `  Total stories: ${summary.totalStories}`,
       `  Max parallel: ${summary.maxParallelStories}`,
       `  Estimated batches: ${summary.estimatedBatches}`,
-      `  Critical path: [${summary.criticalPath.join(' -> ')}]`,
-    ].join('\n');
+      `  Critical path: [${summary.criticalPath.join(" -> ")}]`,
+    ].join("\n");
   }
 }

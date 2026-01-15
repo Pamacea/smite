@@ -1,20 +1,27 @@
 // SMITE Ralph - Main Entry Point
 // Multi-agent orchestrator with parallel execution
 
-export { PRDParser } from './prd-parser';
-export { DependencyGraph } from './dependency-graph';
-export { TaskOrchestrator } from './task-orchestrator';
-export { StateManager } from './state-manager';
-export { PRDGenerator } from './prd-generator';
-export { setupRalphLoop, setupAndExecuteLoop, readLoopConfig, incrementLoopIteration, clearLoopFile, checkCompletionPromise } from './loop-setup';
-export * from './types';
+export { PRDParser } from "./prd-parser";
+export { DependencyGraph } from "./dependency-graph";
+export { TaskOrchestrator } from "./task-orchestrator";
+export { StateManager } from "./state-manager";
+export { PRDGenerator } from "./prd-generator";
+export {
+  setupRalphLoop,
+  setupAndExecuteLoop,
+  readLoopConfig,
+  incrementLoopIteration,
+  clearLoopFile,
+  checkCompletionPromise,
+} from "./loop-setup";
+export * from "./types";
 
 // Re-export for convenience
-import { PRDParser } from './prd-parser';
-import { PRDGenerator } from './prd-generator';
-import { TaskOrchestrator } from './task-orchestrator';
-import * as path from 'path';
-import * as fs from 'fs';
+import { PRDParser } from "./prd-parser";
+import { PRDGenerator } from "./prd-generator";
+import { TaskOrchestrator } from "./task-orchestrator";
+import * as path from "path";
+import * as fs from "fs";
 
 /**
  * Quick start: Execute Ralph from a prompt
@@ -24,7 +31,7 @@ import * as fs from 'fs';
  */
 export async function execute(prompt: string, options?: { maxIterations?: number }) {
   try {
-    const smiteDir = path.join(process.cwd(), '.smite');
+    const smiteDir = path.join(process.cwd(), ".smite");
 
     // Generate PRD from prompt
     const newPrd = PRDGenerator.generateFromPrompt(prompt);
@@ -35,7 +42,7 @@ export async function execute(prompt: string, options?: { maxIterations?: number
     // Load merged PRD for execution
     const mergedPrd = await PRDParser.loadFromSmiteDir();
     if (!mergedPrd) {
-      throw new Error('Failed to load merged PRD');
+      throw new Error("Failed to load merged PRD");
     }
 
     console.log(`\n✅ PRD ready at: ${prdPath}`);
@@ -51,7 +58,7 @@ export async function execute(prompt: string, options?: { maxIterations?: number
 
     return await orchestrator.execute(maxIterations);
   } catch (error) {
-    console.error('❌ Ralph execution failed:', error);
+    console.error("❌ Ralph execution failed:", error);
     throw error; // Re-throw for caller to handle
   }
 }
@@ -60,7 +67,7 @@ export async function execute(prompt: string, options?: { maxIterations?: number
  * Execute Ralph from existing PRD file
  */
 export async function executeFromPRD(prdPath: string, options?: { maxIterations?: number }) {
-  const smiteDir = path.join(process.cwd(), '.smite');
+  const smiteDir = path.join(process.cwd(), ".smite");
 
   // Validate PRD exists
   try {
@@ -80,7 +87,7 @@ export async function executeFromPRD(prdPath: string, options?: { maxIterations?
   // Load merged PRD for execution
   const mergedPrd = await PRDParser.loadFromSmiteDir();
   if (!mergedPrd) {
-    throw new Error('Failed to load merged PRD');
+    throw new Error("Failed to load merged PRD");
   }
 
   console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);

@@ -5,6 +5,7 @@ export interface UserStory {
     acceptanceCriteria: string[];
     priority: number;
     agent: string;
+    tech: string;
     dependencies: string[];
     passes: boolean;
     notes: string;
@@ -25,7 +26,7 @@ export interface RalphState {
     completedStories: string[];
     failedStories: string[];
     inProgressStory: string | null;
-    status: 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
+    status: "running" | "paused" | "completed" | "failed" | "cancelled";
     lastActivity: number;
     prdPath: string;
     prdHash?: string;

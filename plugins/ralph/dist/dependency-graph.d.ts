@@ -1,9 +1,12 @@
-import { PRD, StoryBatch } from './types';
+import { PRD, StoryBatch } from "./types";
 export declare class DependencyGraph {
     private prd;
     private readonly storyMap;
+    private cachedBatches;
+    private cachedPrdHash;
     constructor(prd: PRD);
     generateBatches(): StoryBatch[];
+    private hashPRD;
     private getReadyStories;
     getExecutionSummary(): {
         totalStories: number;

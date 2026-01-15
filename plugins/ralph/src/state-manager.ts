@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
-import { RalphState } from './types';
-import { PRDParser } from './prd-parser';
+import * as fs from "fs";
+import * as path from "path";
+import * as crypto from "crypto";
+import { RalphState } from "./types";
+import { PRDParser } from "./prd-parser";
 
 export class StateManager {
   private readonly statePath: string;
@@ -10,8 +10,8 @@ export class StateManager {
   private static readonly MINUTES_MS = 60000;
 
   constructor(smiteDir: string) {
-    this.statePath = path.join(smiteDir, 'ralph-state.json');
-    this.progressPath = path.join(smiteDir, 'progress.txt');
+    this.statePath = path.join(smiteDir, "ralph-state.json");
+    this.progressPath = path.join(smiteDir, "progress.txt");
   }
 
   async initialize(maxIterations: number, prdPath?: string): Promise<RalphState> {
@@ -35,7 +35,7 @@ export class StateManager {
       completedStories: [],
       failedStories: [],
       inProgressStory: null,
-      status: 'running',
+      status: "running",
       lastActivity: Date.now(),
       prdPath: effectivePrdPath,
     };
@@ -56,7 +56,7 @@ export class StateManager {
     }
 
     try {
-      const content = await fs.promises.readFile(this.statePath, 'utf-8');
+      const content = await fs.promises.readFile(this.statePath, "utf-8");
       return JSON.parse(content) as RalphState;
     } catch {
       return null;
@@ -64,7 +64,7 @@ export class StateManager {
   }
 
   async save(state: RalphState): Promise<void> {
-    await fs.promises.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf-8');
+    await fs.promises.writeFile(this.statePath, JSON.stringify(state, null, 2), "utf-8");
   }
 
   async update(updates: Partial<RalphState>): Promise<RalphState | null> {
@@ -76,13 +76,17 @@ export class StateManager {
     return updated;
   }
 
-  async markStoryResult(storyId: string, success: boolean, error?: string): Promise<RalphState | null> {
+  async markStoryResult(
+    storyId: string,
+    success: boolean,
+    error?: string
+  ): Promise<RalphState | null> {
     const state = await this.load();
     if (!state) return null;
 
     const array = success ? state.completedStories : state.failedStories;
-    const emoji = success ? '✅' : '❌';
-    const status = success ? 'PASSED' : `FAILED: ${error}`;
+    const emoji = success ? "✅" : "❌";
+    const status = success ? "PASSED" : `FAILED: ${error}`;
 
     if (!array.includes(storyId)) {
       array.push(storyId);
@@ -100,7 +104,7 @@ export class StateManager {
     return await this.update({ inProgressStory: storyId });
   }
 
-  async setStatus(status: RalphState['status']): Promise<RalphState | null> {
+  async setStatus(status: RalphState["status"]): Promise<RalphState | null> {
     const state = await this.update({ status });
     if (state) {
       await this.logProgress(`\n📊 Status changed to: ${status}`);
@@ -111,9 +115,9 @@ export class StateManager {
   async readProgress(): Promise<string> {
     try {
       await fs.promises.access(this.progressPath, fs.constants.F_OK);
-      return await fs.promises.readFile(this.progressPath, 'utf-8');
+      return await fs.promises.readFile(this.progressPath, "utf-8");
     } catch {
-      return '';
+      return "";
     }
   }
 
@@ -136,8 +140,8 @@ export class StateManager {
 
   private async logProgress(...messages: string[]): Promise<void> {
     const timestamp = new Date().toISOString();
-    const content = messages.map(m => `[${timestamp}] ${m}`).join('\n') + '\n';
-    await fs.promises.appendFile(this.progressPath, content, 'utf-8');
+    const content = messages.map((m) => `[${timestamp}] ${m}`).join("\n") + "\n";
+    await fs.promises.appendFile(this.progressPath, content, "utf-8");
   }
 
   /**

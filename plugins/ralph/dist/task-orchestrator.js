@@ -6,18 +6,21 @@ exports.TaskOrchestrator = void 0;
 const dependency_graph_1 = require("./dependency-graph");
 const state_manager_1 = require("./state-manager");
 const prd_parser_1 = require("./prd-parser");
+const spec_generator_1 = require("./spec-generator");
 class TaskOrchestrator {
     constructor(prd, smiteDir) {
         this.prd = prd;
         this.dependencyGraph = new dependency_graph_1.DependencyGraph(prd);
         this.stateManager = new state_manager_1.StateManager(smiteDir);
+        this.specGenerator = new spec_generator_1.SpecGenerator(smiteDir);
+        this.smiteDir = smiteDir;
     }
     async execute(maxIterations = TaskOrchestrator.DEFAULT_MAX_ITERATIONS) {
         // Get PRD path before initialization
         const prdPath = prd_parser_1.PRDParser.getStandardPRDPath();
         // Validate PRD exists before starting
-        prd_parser_1.PRDParser.assertPRDExists();
-        const state = this.stateManager.initialize(maxIterations, prdPath);
+        await prd_parser_1.PRDParser.assertPRDExists();
+        const state = await this.stateManager.initialize(maxIterations, prdPath);
         const batches = this.dependencyGraph.generateBatches();
         this.logExecutionStart(batches.length, prdPath);
         for (const batch of batches) {
@@ -25,7 +28,7 @@ class TaskOrchestrator {
                 break;
             await this.executeBatch(batch, state);
         }
-        this.finalizeExecution(state, maxIterations);
+        await this.finalizeExecution(state, maxIterations);
         return state;
     }
     logExecutionStart(batchCount, prdPath) {
@@ -50,7 +53,7 @@ class TaskOrchestrator {
             console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
             console.log(`   Completed: ${completed}/${total} stories`);
             console.log(`   Use --max-iterations=${total} or higher to complete all stories`);
-            state.status = 'failed';
+            state.status = "failed";
             return true;
         }
         return false;
@@ -58,7 +61,7 @@ class TaskOrchestrator {
     async executeBatch(batch, state) {
         console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
         if (batch.canRunInParallel) {
-            console.log(`⚡ Running in PARALLEL: ${batch.stories.map(s => s.id).join(', ')}`);
+            console.log(`⚡ Running in PARALLEL: ${batch.stories.map((s) => s.id).join(", ")}`);
             await this.executeBatchParallel(batch.stories, state);
         }
         else {
@@ -67,14 +70,14 @@ class TaskOrchestrator {
             await this.executeStory(story, state);
         }
         state.currentBatch = batch.batchNumber;
-        this.stateManager.save(state);
+        await this.stateManager.save(state);
     }
-    finalizeExecution(state, maxIterations) {
-        if (state.status === 'running') {
-            state.status = state.failedStories.length === 0 ? 'completed' : 'failed';
+    async finalizeExecution(state, maxIterations) {
+        if (state.status === "running") {
+            state.status = state.failedStories.length === 0 ? "completed" : "failed";
         }
-        this.stateManager.save(state);
-        console.log(`\n${state.status === 'completed' ? '✅' : '❌'} Ralph execution ${state.status}`);
+        await this.stateManager.save(state);
+        console.log(`\n${state.status === "completed" ? "✅" : "❌"} Ralph execution ${state.status}`);
         console.log(`   Completed: ${state.completedStories.length}/${this.prd.userStories.length}`);
         console.log(`   Failed: ${state.failedStories.length}`);
         console.log(`   Iterations: ${state.currentIteration}/${maxIterations}\n`);
@@ -87,7 +90,7 @@ class TaskOrchestrator {
         // In a real implementation, this would launch multiple Claude Code agents in parallel
         // For now, we simulate by marking them as ready for parallel execution
         console.log(`   → Stories can run in parallel:`);
-        const promises = stories.map(story => this.executeStory(story, state));
+        const promises = stories.map((story) => this.executeStory(story, state));
         await Promise.all(promises);
     }
     async executeStory(story, state) {
@@ -95,70 +98,127 @@ class TaskOrchestrator {
         state.lastActivity = Date.now();
         console.log(`   → Executing ${story.id}: ${story.title}`);
         console.log(`      Agent: ${story.agent}`);
-        const result = await this.invokeAgent(story);
-        this.processStoryResult(story, state, result);
+        // Spec-first workflow: Generate spec before invoking agent
+        const specResult = await this.generateAndValidateSpec(story);
+        if (!specResult.valid) {
+            await this.processStoryResult(story, state, {
+                storyId: story.id,
+                success: false,
+                output: "",
+                error: `Spec validation failed: ${specResult.gaps.join(", ")}`,
+                timestamp: Date.now(),
+            });
+            state.inProgressStory = null;
+            return;
+        }
+        const result = await this.invokeAgent(story, specResult.specPath);
+        await this.processStoryResult(story, state, result);
         state.inProgressStory = null;
         state.currentIteration++;
     }
-    processStoryResult(story, state, result) {
+    async processStoryResult(story, state, result) {
         if (result.success) {
             state.completedStories.push(story.id);
-            story.passes = true;
-            story.notes = result.output;
-            console.log('      ✅ PASSED');
-            // Save story status to PRD file
-            prd_parser_1.PRDParser.updateStory(story.id, { passes: true, notes: result.output });
+            await this.updateStoryStatus(story, true, result.output);
+            console.log("      ✅ PASSED");
             return;
         }
         state.failedStories.push(story.id);
-        story.passes = false;
-        story.notes = result.error ?? 'Unknown error';
+        await this.updateStoryStatus(story, false, result.error ?? "Unknown error");
         console.log(`      ❌ FAILED: ${result.error}`);
-        // Save story status to PRD file
-        prd_parser_1.PRDParser.updateStory(story.id, { passes: false, notes: result.error ?? 'Unknown error' });
+    }
+    /**
+     * Update story status in memory and persist to PRD file
+     * Consolidates duplicate PRD update logic
+     */
+    async updateStoryStatus(story, passes, notes) {
+        story.passes = passes;
+        story.notes = notes;
+        await prd_parser_1.PRDParser.updateStory(story.id, { passes, notes });
     }
     /**
      * Invoke Claude Code agent for story execution
      * In real implementation, this uses the Task tool
      */
-    async invokeAgent(story) {
+    async invokeAgent(story, specPath) {
         // This is a placeholder for the actual Task tool invocation
         // In production, this would call Claude Code's Task tool like:
-        // Task(subagent_type=story.agent, prompt=this.buildPrompt(story))
-        const prompt = this.buildPrompt(story);
+        // Task(subagent_type=story.agent, prompt=this.buildPrompt(story, specPath))
+        const prompt = this.buildPrompt(story, specPath);
         // Simulate execution
         return {
             storyId: story.id,
             success: true,
-            output: `Executed: ${story.title}`,
+            output: `Executed: ${story.title}${specPath ? ` with spec: ${specPath}` : ""}`,
             timestamp: Date.now(),
         };
     }
     /**
+     * Generate and validate specification before agent execution
+     */
+    async generateAndValidateSpec(story) {
+        try {
+            console.log(`      📋 Generating specification for ${story.id}...`);
+            const spec = await this.specGenerator.generateSpec(story);
+            const specPath = await this.specGenerator.writeSpec(spec);
+            console.log(`      ✅ Spec written to: ${specPath}`);
+            const validation = await this.specGenerator.validateSpec(spec);
+            if (validation.warnings.length > 0) {
+                console.log(`      ⚠️  Spec warnings: ${validation.warnings.join(", ")}`);
+            }
+            if (!validation.valid) {
+                console.log(`      ❌ Spec validation failed: ${validation.gaps.join(", ")}`);
+                return { valid: false, gaps: validation.gaps };
+            }
+            console.log(`      ✅ Spec validated successfully`);
+            return { valid: true, specPath, gaps: [] };
+        }
+        catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            console.log(`      ❌ Spec generation failed: ${errorMessage}`);
+            return { valid: false, gaps: [errorMessage] };
+        }
+    }
+    /**
      * Build agent prompt from user story
      */
-    buildPrompt(story) {
+    buildPrompt(story, specPath) {
         const parts = [
             `Story ID: ${story.id}`,
             `Title: ${story.title}`,
             `Description: ${story.description}`,
-            '',
-            'Acceptance Criteria:',
-            ...story.acceptanceCriteria.map((c, i) => `  ${i + 1}. ${c}`),
-            '',
-            story.dependencies.length > 0
-                ? `Dependencies: ${story.dependencies.join(', ')}`
-                : 'No dependencies - can start immediately',
+            "",
         ];
-        return parts.join('\n');
+        if (specPath) {
+            parts.push("**SPEC-FIRST MODE ENABLED**");
+            parts.push("");
+            parts.push(`You MUST read the specification at: ${specPath}`);
+            parts.push("");
+            parts.push("Follow the specification EXACTLY:");
+            parts.push("1. Read the spec completely before starting");
+            parts.push("2. Implement steps in the order defined");
+            parts.push("3. DO NOT deviate from the spec without updating it first");
+            parts.push("4. If you find a logic gap: STOP, report it, wait for spec update");
+            parts.push("");
+        }
+        parts.push("Acceptance Criteria:");
+        parts.push(...story.acceptanceCriteria.map((c, i) => `  ${i + 1}. ${c}`));
+        parts.push("");
+        if (story.dependencies.length > 0) {
+            parts.push(`Dependencies: ${story.dependencies.join(", ")}`);
+        }
+        else {
+            parts.push("No dependencies - can start immediately");
+        }
+        return parts.join("\n");
     }
     /**
-     * Get execution status
+     * Get execution status (async)
      */
-    getStatus() {
-        const state = this.stateManager.load();
+    async getStatus() {
+        const state = await this.stateManager.load();
         if (!state)
-            return 'Not started';
+            return "Not started";
         const summary = this.dependencyGraph.getExecutionSummary();
         return `
 Ralph Execution Status:
@@ -169,9 +229,9 @@ Progress: ${state.completedStories.length}/${summary.totalStories} stories
 Batch: ${state.currentBatch}/${summary.estimatedBatches}
 Iteration: ${state.currentIteration}/${state.maxIterations}
 
-Completed: [${state.completedStories.join(', ') || 'None'}]
-Failed: [${state.failedStories.join(', ') || 'None'}]
-In Progress: ${state.inProgressStory || 'None'}
+Completed: [${state.completedStories.join(", ") || "None"}]
+Failed: [${state.failedStories.join(", ") || "None"}]
+In Progress: ${state.inProgressStory || "None"}
 
 Last Activity: ${new Date(state.lastActivity).toISOString()}
     `.trim();
