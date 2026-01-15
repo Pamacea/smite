@@ -1,0 +1,9 @@
+{
+  "name": "shell-aliases",
+  "description": "Cross-platform shell aliases for Claude Code (cc and ccc)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/"
+}
