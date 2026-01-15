@@ -14,6 +14,8 @@ export const colors = {
   blue: "\x1b[34m",
   cyan: "\x1b[36m",
   gray: "\x1b[90m",
+  orange: "\x1b[38;5;208m",
+  white: "\x1b[97m",
 };
 
 /**
@@ -106,10 +108,12 @@ export function formatTokens(tokens: number, showDecimals: boolean): string {
   }
 
   const k = tokens / 1000;
-  if (showDecimals) {
+  const roundedK = Math.round(k);
+
+  if (showDecimals && roundedK >= 100) {
     return `${k.toFixed(1)}K`;
   }
-  return `${Math.round(k)}K`;
+  return `${roundedK}K`;
 }
 
 /**

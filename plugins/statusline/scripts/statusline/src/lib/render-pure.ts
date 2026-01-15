@@ -30,7 +30,7 @@ function renderPathAndModel(data: StatuslineData, config: StatuslineConfig): str
     config.showSonnetModel || !data.modelName.includes("Sonnet")
       ? data.modelName
       : "Sonnet";
-  return `${data.dirPath} ${colors.gray}${config.separator}${colors.reset} ${modelDisplay}`;
+  return `${data.dirPath} ${colors.gray}${config.separator}${colors.reset} ${colors.orange}${modelDisplay}${colors.reset}`;
 }
 
 /**
@@ -70,7 +70,7 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
     }
 
     if (showValue) {
-      sessionParts.push(`${data.contextPercentage}%`);
+      sessionParts.push(`${colors.green}${data.contextPercentage}%${colors.reset}`);
     }
   }
 
@@ -146,7 +146,7 @@ export function renderStatusline(
 
   // Git branch
   if (config.git.enabled && data.branch) {
-    parts.push(`${colors.cyan}${data.branch}${colors.reset}`);
+    parts.push(`${colors.white}${data.branch}${colors.reset}`);
   }
 
   // Session info
