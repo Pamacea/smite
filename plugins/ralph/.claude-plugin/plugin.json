@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node plugins/smite-ralph/dist/stop-hook.js"
+            "command": "node dist/stop-hook.js"
           }
         ]
       }

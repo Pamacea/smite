@@ -6,7 +6,7 @@ export { DependencyGraph } from './dependency-graph';
 export { TaskOrchestrator } from './task-orchestrator';
 export { StateManager } from './state-manager';
 export { PRDGenerator } from './prd-generator';
-export { StopHookHandler } from './stop-handler';
+export * from './loop-setup';
 export * from './types';
 
 // Re-export for convenience

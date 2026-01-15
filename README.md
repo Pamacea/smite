@@ -32,16 +32,23 @@
 ### One-Shot Execution
 
 ```bash
-# Ralph auto-generates PRD and executes in parallel
-/ralph "Build a todo app with authentication and real-time updates"
+# Mode 1: Auto-iterating loop (RECOMMENDED for complex tasks)
+/ralph-loop "Build a todo app with authentication and real-time updates"
 
-# That's it! Ralph handles:
+# Mode 2: Single-pass execution (for quick tasks)
+/ralph "Add a login form component"
+
+# Ralph handles:
 # ✅ PRD generation
 # ✅ Dependency analysis
 # ✅ Parallel execution (2-3x faster)
 # ✅ QA & documentation
-# ✅ Auto-looping until completion
+# ✅ Auto-looping until completion (with ralph-loop)
 ```
+
+**Ralph Modes:**
+- **`/ralph-loop`** - Auto-iterating execution with loop file, continues until completion
+- **`/ralph`** - Single-pass execution, best for quick tasks or full control
 
 ---
 

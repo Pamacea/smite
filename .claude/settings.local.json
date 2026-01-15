@@ -61,7 +61,11 @@
       "Bash(if [ -f \"$dirREADME.md\" ])",
       "Bash(then echo \"HAS README\")",
       "Bash(else echo \"MISSING README\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(LAST_ASSISTANT_OUTPUT=\"<promise>DONE</promise>\" node dist/stop-hook.js)",
+      "Bash(LAST_ASSISTANT_OUTPUT=\"Some work done but not complete\" node:*)",
+      "Bash(LAST_ASSISTANT_OUTPUT=\"Still working on it\" node plugins/ralph/dist/stop-hook.js)",
+      "Bash(LAST_ASSISTANT_OUTPUT=\"All done! <promise>DONE</promise>\" node plugins/ralph/dist/stop-hook.js)"
     ]
   },
   "hooks": {

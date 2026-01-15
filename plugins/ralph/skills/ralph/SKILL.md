@@ -363,37 +363,24 @@ Total: 15 minutes (2x faster)
 
 ---
 
-## 🔧 STOP HOOK
+## 🔧 LOOP SYSTEM
 
-Ralph uses a Stop hook to create iterative loops:
+Ralph supports two execution modes:
 
-```typescript
-// plugins/smite-ralph/dist/stop-hook.js
+### 1. Single-Pass Execution (`/ralph execute`)
 
-function stopHook() {
-  const state = readRalphState();
+Execute PRD once with parallel optimization, no looping.
 
-  if (!state || !state.active) {
-    return { shouldBlock: false };
-  }
+### 2. Auto-Iterating Loop (`/ralph-loop`) ⚡ NEW
 
-  // Increment iteration
-  state.iteration++;
+Uses hook-based system for automatic iteration until completion.
 
-  // Feed same prompt back
-  return {
-    shouldBlock: true,
-    message: `
-🔄 Ralph Iteration ${state.iteration}/${state.maxIterations}
+**How it works:**
+1. Creates `.claude/ralph-loop.local.md` with loop configuration
+2. Stop hook intercepts exit and re-feeds prompt if not complete
+3. Iterates until `<promise>COMPLETE</promise>` detected or max iterations
 
-${state.prompt}
-
-Previous work is in files and git history.
-Continue iterating until completion.
-    `
-  };
-}
-```
+**Documentation:** See `RALPH-LOOP.md` for complete guide on loop system.
 
 ---
 

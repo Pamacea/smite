@@ -38,7 +38,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StopHookHandler = exports.PRDGenerator = exports.StateManager = exports.TaskOrchestrator = exports.DependencyGraph = exports.PRDParser = void 0;
+exports.PRDGenerator = exports.StateManager = exports.TaskOrchestrator = exports.DependencyGraph = exports.PRDParser = void 0;
 exports.execute = execute;
 exports.executeFromPRD = executeFromPRD;
 var prd_parser_1 = require("./prd-parser");
@@ -51,8 +51,7 @@ var state_manager_1 = require("./state-manager");
 Object.defineProperty(exports, "StateManager", { enumerable: true, get: function () { return state_manager_1.StateManager; } });
 var prd_generator_1 = require("./prd-generator");
 Object.defineProperty(exports, "PRDGenerator", { enumerable: true, get: function () { return prd_generator_1.PRDGenerator; } });
-var stop_handler_1 = require("./stop-handler");
-Object.defineProperty(exports, "StopHookHandler", { enumerable: true, get: function () { return stop_handler_1.StopHookHandler; } });
+__exportStar(require("./loop-setup"), exports);
 __exportStar(require("./types"), exports);
 // Re-export for convenience
 const prd_parser_2 = require("./prd-parser");
