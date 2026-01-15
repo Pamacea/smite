@@ -56,6 +56,7 @@ Object.defineProperty(exports, "SpecGenerator", { enumerable: true, get: functio
 var spec_lock_1 = require("./spec-lock");
 Object.defineProperty(exports, "SpecLock", { enumerable: true, get: function () { return spec_lock_1.SpecLock; } });
 __exportStar(require("./path-utils"), exports);
+__exportStar(require("./logger"), exports);
 var loop_setup_1 = require("./loop-setup");
 Object.defineProperty(exports, "setupRalphLoop", { enumerable: true, get: function () { return loop_setup_1.setupRalphLoop; } });
 Object.defineProperty(exports, "setupAndExecuteLoop", { enumerable: true, get: function () { return loop_setup_1.setupAndExecuteLoop; } });
