@@ -11,30 +11,30 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # Full finalize (QA + Docs) - DEFAULT
-/smite-finalize
+/finalize
 
 # QA only
-/smite-finalize --mode=qa
+/finalize --mode=qa
 
 # Specific QA type
-/smite-finalize --mode=qa --type=test       # Generate & run tests
-/smite-finalize --mode=qa --type=review    # Code review & refactor
-/smite-finalize --mode=qa --type=lint      # Fix linting issues
-/smite-finalize --mode=qa --type=perf      # Performance audit
-/smite-finalize --mode=qa --type=security  # Security audit
-/smite-finalize --mode=qa --type=coverage  # Coverage analysis
+/finalize --mode=qa --type=test       # Generate & run tests
+/finalize --mode=qa --type=review    # Code review & refactor
+/finalize --mode=qa --type=lint      # Fix linting issues
+/finalize --mode=qa --type=perf      # Performance audit
+/finalize --mode=qa --type=security  # Security audit
+/finalize --mode=qa --type=coverage  # Coverage analysis
 
 # Docs only
-/smite-finalize --mode=docs
+/finalize --mode=docs
 
 # Specific doc type
-/smite-finalize --mode=docs --type=readme  # Update README
-/smite-finalize --mode=docs --type=agents  # Update AGENTS.md
-/smite-finalize --mode=docs --type=api     # Generate API docs
-/smite-finalize --mode=docs --type=sync    # Sync all docs
+/finalize --mode=docs --type=readme  # Update README
+/finalize --mode=docs --type=agents  # Update AGENTS.md
+/finalize --mode=docs --type=api     # Generate API docs
+/finalize --mode=docs --type=sync    # Sync all docs
 
 # Automatic (by Ralph)
-/smite-finalize --auto --artifact="src/components/Button.tsx"
+/finalize --auto --artifact="src/components/Button.tsx"
 ```
 
 ## What It Does
@@ -78,7 +78,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You just implemented a new feature
-/smite-finalize
+/finalize
 
 → Runs all tests
 → Reviews code quality
@@ -91,7 +91,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You only need to validate code quality
-/smite-finalize --mode=qa
+/finalize --mode=qa
 
 → Tests + Review + Lint + Performance
 → No documentation changes
@@ -101,7 +101,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You need comprehensive tests
-/smite-finalize --mode=qa --type=test
+/finalize --mode=qa --type=test
 
 → Generates unit, integration, E2E tests
 → Analyzes coverage
@@ -112,7 +112,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You want code review and optimization
-/smite-finalize --mode=qa --type=review
+/finalize --mode=qa --type=review
 
 → Comprehensive code review
 → Refactoring recommendations
@@ -123,7 +123,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You have linting errors
-/smite-finalize --mode=qa --type=lint
+/finalize --mode=qa --type=lint
 
 → Auto-fixes ESLint
 → Formats with Prettier
@@ -135,7 +135,7 @@ Complete quality assurance, code review, refactoring, linting, and documentation
 
 ```bash
 # You need to update docs after code changes
-/smite-finalize --mode=docs --type=sync
+/finalize --mode=docs --type=sync
 
 → Updates JSDoc
 → Syncs README

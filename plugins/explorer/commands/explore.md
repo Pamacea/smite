@@ -26,7 +26,7 @@ Explore and understand the codebase structure.
 - `docs/explorer-architecture.md` - Architecture overview
 
 **Usage:**
-/smite-explorer --task=find-function --target="getUserData"
-/smite-explorer --task=find-component --scope=module
-/smite-explorer --task=map-architecture
-/smite-explorer --task=find-bug --target="memory leak"
+/explore --task=find-function --target="getUserData"
+/explore --task=find-component --scope=module
+/explore --task=map-architecture
+/explore --task=find-bug --target="memory leak"

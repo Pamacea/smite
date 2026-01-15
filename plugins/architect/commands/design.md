@@ -11,16 +11,16 @@ Complete project architecture from concept to implementation-ready specification
 
 ```bash
 # Initialize new project
-/smite-architect --mode=init "Build a SaaS dashboard for analytics"
+/design --mode=init "Build a SaaS dashboard for analytics"
 
 # Define business strategy
-/smite-architect --mode=strategy "Define pricing strategy for productivity tool"
+/design --mode=strategy "Define pricing strategy for productivity tool"
 
 # Create design system
-/smite-architect --mode=design "Modern minimalist design for fintech app"
+/design --mode=design "Modern minimalist design for fintech app"
 
 # Brainstorm solutions
-/smite-architect --mode=brainstorm "How to improve user engagement"
+/design --mode=brainstorm "How to improve user engagement"
 ```
 
 ## Modes
@@ -30,7 +30,7 @@ Complete project architecture from concept to implementation-ready specification
 Initialize new projects with tech stack and tooling.
 
 ```bash
-/smite-architect --mode=init "<project description>"
+/design --mode=init "<project description>"
 ```
 
 **What it does:**
@@ -47,7 +47,7 @@ Initialize new projects with tech stack and tooling.
 
 **Example:**
 ```bash
-/smite-architect --mode=init "Build a real-time chat application with WebSocket support"
+/design --mode=init "Build a real-time chat application with WebSocket support"
 ```
 
 ### MODE: STRATEGY (Business Strategy)
@@ -55,7 +55,7 @@ Initialize new projects with tech stack and tooling.
 Develop comprehensive business and market strategy.
 
 ```bash
-/smite-architect --mode=strategy "<business question>"
+/design --mode=strategy "<business question>"
 ```
 
 **What it does:**
@@ -72,7 +72,7 @@ Develop comprehensive business and market strategy.
 
 **Example:**
 ```bash
-/smite-architect --mode=strategy "Analyze project management market, define pricing tiers"
+/design --mode=strategy "Analyze project management market, define pricing tiers"
 ```
 
 ### MODE: DESIGN (Design System)
@@ -80,7 +80,7 @@ Develop comprehensive business and market strategy.
 Create comprehensive design system and UI specifications.
 
 ```bash
-/smite-architect --mode=design "<design requirements>"
+/design --mode=design "<design requirements>"
 ```
 
 **What it does:**
@@ -97,7 +97,7 @@ Create comprehensive design system and UI specifications.
 
 **Example:**
 ```bash
-/smite-architect --mode=design "Create a modern design system for a mobile fitness app"
+/design --mode=design "Create a modern design system for a mobile fitness app"
 ```
 
 ### MODE: BRAINSTORM (Creative Thinking)
@@ -105,7 +105,7 @@ Create comprehensive design system and UI specifications.
 Facilitate creative problem-solving and ideation.
 
 ```bash
-/smite-architect --mode=brainstorm "<problem or topic>"
+/design --mode=brainstorm "<problem or topic>"
 ```
 
 **What it does:**
@@ -122,7 +122,7 @@ Facilitate creative problem-solving and ideation.
 
 **Example:**
 ```bash
-/smite-architect --mode=brainstorm "Innovative features to increase user engagement"
+/design --mode=brainstorm "Innovative features to increase user engagement"
 ```
 
 ## When To Use
@@ -144,16 +144,16 @@ Complete project architecture:
 
 ```bash
 # Step 1: Initialize
-/smite-architect --mode=init "Build a project management SaaS"
+/design --mode=init "Build a project management SaaS"
 
 # Step 2: Strategy
-/smite-architect --mode=strategy "Define pricing and revenue model"
+/design --mode=strategy "Define pricing and revenue model"
 
 # Step 3: Design
-/smite-architect --mode=design "Create professional enterprise design system"
+/design --mode=design "Create professional enterprise design system"
 
 # Step 4: Brainstorm
-/smite-architect --mode=brainstorm "Innovative collaboration features"
+/design --mode=brainstorm "Innovative collaboration features"
 
 → Complete architecture ready for Builder
 ```
@@ -161,10 +161,10 @@ Complete project architecture:
 ## Integration
 
 **Works with:**
-- smite-explorer (analyze existing codebase)
-- smite-builder (implement architecture)
-- smite-finalize (document decisions)
-- smite-ralph (full orchestration)
+- explore (analyze existing codebase)
+- build (implement architecture)
+- finalize (document decisions)
+- ralph (full orchestration)
 
 ## Best Practices
 

@@ -284,11 +284,11 @@ Execute with:
 
 See individual plugin documentation for detailed usage:
 
-- `plugins/explorer/commands/smite-explorer.md`
-- `plugins/builder/commands/smite-builder.md`
-- `plugins/architect/commands/smite-architect.md`
-- `plugins/finalize/commands/smite-finalize.md`
-- `plugins/simplifier/README.md`
+- `plugins/explorer/commands/explore.md`
+- `plugins/builder/commands/build.md`
+- `plugins/architect/commands/design.md`
+- `plugins/finalize/commands/finalize.md`
+- `plugins/simplifier/commands/simplify.md`
 - `plugins/statusline/README.md`
 - `plugins/ralph/README.md`
 

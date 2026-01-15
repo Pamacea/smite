@@ -33,7 +33,7 @@
 
 ```bash
 # Mode 1: Auto-iterating loop (RECOMMENDED for complex tasks)
-/ralph-loop "Build a todo app with authentication and real-time updates"
+/loop "Build a todo app with authentication and real-time updates"
 
 # Mode 2: Single-pass execution (for quick tasks)
 /ralph "Add a login form component"
@@ -47,7 +47,7 @@
 ```
 
 **Ralph Modes:**
-- **`/ralph-loop`** - Auto-iterating execution with loop file, continues until completion
+- **`/loop`** - Auto-iterating execution with loop file, continues until completion
 - **`/ralph`** - Single-pass execution, best for quick tasks or full control
 
 ---
@@ -75,9 +75,9 @@ With 10+ stories: 2-3x speedup!
 | Old (13 agents) | New (6 agents) | Description |
 |-----------------|----------------|-------------|
 | smite-initializer, smite-strategist, smite-aura, smite-brainstorm | **architect** | Design, strategy, init, creative thinking |
-| smite-constructor, smite-router | **builder** | Implementation with auto-detection |
+| builder, smite-router | **builder** | Implementation with auto-detection |
 | smite-gatekeeper, smite-surgeon, linter-sentinel, smite-handover, doc-maintainer | **finalize** | QA + documentation unified |
-| smite-explorer | **explorer** | Codebase analysis |
+| explorer | **explorer** | Codebase analysis |
 | — | **simplifier** | Code simplification & refactoring (NEW!) |
 | — | **ralph** | Multi-agent orchestrator (NEW!) |
 
@@ -385,7 +385,7 @@ Batch 3: [US-004] (sequential)
 ### macOS/Linux (Bash)
 
 ```bash
-./ralph-loop.sh --prompt "Build a todo app"
+./loop.sh --prompt "Build a todo app"
 ./ralph-status.sh
 ./ralph-cancel.sh
 ```

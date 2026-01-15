@@ -21,6 +21,6 @@ Convert Figma designs and SVG to code components
 - Documentation
 
 **Usage:**
-/smite-constructor --tech=nextjs --feature="authentication"
-/smite-constructor --tech=rust --component="api-handler"
-/smite-constructor --design --source="figma:file-id"
+/build --tech=nextjs --feature="authentication"
+/build --tech=rust --component="api-handler"
+/build --design --source="figma:file-id"
