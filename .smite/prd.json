@@ -36,7 +36,7 @@
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": [],
-      "passes": false,
+      "passes": true,
       "notes": "Estimated 6 hours. Highest impact optimization."
     },
     {
@@ -54,7 +54,7 @@
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": [],
-      "passes": false,
+      "passes": true,
       "notes": "Estimated 4 hours. Huge performance win."
     },
     {
@@ -144,7 +144,7 @@
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": [],
-      "passes": false,
+      "passes": true,
       "notes": "Estimated 2 hours. Micro-optimization."
     },
     {
@@ -162,7 +162,7 @@
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": [],
-      "passes": false,
+      "passes": true,
       "notes": "Estimated 4 hours. Type safety improvement."
     },
     {
