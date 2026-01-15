@@ -48,11 +48,44 @@
 
 **Ralph Modes:**
 - **`/loop`** - Auto-iterating execution with loop file, continues until completion
-- **`/ralph`** - Single-pass execution, best for quick tasks or full control
+- **`/ralph`** - Single-pass execution with PRD accumulation, best for iterative development
+
+**Important:** Both modes use PRD accumulation - running `/ralph` multiple times ADDS stories instead of overwriting!
 
 ---
 
 ## 🎯 What's New in v3.0
+
+### 🔥 PRD Accumulation (Never Lose Progress!)
+
+**Problem**: Traditional PRD systems overwrite everything on each run, losing completed stories.
+
+**Solution**: Ralph v3.0 accumulates PRD content intelligently.
+
+```bash
+# Run 1: Initial PRD
+/ralph "Build a todo app"
+→ Creates: US-001, US-002, US-003
+
+# Run 2: Add features (MERGES, doesn't overwrite!)
+/ralph "Add export to PDF"
+→ Result: US-001, US-002, US-003, US-004 (NEW!)
+→ Completed stories stay completed ✅
+→ All progress preserved 💾
+```
+
+**Features:**
+- ✅ Preserves completed stories (`passes: true`)
+- ✅ Adds new stories from new prompts
+- ✅ Updates existing stories if needed
+- ✅ Auto-saves progress after each story
+- ✅ Cleans up phantom PRD files automatically
+
+**Technical Details:**
+- Single source of truth: `.smite/prd.json`
+- Smart merge: `PRDParser.mergePRD()` vs old `saveToSmiteDir()`
+- Auto-save: `PRDParser.updateStory()` called after each completion
+- Cleanup: Removes `prd-*.json` phantom files on each merge
 
 ### ⚡ Multi-Agent Parallel Execution
 
@@ -69,6 +102,25 @@ Story 1 → (Story 2 + Story 3) → Story 4
 
 With 10+ stories: 2-3x speedup!
 ```
+
+### 🚀 Loop Auto-Execution
+
+New function: `setupAndExecuteLoop()` - One command does it all!
+
+```typescript
+// Check PRD → Merge prompt → Execute automatically
+await setupAndExecuteLoop("Add user authentication", {
+  maxIterations: 100
+})
+```
+
+**Steps (automated):**
+1. Checks if `.smite/prd.json` exists
+2. Generates PRD from prompt
+3. **Merges** with existing PRD (no overwrite!)
+4. Creates `.claude/loop.md`
+5. **Executes** automatically
+6. Saves progress after each story
 
 ### 📦 Simplified Architecture (13 → 6 agents)
 
@@ -115,25 +167,44 @@ finalize:task
 
 ### 1. **ralph** - Multi-Agent Orchestrator ⭐
 
-The revolution: autonomous coding with parallel execution.
+The revolution: autonomous coding with parallel execution + **PRD accumulation**.
 
 ```bash
-# Quick start
+# Quick start (auto-generates & merges PRD)
 /ralph "Build a REST API with Node.js, Express, and PostgreSQL"
+
+# Add more features (MERGES with existing PRD - never overwrites!)
+/ralph "Add authentication and user management"
 
 # From PRD file
 /ralph .smite/prd.json
 
-# With custom iterations
-/ralph "your task" --iterations 100
+# Auto-iterating loop (recommended for complex tasks)
+/loop "Build a full SaaS platform with payments and analytics"
 ```
 
 **Features:**
 - 🧠 Auto-generates PRD from prompt
-- 📊 Analyzes dependencies
-- ⚡ Executes in parallel batches
+- 📊 **Smart PRD accumulation** - merges new prompts, preserves completed stories
+- ⚡ Executes in parallel batches (2-3x faster)
 - 🔄 Auto-loops until completion
 - 📝 QA & documentation included
+- 💾 Auto-saves story progress to PRD file
+- 🧹 Auto-cleanup of phantom PRD files
+
+**PRD Accumulation - Key Feature:**
+```bash
+# First call: Creates PRD with 3 stories
+/ralph "Build a CRUD app"
+→ PRD created: US-001, US-002, US-003
+
+# Execute: US-001 ✅ completed, US-002 ✅ completed
+
+# Second call: ADDS stories, PRESERVES completed ones
+/ralph "Add export to CSV and PDF"
+→ Merged: US-001 ✅, US-002 ✅, US-003 ⏳, US-004 🆕, US-005 🆕
+→ US-001 and US-002 stay completed!
+```
 
 **See:** [docs/RALPH_GUIDE.md](docs/RALPH_GUIDE.md)
 

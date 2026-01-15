@@ -38,7 +38,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PRDGenerator = exports.StateManager = exports.TaskOrchestrator = exports.DependencyGraph = exports.PRDParser = void 0;
+exports.checkCompletionPromise = exports.clearLoopFile = exports.incrementLoopIteration = exports.readLoopConfig = exports.setupAndExecuteLoop = exports.setupRalphLoop = exports.PRDGenerator = exports.StateManager = exports.TaskOrchestrator = exports.DependencyGraph = exports.PRDParser = void 0;
 exports.execute = execute;
 exports.executeFromPRD = executeFromPRD;
 var prd_parser_1 = require("./prd-parser");
@@ -51,37 +51,73 @@ var state_manager_1 = require("./state-manager");
 Object.defineProperty(exports, "StateManager", { enumerable: true, get: function () { return state_manager_1.StateManager; } });
 var prd_generator_1 = require("./prd-generator");
 Object.defineProperty(exports, "PRDGenerator", { enumerable: true, get: function () { return prd_generator_1.PRDGenerator; } });
-__exportStar(require("./loop-setup"), exports);
+var loop_setup_1 = require("./loop-setup");
+Object.defineProperty(exports, "setupRalphLoop", { enumerable: true, get: function () { return loop_setup_1.setupRalphLoop; } });
+Object.defineProperty(exports, "setupAndExecuteLoop", { enumerable: true, get: function () { return loop_setup_1.setupAndExecuteLoop; } });
+Object.defineProperty(exports, "readLoopConfig", { enumerable: true, get: function () { return loop_setup_1.readLoopConfig; } });
+Object.defineProperty(exports, "incrementLoopIteration", { enumerable: true, get: function () { return loop_setup_1.incrementLoopIteration; } });
+Object.defineProperty(exports, "clearLoopFile", { enumerable: true, get: function () { return loop_setup_1.clearLoopFile; } });
+Object.defineProperty(exports, "checkCompletionPromise", { enumerable: true, get: function () { return loop_setup_1.checkCompletionPromise; } });
 __exportStar(require("./types"), exports);
 // Re-export for convenience
 const prd_parser_2 = require("./prd-parser");
 const prd_generator_2 = require("./prd-generator");
 const task_orchestrator_2 = require("./task-orchestrator");
 const path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
 /**
  * Quick start: Execute Ralph from a prompt
+ * IMPORTANT: This MERGES with existing PRD instead of overwriting
+ *
+ * By default, executes ALL stories (no limit). Use maxIterations to limit.
  */
 async function execute(prompt, options) {
     const smiteDir = path.join(process.cwd(), '.smite');
-    // Generate PRD
-    const prd = prd_generator_2.PRDGenerator.generateFromPrompt(prompt);
-    // Save PRD
-    prd_parser_2.PRDParser.saveToSmiteDir(prd);
-    // Execute
-    const orchestrator = new task_orchestrator_2.TaskOrchestrator(prd, smiteDir);
-    return await orchestrator.execute(options?.maxIterations || 50);
+    // Generate PRD from prompt
+    const newPrd = prd_generator_2.PRDGenerator.generateFromPrompt(prompt);
+    // Merge with existing PRD (preserves completed stories)
+    const prdPath = prd_parser_2.PRDParser.mergePRD(newPrd);
+    // Load merged PRD for execution
+    const mergedPrd = prd_parser_2.PRDParser.loadFromSmiteDir();
+    if (!mergedPrd) {
+        throw new Error('Failed to load merged PRD');
+    }
+    console.log(`\n✅ PRD ready at: ${prdPath}`);
+    console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
+    // Execute (no limit by default - completes all stories)
+    const orchestrator = new task_orchestrator_2.TaskOrchestrator(mergedPrd, smiteDir);
+    const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
+    if (maxIterations !== Infinity) {
+        console.log(`⚠️  Limited to ${maxIterations} stories`);
+    }
+    return await orchestrator.execute(maxIterations);
 }
 /**
  * Execute Ralph from existing PRD file
  */
 async function executeFromPRD(prdPath, options) {
     const smiteDir = path.join(process.cwd(), '.smite');
+    // Validate PRD exists
+    if (!fs.existsSync(prdPath)) {
+        throw new Error(`PRD file not found: ${prdPath}`);
+    }
     // Load PRD
     const prd = prd_parser_2.PRDParser.parseFromFile(prdPath);
-    // Copy to .smite
-    prd_parser_2.PRDParser.saveToSmiteDir(prd);
-    // Execute
-    const orchestrator = new task_orchestrator_2.TaskOrchestrator(prd, smiteDir);
-    return await orchestrator.execute(options?.maxIterations || 50);
+    // Merge with existing PRD at standard location (preserves completed stories)
+    const standardPath = prd_parser_2.PRDParser.mergePRD(prd);
+    console.log(`\n✅ PRD merged to standard location: ${standardPath}`);
+    // Load merged PRD for execution
+    const mergedPrd = prd_parser_2.PRDParser.loadFromSmiteDir();
+    if (!mergedPrd) {
+        throw new Error('Failed to load merged PRD');
+    }
+    console.log(`📊 Stories: ${mergedPrd.userStories.length} total`);
+    // Execute (no limit by default)
+    const orchestrator = new task_orchestrator_2.TaskOrchestrator(mergedPrd, smiteDir);
+    const maxIterations = options?.maxIterations ?? Infinity; // Default: unlimited
+    if (maxIterations !== Infinity) {
+        console.log(`⚠️  Limited to ${maxIterations} stories`);
+    }
+    return await orchestrator.execute(maxIterations);
 }
 //# sourceMappingURL=index.js.map

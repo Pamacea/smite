@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { RalphState } from './types';
+import { PRDParser } from './prd-parser';
 
 export class StateManager {
   private readonly statePath: string;
@@ -13,7 +14,15 @@ export class StateManager {
     this.progressPath = path.join(smiteDir, 'progress.txt');
   }
 
-  initialize(maxIterations: number): RalphState {
+  initialize(maxIterations: number, prdPath?: string): RalphState {
+    // Use provided PRD path or default to standard location
+    const effectivePrdPath = prdPath || PRDParser.getStandardPRDPath();
+
+    // Validate PRD exists
+    if (!fs.existsSync(effectivePrdPath)) {
+      throw new Error(`PRD not found at ${effectivePrdPath}. Cannot initialize Ralph session.`);
+    }
+
     const state: RalphState = {
       sessionId: uuidv4(),
       startTime: Date.now(),
@@ -26,10 +35,13 @@ export class StateManager {
       inProgressStory: null,
       status: 'running',
       lastActivity: Date.now(),
+      prdPath: effectivePrdPath,
     };
 
     this.save(state);
-    this.logProgress(`\n🚀 Ralph session started: ${state.sessionId}`, `Max iterations: ${maxIterations}\n`);
+    this.logProgress(`\n🚀 Ralph session started: ${state.sessionId}`);
+    this.logProgress(`📄 PRD: ${effectivePrdPath}`);
+    this.logProgress(`🔄 Max iterations: ${maxIterations}\n`);
 
     return state;
   }
@@ -117,5 +129,37 @@ export class StateManager {
   private logProgress(...messages: string[]): void {
     const timestamp = new Date().toISOString();
     fs.appendFileSync(this.progressPath, messages.map(m => `[${timestamp}] ${m}`).join('\n') + '\n');
+  }
+
+  /**
+   * Validate that the tracked PRD still exists
+   * Returns true if PRD exists, false otherwise
+   */
+  validatePRDExists(): boolean {
+    const state = this.load();
+    if (!state) return false;
+
+    const exists = fs.existsSync(state.prdPath);
+    if (!exists) {
+      this.logProgress(`\n⚠️  WARNING: PRD file missing: ${state.prdPath}`);
+    }
+    return exists;
+  }
+
+  /**
+   * Check if PRD has been modified since session started
+   * (Optional feature using hash comparison)
+   */
+  hasPRDChanged(): boolean {
+    const state = this.load();
+    if (!state || !state.prdHash) return false;
+
+    try {
+      const prd = PRDParser.parseFromFile(state.prdPath);
+      const currentHash = PRDParser.generateHash(prd);
+      return currentHash !== state.prdHash;
+    } catch {
+      return false;
+    }
   }
 }

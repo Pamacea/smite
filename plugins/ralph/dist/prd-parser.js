@@ -38,14 +38,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PRDParser = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const crypto = __importStar(require("crypto"));
 class PRDParser {
     /**
      * Parse PRD from JSON file
      */
     static parseFromFile(filePath) {
         const fullPath = path.resolve(filePath);
+        // SECURITY: Only allow .smite/prd.json or explicit user intent
+        if (!this.isValidPRDPath(fullPath)) {
+            console.warn(`⚠️  Warning: Non-standard PRD path detected: ${filePath}`);
+            console.warn(`   Standard path is: ${this.STANDARD_PRD_PATH}`);
+            console.warn(`   Copying to standard location...`);
+        }
         const content = fs.readFileSync(fullPath, 'utf-8');
         return this.parseFromString(content);
+    }
+    /**
+     * Validate PRD file path - prevent phantom PRD files
+     */
+    static isValidPRDPath(filePath) {
+        const resolved = path.resolve(filePath);
+        const standard = path.resolve(this.STANDARD_PRD_PATH);
+        return resolved === standard;
     }
     /**
      * Parse PRD from JSON string
@@ -122,22 +137,188 @@ class PRDParser {
      * Load PRD from .smite directory
      */
     static loadFromSmiteDir() {
-        const prdPath = path.join(process.cwd(), '.smite', 'prd.json');
+        const prdPath = path.join(process.cwd(), this.STANDARD_PRD_PATH);
         if (!fs.existsSync(prdPath))
             return null;
         return this.parseFromFile(prdPath);
     }
     /**
-     * Save PRD to .smite directory
+     * Save PRD to .smite directory (ONLY valid location)
+     * WARNING: This OVERWRITES the existing PRD. Use mergePRD() instead to preserve existing stories.
      */
     static saveToSmiteDir(prd) {
         const smiteDir = path.join(process.cwd(), '.smite');
         if (!fs.existsSync(smiteDir)) {
             fs.mkdirSync(smiteDir, { recursive: true });
         }
-        const prdPath = path.join(smiteDir, 'prd.json');
+        const prdPath = path.join(process.cwd(), this.STANDARD_PRD_PATH);
         fs.writeFileSync(prdPath, JSON.stringify(prd, null, 2));
+        // Clean up any phantom PRD files
+        this.cleanupPhantomPRDs();
+        return prdPath;
+    }
+    /**
+     * Merge new PRD content with existing PRD (preserves completed stories)
+     * This is the PREFERRED way to update a PRD.
+     */
+    static mergePRD(newPrd) {
+        const existingPrd = this.loadFromSmiteDir();
+        if (!existingPrd) {
+            // No existing PRD, just save the new one
+            console.log('📄 Creating new PRD');
+            return this.saveToSmiteDir(newPrd);
+        }
+        // Merge: Keep existing stories, add new ones, update description
+        const mergedPrd = {
+            project: existingPrd.project, // Keep existing project name
+            branchName: existingPrd.branchName, // Keep existing branch
+            description: this.mergeDescriptions(existingPrd.description, newPrd.description),
+            userStories: this.mergeStories(existingPrd.userStories, newPrd.userStories),
+        };
+        console.log(`🔄 Merging PRDs:`);
+        console.log(`   Existing: ${existingPrd.userStories.length} stories`);
+        console.log(`   New: ${newPrd.userStories.length} stories`);
+        console.log(`   Merged: ${mergedPrd.userStories.length} stories`);
+        return this.saveToSmiteDir(mergedPrd);
+    }
+    /**
+     * Merge descriptions intelligently
+     */
+    static mergeDescriptions(existing, newDesc) {
+        // If new description is significantly different, append it
+        if (existing.toLowerCase() === newDesc.toLowerCase()) {
+            return existing;
+        }
+        // Check if new description is already contained in existing
+        if (existing.toLowerCase().includes(newDesc.toLowerCase())) {
+            return existing;
+        }
+        // Append new description
+        return `${existing}\n\n${newDesc}`;
+    }
+    /**
+     * Merge story lists, avoiding duplicates by ID
+     * Preserves existing stories with their status (passes, notes)
+     */
+    static mergeStories(existing, newStories) {
+        const storyMap = new Map();
+        // Add existing stories first (preserves completed status)
+        existing.forEach(story => {
+            storyMap.set(story.id, story);
+        });
+        // Add/update new stories
+        newStories.forEach(story => {
+            const existingStory = storyMap.get(story.id);
+            if (!existingStory) {
+                // New story - add it
+                console.log(`   ➕ Adding new story: ${story.id}`);
+                storyMap.set(story.id, story);
+            }
+            else {
+                // Story exists - update fields but preserve status
+                console.log(`   🔄 Updating existing story: ${story.id}`);
+                storyMap.set(story.id, {
+                    ...existingStory, // Keep existing passes, notes, status
+                    title: story.title,
+                    description: story.description,
+                    acceptanceCriteria: story.acceptanceCriteria,
+                    priority: story.priority,
+                    agent: story.agent,
+                    dependencies: story.dependencies,
+                });
+            }
+        });
+        return Array.from(storyMap.values()).sort((a, b) => {
+            // Sort by priority, then by ID
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority;
+            }
+            return a.id.localeCompare(b.id);
+        });
+    }
+    /**
+     * Update specific story in PRD (e.g., mark as passed)
+     */
+    static updateStory(storyId, updates) {
+        const prd = this.loadFromSmiteDir();
+        if (!prd)
+            return false;
+        const storyIndex = prd.userStories.findIndex(s => s.id === storyId);
+        if (storyIndex === -1)
+            return false;
+        // Update story
+        prd.userStories[storyIndex] = {
+            ...prd.userStories[storyIndex],
+            ...updates,
+        };
+        // Save updated PRD
+        this.saveToSmiteDir(prd);
+        return true;
+    }
+    /**
+     * Generate hash for PRD content (for change detection)
+     */
+    static generateHash(prd) {
+        const content = JSON.stringify(prd);
+        return crypto.createHash('md5').update(content).digest('hex');
+    }
+    /**
+     * Clean up phantom PRD files (prd-*.json in .smite or root)
+     * This prevents accumulation of unused PRD files
+     */
+    static cleanupPhantomPRDs() {
+        try {
+            const smiteDir = path.join(process.cwd(), '.smite');
+            const rootDir = process.cwd();
+            // Clean .smite directory
+            if (fs.existsSync(smiteDir)) {
+                const files = fs.readdirSync(smiteDir);
+                files.forEach(file => {
+                    if (file.match(/^prd-.*\.json$/) || file.match(/^prd-\d+\.json$/)) {
+                        const filePath = path.join(smiteDir, file);
+                        console.log(`🧹 Cleaning up phantom PRD: ${file}`);
+                        fs.unlinkSync(filePath);
+                    }
+                });
+            }
+            // Clean root directory (warn but don't delete unless it's clearly a phantom)
+            const rootFiles = fs.readdirSync(rootDir);
+            rootFiles.forEach(file => {
+                if (file.match(/^prd-\d+\.json$/)) {
+                    const filePath = path.join(rootDir, file);
+                    console.warn(`⚠️  Warning: Phantom PRD in root: ${file}`);
+                    console.warn(`   Consider moving to .smite/prd.json or deleting`);
+                }
+            });
+        }
+        catch (error) {
+            // Non-critical: log but don't fail
+            console.warn(`Could not cleanup phantom PRDs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+    }
+    /**
+     * Get the standard PRD path
+     */
+    static getStandardPRDPath() {
+        return path.join(process.cwd(), this.STANDARD_PRD_PATH);
+    }
+    /**
+     * Check if standard PRD exists
+     */
+    static standardPRDExists() {
+        return fs.existsSync(this.getStandardPRDPath());
+    }
+    /**
+     * Assert that PRD exists - throw error if missing
+     */
+    static assertPRDExists(message) {
+        if (!this.standardPRDExists()) {
+            throw new Error(message ||
+                `PRD not found at ${this.getStandardPRDPath()}. Use '/ralph \"<prompt>\"' to create one.`);
+        }
     }
 }
 exports.PRDParser = PRDParser;
+// Standard PRD location - SINGLE SOURCE OF TRUTH
+PRDParser.STANDARD_PRD_PATH = path.join('.smite', 'prd.json');
 //# sourceMappingURL=prd-parser.js.map

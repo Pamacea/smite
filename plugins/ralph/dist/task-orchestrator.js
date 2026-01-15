@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskOrchestrator = void 0;
 const dependency_graph_1 = require("./dependency-graph");
 const state_manager_1 = require("./state-manager");
+const prd_parser_1 = require("./prd-parser");
 class TaskOrchestrator {
     constructor(prd, smiteDir) {
         this.prd = prd;
@@ -12,9 +13,13 @@ class TaskOrchestrator {
         this.stateManager = new state_manager_1.StateManager(smiteDir);
     }
     async execute(maxIterations = TaskOrchestrator.DEFAULT_MAX_ITERATIONS) {
-        const state = this.stateManager.initialize(maxIterations);
+        // Get PRD path before initialization
+        const prdPath = prd_parser_1.PRDParser.getStandardPRDPath();
+        // Validate PRD exists before starting
+        prd_parser_1.PRDParser.assertPRDExists();
+        const state = this.stateManager.initialize(maxIterations, prdPath);
         const batches = this.dependencyGraph.generateBatches();
-        this.logExecutionStart(batches.length);
+        this.logExecutionStart(batches.length, prdPath);
         for (const batch of batches) {
             if (this.shouldStopExecution(state, maxIterations))
                 break;
@@ -23,16 +28,32 @@ class TaskOrchestrator {
         this.finalizeExecution(state, maxIterations);
         return state;
     }
-    logExecutionStart(batchCount) {
+    logExecutionStart(batchCount, prdPath) {
         console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
+        console.log(`📄 PRD: ${prdPath}`);
         console.log(`📊 Optimized into ${batchCount} batches (parallel execution)\n`);
     }
     shouldStopExecution(state, maxIterations) {
-        if (state.currentIteration < state.maxIterations)
+        // If infinite iterations, only stop when all stories are done
+        if (maxIterations === Infinity) {
+            const allStoriesCompleted = state.completedStories.length >= this.prd.userStories.length;
+            if (allStoriesCompleted) {
+                console.log(`\n✅ All ${this.prd.userStories.length} stories completed!`);
+                return true;
+            }
             return false;
-        console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
-        state.status = 'failed';
-        return true;
+        }
+        // If limited iterations, check if reached
+        if (state.currentIteration >= state.maxIterations) {
+            const completed = state.completedStories.length;
+            const total = this.prd.userStories.length;
+            console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
+            console.log(`   Completed: ${completed}/${total} stories`);
+            console.log(`   Use --max-iterations=${total} or higher to complete all stories`);
+            state.status = 'failed';
+            return true;
+        }
+        return false;
     }
     async executeBatch(batch, state) {
         console.log(`\n📦 Batch ${batch.batchNumber}: ${batch.stories.length} story(ies)`);
@@ -85,12 +106,16 @@ class TaskOrchestrator {
             story.passes = true;
             story.notes = result.output;
             console.log('      ✅ PASSED');
+            // Save story status to PRD file
+            prd_parser_1.PRDParser.updateStory(story.id, { passes: true, notes: result.output });
             return;
         }
         state.failedStories.push(story.id);
         story.passes = false;
         story.notes = result.error ?? 'Unknown error';
         console.log(`      ❌ FAILED: ${result.error}`);
+        // Save story status to PRD file
+        prd_parser_1.PRDParser.updateStory(story.id, { passes: false, notes: result.error ?? 'Unknown error' });
     }
     /**
      * Invoke Claude Code agent for story execution
@@ -153,5 +178,5 @@ Last Activity: ${new Date(state.lastActivity).toISOString()}
     }
 }
 exports.TaskOrchestrator = TaskOrchestrator;
-TaskOrchestrator.DEFAULT_MAX_ITERATIONS = 50;
+TaskOrchestrator.DEFAULT_MAX_ITERATIONS = Infinity; // No limit by default - execute all stories
 //# sourceMappingURL=task-orchestrator.js.map

@@ -1,9 +1,14 @@
 import { PRD, UserStory } from './types';
 export declare class PRDParser {
+    private static readonly STANDARD_PRD_PATH;
     /**
      * Parse PRD from JSON file
      */
     static parseFromFile(filePath: string): PRD;
+    /**
+     * Validate PRD file path - prevent phantom PRD files
+     */
+    private static isValidPRDPath;
     /**
      * Parse PRD from JSON string
      */
@@ -21,8 +26,48 @@ export declare class PRDParser {
      */
     static loadFromSmiteDir(): PRD | null;
     /**
-     * Save PRD to .smite directory
+     * Save PRD to .smite directory (ONLY valid location)
+     * WARNING: This OVERWRITES the existing PRD. Use mergePRD() instead to preserve existing stories.
      */
-    static saveToSmiteDir(prd: PRD): void;
+    static saveToSmiteDir(prd: PRD): string;
+    /**
+     * Merge new PRD content with existing PRD (preserves completed stories)
+     * This is the PREFERRED way to update a PRD.
+     */
+    static mergePRD(newPrd: PRD): string;
+    /**
+     * Merge descriptions intelligently
+     */
+    private static mergeDescriptions;
+    /**
+     * Merge story lists, avoiding duplicates by ID
+     * Preserves existing stories with their status (passes, notes)
+     */
+    private static mergeStories;
+    /**
+     * Update specific story in PRD (e.g., mark as passed)
+     */
+    static updateStory(storyId: string, updates: Partial<UserStory>): boolean;
+    /**
+     * Generate hash for PRD content (for change detection)
+     */
+    static generateHash(prd: PRD): string;
+    /**
+     * Clean up phantom PRD files (prd-*.json in .smite or root)
+     * This prevents accumulation of unused PRD files
+     */
+    private static cleanupPhantomPRDs;
+    /**
+     * Get the standard PRD path
+     */
+    static getStandardPRDPath(): string;
+    /**
+     * Check if standard PRD exists
+     */
+    static standardPRDExists(): boolean;
+    /**
+     * Assert that PRD exists - throw error if missing
+     */
+    static assertPRDExists(message?: string): void;
 }
 //# sourceMappingURL=prd-parser.d.ts.map

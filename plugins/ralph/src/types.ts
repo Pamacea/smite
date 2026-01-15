@@ -32,6 +32,8 @@ export interface RalphState {
   inProgressStory: string | null;
   status: 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
   lastActivity: number;
+  prdPath: string; // Track which PRD file is being used (mandatory)
+  prdHash?: string; // Optional: track PRD content hash to detect modifications
 }
 
 export interface StoryBatch {

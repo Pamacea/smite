@@ -4,7 +4,7 @@ export declare class StateManager {
     private readonly progressPath;
     private static readonly MINUTES_MS;
     constructor(smiteDir: string);
-    initialize(maxIterations: number): RalphState;
+    initialize(maxIterations: number, prdPath?: string): RalphState;
     load(): RalphState | null;
     save(state: RalphState): void;
     update(updates: Partial<RalphState>): RalphState | null;
@@ -15,5 +15,15 @@ export declare class StateManager {
     clear(): void;
     getDuration(state: RalphState): string;
     private logProgress;
+    /**
+     * Validate that the tracked PRD still exists
+     * Returns true if PRD exists, false otherwise
+     */
+    validatePRDExists(): boolean;
+    /**
+     * Check if PRD has been modified since session started
+     * (Optional feature using hash comparison)
+     */
+    hasPRDChanged(): boolean;
 }
 //# sourceMappingURL=state-manager.d.ts.map

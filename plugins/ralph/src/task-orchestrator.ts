@@ -4,6 +4,7 @@
 import { PRD, UserStory, TaskResult, RalphState, StoryBatch } from './types';
 import { DependencyGraph } from './dependency-graph';
 import { StateManager } from './state-manager';
+import { PRDParser } from './prd-parser';
 import * as path from 'path';
 
 export class TaskOrchestrator {
@@ -17,13 +18,19 @@ export class TaskOrchestrator {
     this.stateManager = new StateManager(smiteDir);
   }
 
-  private static readonly DEFAULT_MAX_ITERATIONS = 50;
+  private static readonly DEFAULT_MAX_ITERATIONS = Infinity; // No limit by default - execute all stories
 
   async execute(maxIterations = TaskOrchestrator.DEFAULT_MAX_ITERATIONS): Promise<RalphState> {
-    const state = this.stateManager.initialize(maxIterations);
+    // Get PRD path before initialization
+    const prdPath = PRDParser.getStandardPRDPath();
+
+    // Validate PRD exists before starting
+    PRDParser.assertPRDExists();
+
+    const state = this.stateManager.initialize(maxIterations, prdPath);
     const batches = this.dependencyGraph.generateBatches();
 
-    this.logExecutionStart(batches.length);
+    this.logExecutionStart(batches.length, prdPath);
 
     for (const batch of batches) {
       if (this.shouldStopExecution(state, maxIterations)) break;
@@ -34,17 +41,35 @@ export class TaskOrchestrator {
     return state;
   }
 
-  private logExecutionStart(batchCount: number): void {
+  private logExecutionStart(batchCount: number, prdPath: string): void {
     console.log(`\n🚀 Starting Ralph execution with ${this.prd.userStories.length} stories`);
+    console.log(`📄 PRD: ${prdPath}`);
     console.log(`📊 Optimized into ${batchCount} batches (parallel execution)\n`);
   }
 
   private shouldStopExecution(state: RalphState, maxIterations: number): boolean {
-    if (state.currentIteration < state.maxIterations) return false;
+    // If infinite iterations, only stop when all stories are done
+    if (maxIterations === Infinity) {
+      const allStoriesCompleted = state.completedStories.length >= this.prd.userStories.length;
+      if (allStoriesCompleted) {
+        console.log(`\n✅ All ${this.prd.userStories.length} stories completed!`);
+        return true;
+      }
+      return false;
+    }
 
-    console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
-    state.status = 'failed';
-    return true;
+    // If limited iterations, check if reached
+    if (state.currentIteration >= state.maxIterations) {
+      const completed = state.completedStories.length;
+      const total = this.prd.userStories.length;
+      console.log(`\n⚠️  Max iterations (${maxIterations}) reached`);
+      console.log(`   Completed: ${completed}/${total} stories`);
+      console.log(`   Use --max-iterations=${total} or higher to complete all stories`);
+      state.status = 'failed';
+      return true;
+    }
+
+    return false;
   }
 
   private async executeBatch(batch: StoryBatch, state: RalphState): Promise<void> {
@@ -109,6 +134,9 @@ export class TaskOrchestrator {
       story.passes = true;
       story.notes = result.output;
       console.log('      ✅ PASSED');
+
+      // Save story status to PRD file
+      PRDParser.updateStory(story.id, { passes: true, notes: result.output });
       return;
     }
 
@@ -116,6 +144,9 @@ export class TaskOrchestrator {
     story.passes = false;
     story.notes = result.error ?? 'Unknown error';
     console.log(`      ❌ FAILED: ${result.error}`);
+
+    // Save story status to PRD file
+    PRDParser.updateStory(story.id, { passes: false, notes: result.error ?? 'Unknown error' });
   }
 
   /**

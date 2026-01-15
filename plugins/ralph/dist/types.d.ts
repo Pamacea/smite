@@ -27,6 +27,8 @@ export interface RalphState {
     inProgressStory: string | null;
     status: 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
     lastActivity: number;
+    prdPath: string;
+    prdHash?: string;
 }
 export interface StoryBatch {
     batchNumber: number;

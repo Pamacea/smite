@@ -9,6 +9,7 @@ import { PRDParser } from './prd-parser';
 export interface LoopOptions {
   maxIterations?: number;
   completionPromise?: string;
+  autoExecute?: boolean; // If true, automatically start execution after setup
 }
 
 export interface LoopConfig {
@@ -20,32 +21,37 @@ export interface LoopConfig {
   prd_path: string;
 }
 
-const DEFAULT_MAX_ITERATIONS = 50;
+const DEFAULT_MAX_ITERATIONS = Infinity; // No limit by default
 const DEFAULT_COMPLETION_PROMISE = 'COMPLETE';
 
 /**
  * Setup Ralph Loop with hook-based auto-iteration
+ * IMPORTANT: This MERGES with existing PRD instead of overwriting
  */
 export function setupRalphLoop(
   prompt: string,
   options: LoopOptions = {}
-): { success: boolean; loopFilePath: string; error?: string } {
+): { success: boolean; loopFilePath: string; prdPath: string; prd?: any; error?: string } {
   try {
     const maxIterations = options.maxIterations || DEFAULT_MAX_ITERATIONS;
     const completionPromise = options.completionPromise || DEFAULT_COMPLETION_PROMISE;
 
     // Generate PRD from prompt
-    const prd = PRDGenerator.generateFromPrompt(prompt);
-    const smiteDir = path.join(process.cwd(), '.smite');
-    const prdPath = path.join(smiteDir, 'prd.json');
+    const newPrd = PRDGenerator.generateFromPrompt(prompt);
 
-    // Ensure .smite directory exists
-    if (!fs.existsSync(smiteDir)) {
-      fs.mkdirSync(smiteDir, { recursive: true });
+    // Merge with existing PRD (preserves completed stories)
+    console.log('\n🔄 Merging PRD with existing...');
+    const prdPath = PRDParser.mergePRD(newPrd);
+
+    // Load merged PRD
+    const prd = PRDParser.loadFromSmiteDir();
+    if (!prd) {
+      throw new Error('Failed to load merged PRD');
     }
 
-    // Save PRD
-    PRDParser.saveToSmiteDir(prd);
+    console.log(`✅ PRD ready: ${prdPath}`);
+    console.log(`   Stories: ${prd.userStories.length} total`);
+    console.log(`   Completed: ${prd.userStories.filter(s => s.passes).length}`);
 
     // Create .claude directory if it doesn't exist
     const claudeDir = path.join(process.cwd(), '.claude');
@@ -61,17 +67,20 @@ export function setupRalphLoop(
       max_iterations: maxIterations,
       completion_promise: completionPromise,
       started_at: new Date().toISOString(),
-      prd_path: prdPath,
+      prd_path: prdPath, // Always use standard PRD path
     };
 
     const loopContent = generateLoopFileContent(config, prd);
     fs.writeFileSync(loopFilePath, loopContent, 'utf-8');
 
-    return { success: true, loopFilePath };
+    console.log(`✅ Loop file created: ${loopFilePath}`);
+
+    return { success: true, loopFilePath, prdPath, prd };
   } catch (error) {
     return {
       success: false,
       loopFilePath: '',
+      prdPath: '',
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
@@ -263,4 +272,62 @@ export function checkCompletionPromise(output: string, promise: string): boolean
 
 function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Setup Ralph Loop AND execute automatically
+ * This is the convenience function for: "Check PRD, merge prompt, execute"
+ *
+ * By default, executes ALL stories (no limit). Use maxIterations to limit.
+ */
+export async function setupAndExecuteLoop(
+  prompt: string,
+  options: LoopOptions & { maxIterations?: number } = {}
+): Promise<{ success: boolean; loopFilePath: string; prdPath: string; state?: any; error?: string }> {
+  try {
+    // Step 1: Setup loop (merges PRD automatically)
+    const setupResult = setupRalphLoop(prompt, options);
+
+    if (!setupResult.success) {
+      return {
+        success: false,
+        loopFilePath: '',
+        prdPath: '',
+        error: setupResult.error,
+      };
+    }
+
+    // Step 2: Import TaskOrchestrator dynamically (avoid circular dependency)
+    const { TaskOrchestrator } = await import('./task-orchestrator');
+    const smiteDir = path.join(process.cwd(), '.smite');
+
+    // Step 3: Execute automatically
+    const maxIterations = options.maxIterations ?? Infinity; // Default: unlimited
+
+    console.log('\n🚀 Starting automatic execution...');
+
+    if (maxIterations !== Infinity) {
+      console.log(`⚠️  Limited to ${maxIterations} stories`);
+    } else {
+      console.log(`✅ Will execute all ${setupResult.prd!.userStories.length} stories`);
+    }
+    console.log();
+
+    const orchestrator = new TaskOrchestrator(setupResult.prd!, smiteDir);
+    const state = await orchestrator.execute(maxIterations);
+
+    return {
+      success: true,
+      loopFilePath: setupResult.loopFilePath,
+      prdPath: setupResult.prdPath,
+      state,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      loopFilePath: '',
+      prdPath: '',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
 }
