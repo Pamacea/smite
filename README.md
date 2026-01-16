@@ -120,6 +120,28 @@ Story 1 → (Story 2 + Story 3) → Story 4 = 25% faster (2-3x with 10+ stories)
 
 Display: `main • $0.15 • 3m0s • [████████░░] 11%`
 
+### **toolkit** - Code Analysis & Optimization 🛠️ 🆕
+
+```bash
+/plugin install toolkit@smite
+```
+
+**Powerful tools for intelligent code analysis:**
+
+- 🔍 **Unified Search Router** - Auto-selects best search strategy (semantic, literal, hybrid, RAG)
+- 📊 **Code Search API** - Search codebases with multiple output formats
+- 🧠 **Semantic Analysis** - Similarity scoring, clustering, pattern detection
+- 🐛 **Bug Detection** - Automated pattern matching with severity classification
+- ✨ **Refactoring** - Code simplification, dead code elimination, structure optimization
+- 📝 **Documentation Generation** - Auto-generate JSDoc, README, and API docs
+
+**Features:**
+- Token optimization with RAG
+- AST-based code extraction
+- Semantic caching with similarity matching
+- Multi-strategy search routing
+- Type-safe APIs throughout
+
 ### **smite** - Essential Commands ⚡
 
 ```bash
@@ -183,6 +205,7 @@ smite/
 │   ├── simplifier/                 # Code simplification
 │   ├── finalize/                   # QA + docs
 │   ├── statusline/                 # Statusline
+│   ├── toolkit/                    # 🆕 Code analysis & optimization
 │   └── smite/                      # Essential commands
 └── docs/
     ├── RALPH_GUIDE.md
@@ -223,5 +246,5 @@ smite/
 
 **SMITE v3.0**
 
-_10 core plugins • 🌐 Mandatory web search • Spec-first workflow • Multi-agent parallel orchestration • 2-3x faster • Zero-debt engineering_
+_11 core plugins • 🛠️ Toolkit with 6 powerful APIs • 🌐 Mandatory web search • Spec-first workflow • Multi-agent parallel orchestration • 2-3x faster • Zero-debt engineering_
 
