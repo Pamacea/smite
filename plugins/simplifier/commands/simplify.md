@@ -7,6 +7,22 @@ argument-hint: [--scope=file|directory|all] [--focus=recent]
 
 Automatically simplify and refine code while preserving all functionality.
 
+## ⚠️ MANDATORY: Use Toolkit First for Analysis
+
+**BEFORE analyzing code for simplification, you MUST:**
+
+1. **Try `/toolkit detect --patterns="complexity,duplication"`** - Find code smells
+2. **Try `/toolkit graph --impact`** - Understand refactoring impact
+3. **Try `/toolkit search`** - Find similar patterns to consolidate
+
+**ONLY proceed with manual exploration if:**
+- Toolkit is unavailable OR
+- Toolkit explicitly fails to provide results
+
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md`
+
+---
+
 **What it does:**
 - Reduces complexity and nesting
 - Eliminates redundant code

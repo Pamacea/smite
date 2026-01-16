@@ -1,5 +1,61 @@
 # 🤖 SMITE Agents Convention
 
+## 🚨 PRIORITÉS D'UTILISATION - READ THIS FIRST
+
+### 1️⃣ OBLIGATOIRE : Recherche Sémantique (TOUJOURS en premier)
+
+**Toujours commencer par la recherche sémantique :**
+
+```bash
+# 1er CHOIX : Toolkit SMITE
+/toolkit search "query"           # 75% économie tokens, 2x précision
+/toolkit explore --task=X         # Exploration intelligente
+/toolkit graph --impact           # Analyse dépendances
+/toolkit detect --patterns="..."  # Détection bugs (+40%)
+
+# 2e CHOIX : mgrep (alternative)
+mgrep "authentication function"   # Recherche sémantique CLI
+
+# DERNIER RECOURS : Grep/Glob (avec permission)
+```
+
+**Pourquoi la recherche sémantique en priorité ?**
+- ✅ **75% d'économie de tokens** (180k → 45k)
+- ✅ **2x plus précis** que grep/Glob (40% → 95%)
+- ✅ **40% de bugs en plus** détectés
+- ✅ **Compréhension du langage naturel** vs regex
+
+**Voir :** [`docs/DECISION_TREE.md`](docs/DECISION_TREE.md) | [`plugins/toolkit/README.md`](plugins/toolkit/README.md) | [mgrep.dev](https://www.mgrep.dev/)
+
+---
+
+### 2️⃣ Agents Spécialisés (si toolkit échoue)
+
+| Agent | Usage | Quand |
+|-------|-------|------|
+| `/explorer` | Mapping architecture complet | Structure globale du projet |
+| `/builder` | Implémentation de code | Nouvelles fonctionnalités |
+| `/architect` | Design & stratégie | Nouveau projet / architecture |
+| `/finalize` | QA & documentation | Avant commit/merge |
+| `/simplifier` | Refactoring | Code trop complexe |
+| `/ralph` | Multi-agent orchestrateur | Workflows complexes |
+
+---
+
+### ⚠️ Interdictions
+
+**NE JAMAIS utiliser en premier :**
+- ❌ Grep tool → Utiliser `/toolkit search`
+- ❌ Glob tool → Utiliser `/toolkit explore`
+- ❌ Bash pour chercher du code → JAMAIS
+- ❌ Read sans contexte → Utiliser `/toolkit explore`
+
+**Ces outils sont réservés :**
+- ⚠️ En dernier recours si toolkit échoue
+- ⚠️ Pour des opérations non liées au code (file system, etc.)
+
+---
+
 ## 📋 Convention
 
 ```bash

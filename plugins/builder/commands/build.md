@@ -5,6 +5,20 @@ argument-hint: [--tech=nextjs|rust|python|go] [--design] [--feature=name] [--com
 
 Build features and components with technology-specific best practices.
 
+## ⚠️ MANDATORY: Use Semantic Search First
+
+**BEFORE implementing anything, you MUST:**
+
+1. **Try `/toolkit search`** - Find similar code (75% token savings)
+2. **Try `mgrep "similar feature"`** - Alternative semantic search
+3. **ONLY then**: Manual Grep/Glob/Read
+
+**NEVER start with manual tools - Always use semantic search!**
+
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md` | [mgrep.dev](https://www.mgrep.dev/)
+
+---
+
 **Tech Specialization:**
 
 - `nextjs` - React Server Components, Prisma, PostgreSQL, Server Actions

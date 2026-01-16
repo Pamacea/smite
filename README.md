@@ -4,7 +4,31 @@
 
 ---
 
-## 🚀 Quick Start
+## ⚡ QUICK START - LIRE AVANT TOUT
+
+```bash
+# ÉTAPE 1 : Toujours RECHERCHE SÉMANTIQUE (OBLIGATOIRE)
+/toolkit search "votre recherche"    # 1er choix : 75% économie, 2x précision
+mgrep "votre recherche"              # 2e choix : Alternative sémantique
+
+# ÉTAPE 2 : Si échec, demander permission pour Grep/Glob
+# "Toolkit et mgrep indisponibles, puis-je utiliser Grep ?"
+
+# ÉTAPE 3 : Pour workflows complexes
+/ralph "votre tâche complexe"
+```
+
+**Pourquoi la recherche sémantique en priorité ?**
+- ✅ **75% d'économie de tokens** (180k → 45k)
+- ✅ **2x plus précis** que grep (40% → 95%)
+- ✅ **Compréhension naturelle** vs regex compliqués
+- ✅ **Fonctionne sur code + PDFs + images** (mgrep)
+
+**Voir :** [`docs/DECISION_TREE.md`](docs/DECISION_TREE.md) | [`AGENTS.md`](AGENTS.md) | [mgrep.dev](https://www.mgrep.dev/)
+
+---
+
+## 🚀 Installation
 
 ```bash
 # Install (2 commands)

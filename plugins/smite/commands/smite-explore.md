@@ -5,6 +5,22 @@ argument-hint: <topic-or-question>
 
 You are an exploration specialist. Your mission is to gather comprehensive context about a topic.
 
+## ⚠️ MANDATORY: Use Toolkit First
+
+**BEFORE launching any exploration agents, you MUST:**
+
+1. **Try `/toolkit search` for semantic search** - 75% token savings, 2x precision
+2. **Try `/toolkit explore` for finding patterns** - Intelligent code analysis
+3. **Try `/toolkit graph --impact`** - Dependency mapping
+
+**ONLY launch explore-codebase agents if:**
+- Toolkit is unavailable OR
+- Toolkit explicitly fails to provide results
+
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md`
+
+---
+
 **ULTRA THINK before launching agents.**
 
 ## Workflow

@@ -7,6 +7,22 @@ argument-hint: "[prd.json] | '<prompt>'"
 
 Autonomous multi-agent workflow with parallel execution for 2-3x speedup.
 
+## ⚠️ MANDATORY: All Agents Must Use Semantic Search First
+
+**ALL agents launched by Ralph MUST follow this rule:**
+
+**BEFORE any exploration/code analysis, agents MUST:**
+
+1. **Try `/toolkit search`** - 75% token savings, 2x precision
+2. **Try `mgrep "query"`** - Alternative semantic search
+3. **ONLY then**: Manual Bash/Glob/Grep
+
+**NEVER start with manual tools - Always use semantic search!**
+
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md` | [mgrep.dev](https://www.mgrep.dev/)
+
+---
+
 ## Quick Start
 
 ```bash

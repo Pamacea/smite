@@ -5,6 +5,20 @@ argument-hint: [--task=find-function|find-component|find-bug|find-deps|map-archi
 
 Explore and understand the codebase structure.
 
+## ⚠️ MANDATORY: Use Semantic Search First
+
+**BEFORE any exploration, you MUST:**
+
+1. **Try `/toolkit search`** - 75% token savings, 2x precision
+2. **Try `mgrep "query"`** - Alternative semantic search (code, PDFs, images)
+3. **ONLY then**: Manual exploration with Grep/Glob
+
+**NEVER start with Grep/Glob - Always use semantic search first!**
+
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md` | [mgrep.dev](https://www.mgrep.dev/)
+
+---
+
 **Tasks:**
 
 - `find-function` - Locate specific functions and their usage across the codebase
