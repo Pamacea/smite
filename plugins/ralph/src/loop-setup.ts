@@ -311,7 +311,7 @@ export async function setupAndExecuteLoop(
 
     // Step 2: Import TaskOrchestrator dynamically (avoid circular dependency)
     const { TaskOrchestrator } = await import("./task-orchestrator");
-    const smiteDir = path.join(process.cwd(), ".smite");
+    const smiteDir = path.join(process.cwd(), ".claude", ".smite");
 
     // Step 3: Execute automatically
     const maxIterations = options.maxIterations ?? Infinity; // Default: unlimited

@@ -40,7 +40,7 @@ node scripts/loopjs $ARGUMENTS
 
 This will:
 - Generate PRD from prompt using `PRDGenerator`
-- Save PRD to `.smite/prd.json`
+- Save PRD to `.claude/.smite/prd.json`
 - Create `.claude/loop.md` with:
   - YAML frontmatter (iteration, max_iterations, completion_promise)
   - Full prompt with PRD details
@@ -65,7 +65,7 @@ Begin executing user stories systematically:
      ```bash
      Task(subagent_type="<story.agent>", prompt="<story.description>")
      ```
-   - Mark story as complete by setting `passes: true` in `.smite/prd.json`
+   - Mark story as complete by setting `passes: true` in `.claude/.smite/prd.json`
    - Run tests: `npm test` (if applicable)
    - Commit changes: `git commit -m "feat: <story.id> - <story.title>"`
 3. Continue until all stories complete or max iterations reached

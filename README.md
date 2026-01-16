@@ -240,7 +240,7 @@ smite/
 /ralph "Build a simple todo app"
 /loop "Build a SaaS dashboard with authentication"
 /ralph "Add export to PDF"  # Merges with existing PRD
-/ralph .smite/prd.json      # Custom PRD
+/ralph .claude/.smite/prd.json      # Custom PRD
 ```
 
 ---

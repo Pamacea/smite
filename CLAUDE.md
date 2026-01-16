@@ -444,7 +444,7 @@ agent-name:task
 /ralph "Build a todo app with authentication, filters, and export to CSV"
 
 # Execute existing PRD file
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 
 # Show workflow progress
 /ralph status
@@ -634,7 +634,7 @@ Ralph creates 3 batches:
 
 Execute with:
 ```bash
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 **Execution Flow:**
@@ -731,7 +731,7 @@ Batch 4: [US-005] Finalize (sequential)
 /ralph cancel
 
 # Verify PRD format
-cat .smite/prd.json
+cat .claude/.smite/prd.json
 
 # Check for circular dependencies
 # Ensure no story depends on itself or creates a loop
@@ -805,13 +805,13 @@ npm test
 **Solutions:**
 ```bash
 # Check state file
-cat .smite/ralph-state.json
+cat .claude/.smite/ralph-state.json
 
 # Remove corrupted state
-rm .smite/ralph-state.json
+rm .claude/.smite/ralph-state.json
 
 # Restart Ralph workflow
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 ### Getting Help
@@ -836,8 +836,8 @@ ls plugins/*/commands/*.md
 /ralph "Build feature" --verbose
 
 # Check logs
-cat .smite/progress.txt
-cat .smite/original-prompt.txt
+cat .claude/.smite/progress.txt
+cat .claude/.smite/original-prompt.txt
 ```
 
 ---

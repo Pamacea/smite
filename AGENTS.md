@@ -152,7 +152,7 @@ agent-name:task
 
 **Direct Usage:**
 ```bash
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 /ralph "Build a todo app with auth"
 /ralph status
 /ralph cancel
@@ -322,7 +322,7 @@ All agents automatically leverage toolkit when available:
 
 Execute with:
 ```bash
-/ralph execute prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 ## 🎓 Best Practices

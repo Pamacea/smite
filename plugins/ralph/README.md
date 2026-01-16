@@ -79,7 +79,7 @@ node "$USERPROFILE/.claude/plugins/ralph-stop-hook.js" && echo "✅ Hook works"
 /ralph "Build a simple component"
 
 # Use existing PRD
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 **Best for:** Quick tasks, when you want full control, single-pass execution
@@ -360,11 +360,11 @@ npm run install-hook
 ### Ralph not starting
 
 ```bash
-# Check .smite directory
-ls -la .smite/
+# Check .claude/.smite directory
+ls -la .claude/.smite/
 
 # Remove old state
-rm -rf .smite/
+rm -rf .claude/.smite/
 
 # Start fresh
 /ralph "your prompt"
@@ -384,7 +384,7 @@ cat .smite/ralph-state.json | grep failedStories
 
 ```bash
 # Validate PRD
-node plugins/ralph/dist/prd-validator.js .smite/prd.json
+node plugins/ralph/dist/prd-validator.js .claude/.smite/prd.json
 ```
 
 ## 📚 Examples

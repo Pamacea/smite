@@ -11,7 +11,7 @@ Autonomous multi-agent workflow with parallel execution for 2-3x speedup.
 
 ```bash
 # Execute existing PRD
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 
 # Auto-generate PRD from prompt and execute
 /ralph "Build a todo app with auth, filters, and export"
@@ -52,7 +52,7 @@ Ralph creates 3 batches:
 ### Example 1: Execute PRD
 
 ```bash
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 Ralph will:
@@ -94,7 +94,7 @@ Shows:
 
 ## PRD Format
 
-Create `.smite/prd.json`:
+Create `.claude/.smite/prd.json`:
 
 ```json
 {

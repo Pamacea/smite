@@ -25,7 +25,7 @@ version: 3.0.0
 Execute a PRD with parallel optimization.
 
 ```bash
-/ralph execute .smite/prd.json
+/ralph execute .claude/.smite/prd.json
 ```
 
 **Process:**
@@ -182,7 +182,7 @@ Result: 3 batches vs 4 sequential = 25% faster
 
 ```typescript
 // Read prd.json
-const prd = readPRD(".smite/prd.json");
+const prd = readPRD(".claude/.smite/prd.json");
 
 // Extract user stories
 const stories = prd.userStories.filter(s => !s.passes);
@@ -239,7 +239,7 @@ Task(
 ```typescript
 // Update prd.json after each story
 story.passes = true;
-writePRD(".smite/prd.json", prd);
+writePRD(".claude/.smite/prd.json", prd);
 
 // Append to progress.txt
 appendProgress(`
@@ -470,8 +470,8 @@ Automatic analysis of story dependencies creates optimal execution batches.
 ### 3. State Persistence
 
 Progress tracked in:
-- `.smite/prd.json` - Story status
-- `.smite/progress.txt` - Learnings
+- `.claude/.smite/prd.json` - Story status
+- `.claude/.smite/progress.txt` - Learnings
 - Git history - Code changes
 
 ### 4. Iterative Improvement

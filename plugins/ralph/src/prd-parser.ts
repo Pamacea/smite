@@ -10,7 +10,7 @@ import { createFileError, createParseError, createValidationError, wrapError } f
 
 export class PRDParser {
   // Standard PRD location - SINGLE SOURCE OF TRUTH
-  private static readonly STANDARD_PRD_PATH = path.join(".smite", "prd.json");
+  private static readonly STANDARD_PRD_PATH = path.join(".claude", ".smite", "prd.json");
 
   // PRD cache for I/O optimization (70-90% reduction in file reads)
   private static prdCache = new Map<string, { prd: PRD; mtime: number }>();
@@ -191,7 +191,7 @@ export class PRDParser {
    * WARNING: This OVERWRITES the existing PRD. Use mergePRD() instead to preserve existing stories.
    */
   static async saveToSmiteDir(prd: PRD): Promise<string> {
-    const smiteDir = path.join(process.cwd(), ".smite");
+    const smiteDir = path.join(process.cwd(), ".claude", ".smite");
     try {
       await fs.promises.mkdir(smiteDir, { recursive: true });
     } catch (error) {
@@ -344,7 +344,7 @@ export class PRDParser {
    */
   private static async cleanupPhantomPRDs(): Promise<void> {
     try {
-      const smiteDir = path.join(process.cwd(), ".smite");
+      const smiteDir = path.join(process.cwd(), ".claude", ".smite");
       const rootDir = process.cwd();
 
       // Clean .smite directory

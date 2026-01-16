@@ -35,7 +35,7 @@ import * as fs from "fs";
  */
 export async function execute(prompt: string, options?: { maxIterations?: number }) {
   try {
-    const smiteDir = path.join(process.cwd(), ".smite");
+    const smiteDir = path.join(process.cwd(), ".claude", ".smite");
 
     // Generate PRD from prompt
     const newPrd = PRDGenerator.generateFromPrompt(prompt);
@@ -71,7 +71,7 @@ export async function execute(prompt: string, options?: { maxIterations?: number
  * Execute Ralph from existing PRD file
  */
 export async function executeFromPRD(prdPath: string, options?: { maxIterations?: number }) {
-  const smiteDir = path.join(process.cwd(), ".smite");
+  const smiteDir = path.join(process.cwd(), ".claude", ".smite");
 
   // Validate PRD exists
   try {
