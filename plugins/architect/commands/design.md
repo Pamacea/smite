@@ -16,6 +16,14 @@ When executing with a spec file (provided in prompt):
 3. **Create detailed specs** - Generate comprehensive technical specifications
 4. **Validate assumptions** - If architectural assumptions don't match reality, update spec first
 
+## Toolkit Integration
+
+When toolkit plugin is available, Architect can leverage:
+- **Codebase Analysis** - Understand existing patterns using `ToolkitAPI.Search.semantic()`
+- **Dependency Analysis** - Analyze architectural dependencies with `ToolkitAPI.DependencyGraph.build()`
+- **Impact Assessment** - Evaluate architectural changes with `ToolkitAPI.Analysis.impact()`
+- **Pattern Discovery** - Find existing patterns for consistency
+
 ## Usage
 
 ```bash

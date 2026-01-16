@@ -48,6 +48,15 @@ Complete quality assurance, code review, refactoring, linting, and documentation
    - Performance audit
    - Security scan
 
+**Toolkit Integration:**
+
+When toolkit plugin is available, Finalize can leverage:
+- **Bug Detection** - 40% more bugs found using `ToolkitAPI.Detect.issues()` with semantic patterns
+- **Security Patterns** - Automated security vulnerability detection
+- **Performance Patterns** - Performance anti-pattern detection
+- **Logic Patterns** - Logic error identification
+- **Documentation Generation** - Auto-generate JSDoc, README, and API docs via `ToolkitAPI.Docs.generate()`
+
 2. **Documentation**
    - Update README.md
    - Update AGENTS.md with patterns

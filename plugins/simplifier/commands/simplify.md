@@ -39,6 +39,14 @@ Automatically simplify and refine code while preserving all functionality.
 4. Improves readability and maintainability
 5. Avoids over-simplification
 
+**Toolkit Integration:**
+
+When toolkit plugin is available, Simplifier can leverage:
+- **Bug Detection** - Identify issues to fix during simplification via `ToolkitAPI.Detect.issues()`
+- **Semantic Analysis** - Understand code intent to preserve functionality
+- **Refactoring** - Safe automated refactoring with `ToolkitAPI.Refactor.simplifyCode()`
+- **Complexity Metrics** - Quantify complexity reduction
+
 **Best Practices:**
 - Runs automatically after code changes
 - Prioritizes clarity over brevity

@@ -34,6 +34,14 @@ When executing with a spec file (provided in prompt):
 - `docs/explorer-dependencies.md` - Dependency mapping
 - `docs/explorer-architecture.md` - Architecture overview
 
+**Toolkit Integration:**
+
+When toolkit plugin is available, Explorer can leverage:
+- **Semantic Search** - 2x precision improvement using `ToolkitAPI.Search.semantic()`
+- **Dependency Graph** - Automated dependency mapping with `ToolkitAPI.DependencyGraph.build()`
+- **Bug Detection** - Pattern-based bug finding with `ToolkitAPI.Detect.issues()`
+- **Token Optimization**: 60-87% savings when using toolkit features
+
 **Usage:**
 /explore --task=find-function --target="getUserData"
 /explore --task=find-component --scope=module

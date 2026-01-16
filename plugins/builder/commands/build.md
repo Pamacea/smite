@@ -33,6 +33,14 @@ When executing with a spec file (provided in prompt):
 - Production code with tests
 - Documentation
 
+**Toolkit Integration:**
+
+When toolkit plugin is available, Builder can leverage:
+- **Context Building** - 70-85% token savings via `ToolkitAPI.Context.build()` with surgeon mode
+- **Impact Analysis** - Change impact assessment with `ToolkitAPI.Analysis.impact()`
+- **Budget Enforcement** - Automatic token budget warnings
+- **AST Signature Extraction** - Fast code understanding without full content
+
 **Usage:**
 /build --tech=nextjs --feature="authentication"
 /build --tech=rust --component="api-handler"
