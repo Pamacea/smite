@@ -13,6 +13,22 @@
         "hooks": [
           {
             "type": "command",
+            "command": "cmd /c \"node %USERPROFILE%\\.claude\\plugins\\toolkit\\hooks\\toolkit-index-hook.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd /c \"node %USERPROFILE%\\.claude\\plugins\\toolkit\\hooks\\toolkit-deps-hook.js\""
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "cmd /c \"node %USERPROFILE%\\.claude\\plugins\\toolkit\\hooks\\toolkit-init-hook.js\""
           }
         ]
