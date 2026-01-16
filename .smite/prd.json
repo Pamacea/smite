@@ -42,7 +42,7 @@
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": ["US-TK-006"],
-      "passes": false,
+      "passes": true,
       "notes": "Main user-facing API"
     },
     {
