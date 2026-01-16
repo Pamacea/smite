@@ -1,223 +1,153 @@
 {
-  "project": "SMITE Quick Wins Implementation",
-  "branchName": "feat/smite-quick-wins",
-  "description": "Implement 12 high-priority quick wins from analysis: fix bugs, async I/O, caching, dependency removal, linting, type safety",
+  "project": "SMITE Toolkit Phase 2",
+  "branchName": "feature/toolkit-phase2",
+  "description": "Implement unified search router and all APIs (US-TK-006 to US-TK-011)",
   "userStories": [
     {
-      "id": "US-001",
-      "title": "Fix 3 high-severity bugs",
-      "description": "Fix the 3 high-severity bugs identified in ANALYSIS_BUGS.md: dependency graph empty array check, non-null assertion validation, and unhandled promise rejection",
+      "id": "US-TK-006",
+      "title": "Implement unified search router",
+      "description": "Create a unified search router that intelligently routes search queries to the appropriate search strategy (RAG, mgrep, semantic, or hybrid) based on query type, context, and available data. The router should automatically select the best strategy and merge results.",
       "acceptanceCriteria": [
-        "BUG-001: Empty array check in dependency-graph.ts:46 fixed",
-        "BUG-002: PRD validation before non-null assertion in loop-setup.ts:312 added",
-        "BUG-003: Try-catch wrapper for async function in index.ts:25-51 added",
-        "All fixes tested and verified",
-        "No new bugs introduced"
+        "SearchRouter class created with strategy selection logic",
+        "Query analysis module to detect query type (semantic, literal, hybrid)",
+        "Automatic strategy routing based on query characteristics",
+        "Result merging and ranking from multiple strategies",
+        "Fallback mechanism when primary strategy fails",
+        "Type-safe interfaces for all search strategies",
+        "Unit tests for router logic",
+        "Integration tests with existing RAG and mgrep modules"
       ],
       "priority": 10,
       "agent": "builder:task",
       "tech": "typescript",
       "dependencies": [],
       "passes": true,
-      "notes": "Completed: All 3 bugs fixed and committed (349b914). TypeScript compilation passes."
+      "notes": "Core feature - must be implemented first as other APIs depend on it"
     },
     {
-      "id": "US-002",
-      "title": "Replace synchronous file operations with async",
-      "description": "Replace all 25 synchronous file operations (readFileSync, writeFileSync, existsSync) with async equivalents (readFile, writeFile, access/stat) for 50-70% performance improvement",
+      "id": "US-TK-007",
+      "title": "Implement code search API",
+      "description": "Implement the primary code search API that provides a unified interface for searching codebases using the SearchRouter. Should support multiple search modes, filters, and output formats.",
       "acceptanceCriteria": [
-        "All sync operations identified and replaced",
-        "Error handling added for async operations",
-        "Performance benchmarked (50-70% improvement measured)",
-        "No breaking changes to API",
-        "Tests pass with async operations"
-      ],
-      "priority": 10,
-      "agent": "builder:task",
-      "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 6 hours. Highest impact optimization."
-    },
-    {
-      "id": "US-003",
-      "title": "Add PRD file caching",
-      "description": "Implement Map-based caching for PRD file reads to achieve 70-90% I/O reduction. Cache should invalidate on file modification.",
-      "acceptanceCriteria": [
-        "PRD cache implemented using Map",
-        "Cache invalidation on file modification (mtime check)",
-        "70-90% I/O reduction measured",
-        "Cache hit rate logged",
-        "No stale data issues"
+        "searchCode() function with unified interface",
+        "Support for search modes: auto, semantic, literal, hybrid",
+        "Filter options: file patterns, language, date range",
+        "Output formats: JSON, table, diff, summary",
+        "Caching integration for performance",
+        "Error handling with meaningful messages",
+        "CLI command integration",
+        "End-to-end tests with sample codebase"
       ],
       "priority": 9,
       "agent": "builder:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 4 hours. Huge performance win."
+      "dependencies": ["US-TK-006"],
+      "passes": false,
+      "notes": "Main user-facing API"
     },
     {
-      "id": "US-004",
-      "title": "Remove uuid dependency",
-      "description": "Remove the uuid dependency (27MB) and replace with built-in crypto.randomUUID() for 27MB bundle reduction.",
+      "id": "US-TK-008",
+      "title": "Implement semantic analysis API",
+      "description": "Implement APIs for deep semantic analysis including similarity scoring, clustering, and pattern recognition. Should work with the transformer models for embeddings and similarity calculations.",
       "acceptanceCriteria": [
-        "uuid dependency removed from package.json",
-        "All uuid.v4() calls replaced with crypto.randomUUID()",
-        "Tests pass after replacement",
-        "27MB bundle reduction verified",
-        "No functionality changes"
-      ],
-      "priority": 9,
-      "agent": "builder:task",
-      "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Completed: uuid and @types/uuid removed from package.json. Replaced with crypto.randomUUID() in state-manager.ts. Committed (6972b84)."
-    },
-    {
-      "id": "US-005",
-      "title": "Memoize dependency graph",
-      "description": "Add memoization to dependency graph calculation to avoid O(N²) recalculation on repeated calls. Store result in instance variable.",
-      "acceptanceCriteria": [
-        "Dependency graph memoized with instance variable",
-        "Invalidation when PRD changes",
-        "80-95% speedup for repeated calls measured",
-        "No memory leaks from caching",
-        "Tests pass"
+        "analyzeSemantics() function for semantic analysis",
+        "calculateSimilarity() for code similarity scoring",
+        "clusterResults() for grouping related code",
+        "detectPatterns() for identifying code patterns",
+        "Integration with transformer models",
+        "Performance optimization for large codebases",
+        "Unit tests for accuracy and performance"
       ],
       "priority": 8,
       "agent": "builder:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Completed: Added cachedBatches/cachedPrdHash with hashPRD() invalidation. 80-95% speedup for repeated calls. Committed (d8a29e7)."
+      "dependencies": ["US-TK-006"],
+      "passes": false,
+      "notes": "Advanced feature for deep analysis"
     },
     {
-      "id": "US-006",
-      "title": "Add ESLint and Prettier configuration",
-      "description": "Set up ESLint and Prettier with TypeScript rules for consistent code quality and automated formatting.",
+      "id": "US-TK-009",
+      "title": "Implement bug detection API",
+      "description": "Implement APIs for automated bug detection using pattern matching, static analysis, and machine learning models. Should detect common bugs, anti-patterns, and potential issues.",
       "acceptanceCriteria": [
-        "ESLint configured with TypeScript rules",
-        "Prettier configured and integrated with ESLint",
-        "npm scripts added: lint, lint:fix, format",
-        "All existing code linted and formatted",
-        "Pre-commit hook for linting (optional)"
-      ],
-      "priority": 8,
-      "agent": "builder:task",
-      "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 8 hours. Foundation for quality."
-    },
-    {
-      "id": "US-007",
-      "title": "Remove duplicate code",
-      "description": "Extract duplicated PRD update logic from task-orchestrator.ts:131-150 into a reusable function.",
-      "acceptanceCriteria": [
-        "Duplicate code identified and extracted",
-        "Single reusable function created",
-        "All call sites updated",
-        "30% code reduction in affected areas",
-        "Tests pass"
+        "detectBugs() function for bug detection",
+        "Bug pattern definitions and rules",
+        "Static analysis integration",
+        "Severity classification (critical, high, medium, low)",
+        "Report generation with fixes suggestions",
+        "Configurable detection rules",
+        "Test suite with known bug patterns"
       ],
       "priority": 7,
       "agent": "builder:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Completed: Extracted updateStoryStatus() method to consolidate duplicate PRD update logic. 30% code reduction. Committed (33c891a)."
+      "dependencies": ["US-TK-006"],
+      "passes": false,
+      "notes": "Critical feature for code quality"
     },
     {
-      "id": "US-008",
-      "title": "Optimize string concatenation",
-      "description": "Replace inefficient string concatenation with template literals in loops and hot paths.",
+      "id": "US-TK-010",
+      "title": "Implement refactoring API",
+      "description": "Implement APIs for automated refactoring including code simplification, dead code elimination, and structure optimization. Should work with ts-morph for AST manipulation.",
       "acceptanceCriteria": [
-        "String concatenation identified via analysis",
-        "Replaced with template literals",
-        "Performance improvement measured",
-        "No functionality changes",
-        "Tests pass"
+        "refactorCode() function for code refactoring",
+        "simplifyCode() for reducing complexity",
+        "removeDeadCode() for eliminating unused code",
+        "optimizeStructure() for improving organization",
+        "Safe refactoring with verification",
+        "Backup and rollback mechanisms",
+        "Integration with existing codebase",
+        "Test suite for refactoring operations"
       ],
       "priority": 6,
       "agent": "builder:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 2 hours. Micro-optimization."
+      "dependencies": ["US-TK-006"],
+      "passes": false,
+      "notes": "Advanced feature requiring careful testing"
     },
     {
-      "id": "US-009",
-      "title": "Replace any types with proper TypeScript types",
-      "description": "Replace all 'any' types with proper TypeScript types for better type safety and developer experience.",
+      "id": "US-TK-011",
+      "title": "Implement documentation generation API",
+      "description": "Implement APIs for automatic documentation generation including JSDoc comments, README files, and API documentation. Should analyze code structure and generate comprehensive docs.",
       "acceptanceCriteria": [
-        "All 'any' types identified via grep",
-        "Replaced with proper types or interfaces",
-        "TypeScript compilation passes",
-        "No runtime errors from typing changes",
-        "Documentation added for complex types"
-      ],
-      "priority": 7,
-      "agent": "builder:task",
-      "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 4 hours. Type safety improvement."
-    },
-    {
-      "id": "US-010",
-      "title": "Add structured logging framework",
-      "description": "Replace 50+ console.log statements with a structured logging framework (winston or pino) with log levels and formatting.",
-      "acceptanceCriteria": [
-        "Logging framework chosen and installed",
-        "Logger configured with appropriate levels",
-        "All console.log replaced with logger calls",
-        "Log formatting implemented",
-        "Performance impact minimal"
-      ],
-      "priority": 6,
-      "agent": "builder:task",
-      "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 6 hours. DX improvement."
-    },
-    {
-      "id": "US-011",
-      "title": "Add error context to error messages",
-      "description": "Enhance error messages with context (file path, operation, stack trace) for better debugging.",
-      "acceptanceCriteria": [
-        "Error context utility function created",
-        "All throw/catch sites updated with context",
-        "Error messages include actionable information",
-        "Stack traces preserved",
-        "Tests verify error messages"
+        "generateDocs() function for documentation generation",
+        "generateJSDoc() for inline documentation",
+        "generateREADME() for project documentation",
+        "generateAPIDocs() for API reference",
+        "Template system for custom documentation",
+        "Support for multiple documentation formats",
+        "Integration with existing code structure",
+        "Test suite for documentation quality"
       ],
       "priority": 5,
       "agent": "builder:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 4 hours. Debugging improvement."
+      "dependencies": ["US-TK-006"],
+      "passes": false,
+      "notes": "Important for maintainability"
     },
     {
-      "id": "US-012",
-      "title": "Add path sanitization",
-      "description": "Implement path sanitization for all file operations to prevent path traversal and ensure cross-platform compatibility.",
+      "id": "US-TK-012",
+      "title": "Integration testing and QA",
+      "description": "Perform comprehensive integration testing of all APIs together, verify error handling, performance, and edge cases. Ensure all components work seamlessly together.",
       "acceptanceCriteria": [
-        "Path sanitization utility created",
-        "All file path inputs sanitized",
-        "Cross-platform path handling verified",
-        "Security tests pass",
-        "No breaking changes"
+        "Integration test suite covering all APIs",
+        "Performance benchmarks and optimization",
+        "Error handling validation",
+        "Edge case coverage",
+        "Documentation completeness",
+        "Code review and refactoring",
+        "All tests passing",
+        "No linting errors",
+        "TypeScript compilation successful"
       ],
-      "priority": 7,
-      "agent": "builder:task",
+      "priority": 1,
+      "agent": "finalize:task",
       "tech": "typescript",
-      "dependencies": [],
-      "passes": true,
-      "notes": "Estimated 4 hours. Security improvement."
+      "dependencies": ["US-TK-006", "US-TK-007", "US-TK-008", "US-TK-009", "US-TK-010", "US-TK-011"],
+      "passes": false,
+      "notes": "Final quality assurance before release"
     }
   ]
 }
