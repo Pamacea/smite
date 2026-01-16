@@ -203,6 +203,61 @@ smite-marketplace • /Users/username/Projects/smite
 
 ---
 
+### 8. Toolkit - `/toolkit`
+
+**Role:** Code analysis, search, optimization, and documentation
+
+**Installation:**
+```bash
+/plugin install toolkit@smite
+```
+
+**Direct Usage:**
+```bash
+# Semantic search
+/toolkit search "authentication flow" --mode=hybrid
+
+# Explore codebase
+/toolkit explore --task=find-function --target="authenticateUser"
+
+# Dependency analysis
+/toolkit graph --target=src/auth/jwt.ts --impact
+
+# Bug detection
+/toolkit detect --scope=src/auth --patterns="security"
+
+# Token budget
+/toolkit budget
+```
+
+**Use when:**
+- Searching code with semantic understanding
+- Analyzing dependencies and impact
+- Detecting bugs and anti-patterns
+- Optimizing token usage
+- Generating documentation
+- Refactoring code safely
+
+**Features:**
+- 🔍 **Unified Search Router** - Auto-selects best search strategy (semantic, literal, hybrid, RAG)
+- 📊 **Code Search API** - Search with multiple output formats (JSON, table, diff, summary)
+- 🧠 **Semantic Analysis** - Similarity scoring, clustering, pattern detection with transformer embeddings
+- 🐛 **Bug Detection** - 40% more bugs found with semantic pattern matching and severity classification
+- ✨ **Refactoring** - Code simplification, dead code elimination, structure optimization with backup
+- 📝 **Documentation Generation** - Auto-generate JSDoc, README, and API docs in multiple formats
+- 💰 **Token Optimization** - 60-87% savings via RAG and AST-based surgeon mode
+- 🎯 **Type-Safe APIs** - Full TypeScript support with factory functions
+
+**Integration:**
+All agents automatically leverage toolkit when available:
+- **Explorer** - Semantic search (2x precision), dependency graphs, bug detection
+- **Builder** - Context building (70-85% savings), impact analysis, budget enforcement
+- **Architect** - Codebase analysis, dependency analysis, pattern discovery
+- **Finalize** - Bug detection, security patterns, documentation generation
+- **Simplifier** - Bug detection, semantic analysis, safe refactoring
+
+---
+
 ## 📊 Usage Comparison
 
 | Scenario | Recommended Approach | Why |

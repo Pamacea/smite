@@ -142,6 +142,24 @@ Display: `main • $0.15 • 3m0s • [████████░░] 11%`
 - Multi-strategy search routing
 - Type-safe APIs throughout
 
+**User Commands:**
+```bash
+# Semantic search (60-87% token savings)
+/toolkit search "authentication flow" --mode=hybrid
+
+# Explore codebase intelligently
+/toolkit explore --task=find-function --target="authenticateUser"
+
+# Analyze dependencies
+/toolkit graph --target=src/auth/jwt.ts --impact
+
+# Detect bugs (40% more bugs found)
+/toolkit detect --scope=src/auth --patterns="security"
+
+# Check token budget
+/toolkit budget
+```
+
 ### **smite** - Essential Commands ⚡
 
 ```bash

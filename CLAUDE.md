@@ -32,6 +32,9 @@ Standardized naming and usage conventions for SMITE agents.
 /plugin install architect@smite
 /plugin install finalize@smite
 /plugin install simplifier@smite
+
+# Recommended: Install Toolkit (code analysis & optimization)
+/plugin install toolkit@smite
 ```
 
 ### Verify Installation
