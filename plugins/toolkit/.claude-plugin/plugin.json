@@ -44,7 +44,7 @@
         ]
       }
     ],
-    "PreToolUse": [
+    "PostToolUse": [
       {
         "hooks": [
           {
@@ -52,9 +52,7 @@
             "command": "cmd /c \"node %USERPROFILE%\\.claude\\plugins\\toolkit-enforcer-hook.js\""
           }
         ]
-      }
-    ],
-    "PostToolUse": [
+      },
       {
         "hooks": [
           {

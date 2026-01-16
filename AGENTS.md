@@ -42,22 +42,18 @@ mgrep "authentication function"   # Recherche sémantique CLI
 
 ---
 
-### ⚠️ Interdictions (STRICTEMENT APPLIQUÉ)
+### ⚠️ Priorité Toolkit (Recommandé)
 
-**NE JAMAIS utiliser en premier :**
-- ❌ Grep tool → **BLOCKÉ** par hook. Utiliser `/toolkit search`
-- ❌ Glob tool → **BLOCKÉ** par hook. Utiliser `/toolkit explore`
-- ❌ Bash pour chercher du code → **BLOCKÉ** par hook. Utiliser `/toolkit`
-- ❌ Read sans contexte → **BLOCKÉ** par hook. Utiliser `/toolkit explore`
+**Utiliser en priorité :**
+- ✅ `/toolkit search` → Recherche sémantique (75% économie tokens)
+- ✅ `/toolkit explore` → Exploration intelligente (2x précision)
+- ✅ `/toolkit graph` → Analyse de dépendances
+- ✅ `/toolkit detect` → Détection de bugs (+40%)
 
-**🚨 BLOQUAGE AUTOMATIQUE :**
-- Ces outils sont **blockés automatiquement** par le hook `toolkit-enforcer-hook.js`
-- Si vous essayez de les utiliser pour l'exploration de code, vous recevrez une erreur
-- Vous DEVEZ utiliser `/toolkit` à la place
-
-**Ces outils sont réservés :**
-- ⚠️ En dernier recours si toolkit échoue (après 3 essais)
-- ⚠️ Pour des opérations non liées au code (file system, git, etc.)
+**Ces outils sont toujours disponibles :**
+- Grep/Glob/Read pour les cas où toolkit échoue
+- Bash pour git, build, file system operations
+- Hook PostToolUse logue les violations et suggère alternatives
 
 ---
 

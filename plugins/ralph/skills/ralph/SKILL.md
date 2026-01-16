@@ -485,19 +485,21 @@ _"Multi-Agent Parallel Orchestration - 2-3x Faster Than Sequential"_
 
 ---
 
-## 🔧 TOOLKIT USAGE (MANDATORY)
+## 🔧 TOOLKIT USAGE (PRIORITY)
 
-### ⚠️ CRITICAL RULES FOR ALL AGENTS
+### ⚠️ TOOLKIT-FIRST POLICY
 
-**FORBIDDEN TOOLS:**
-- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
-- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
-- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+**PRIORITY ORDER:**
+- ✅ **1st choice: `/toolkit search`** - 75% token savings, 2x precision
+- ✅ **2nd choice: `mgrep`** - Alternative semantic search
+- ⚠️ **Last resort: `Grep` tool** - Only if toolkit unavailable
 
-**REQUIRED TOOLS:**
-- ✅ **ALWAYS use SMITE Toolkit** for code search
-- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
-- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+**REMINDER:** PostToolUse hook logs when manual tools are used and suggests alternatives
+
+**BENEFITS:**
+- 75% token savings (180k → 45k)
+- 2x search precision (40% → 95%)
+- 40% more bugs detected
 
 ### 🚀 HOW TO USE TOOLKIT
 
