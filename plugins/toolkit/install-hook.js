@@ -19,7 +19,9 @@ const targetDir = path.join(homeDir, '.claude', 'plugins');
 const hooks = [
   'toolkit-init-hook.js',
   'toolkit-stats-hook.js',
-  'toolkit-save-hook.js'
+  'toolkit-save-hook.js',
+  'toolkit-index-hook.js',
+  'toolkit-deps-hook.js'
 ];
 
 console.log('🔧 Installing SMITE Toolkit hooks...');
