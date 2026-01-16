@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "install-hook": "node install-hook.js",
+    "postinstall": "node install-hook.js",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts"

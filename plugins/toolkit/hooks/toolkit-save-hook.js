@@ -32,10 +32,16 @@ function saveSessionStats() {
     stats.totalTokens += budget.usedTokens;
     stats.lastUpdated = new Date().toISOString();
 
-    // Calculate savings (assuming 75% savings)
+    // Calculate savings (assuming 75% savings compared to traditional approach)
     const traditionalTokens = budget.usedTokens * 4;
     const savings = traditionalTokens - budget.usedTokens;
     stats.totalSavings += savings;
+
+    // IMPORTANT: Reset budget for next session but keep the same maxTokens
+    const sessionUsedTokens = budget.usedTokens;
+    budget.usedTokens = 0;
+    budget.lastReset = new Date().toISOString();
+    fs.writeFileSync(budgetPath, JSON.stringify(budget, null, 2));
 
     // Save stats
     fs.writeFileSync(statsPath, JSON.stringify(stats, null, 2));
@@ -44,7 +50,7 @@ function saveSessionStats() {
     console.log('');
     console.log('📊 SMITE Toolkit Session Summary');
     console.log('─'.repeat(40));
-    console.log(`Tokens used: ${budget.usedTokens.toLocaleString()}`);
+    console.log(`Tokens used: ${sessionUsedTokens.toLocaleString()}`);
     console.log(`Est. savings: ${savings.toLocaleString()} tokens (${((savings / traditionalTokens) * 100).toFixed(1)}%)`);
     console.log(`Total sessions: ${stats.sessions}`);
     console.log(`Lifetime savings: ${stats.totalSavings.toLocaleString()} tokens`);
