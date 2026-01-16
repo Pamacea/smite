@@ -243,3 +243,63 @@ async function createSession(userId: string): Promise<string> {
 
 **Built with ❤️ by SMITE v3.0**
 *Code Clarity & Maintainability Excellence*
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Find deeply nested code to simplify
+mgrep "nested if else ternary callback" --strategy semantic --glob "**/*.ts"
+
+# Search for duplicate patterns
+mgrep "similar function implementation" --strategy hybrid
+
+# Find specific complexity issues
+mgrep "callback hell promise chain" --strategy literal
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+import { CodeSearchAPI } from '@smite/toolkit';
+const search = new CodeSearchAPI();
+
+// Find deeply nested code
+const complexCode = await search.search('nested if else ternary callback', {
+  strategy: 'SEMANTIC',
+  filePatterns: ['src/**/*.ts', 'lib/**/*.ts']
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### ✅ COMPLIANCE CHECKLIST
+
+Before simplifying:
+- [ ] Using `mgrep` or `CodeSearchAPI`? ✅
+- [ ] Avoided `Grep` tool completely? ✅
+- [ ] Planning consistent changes? ✅
+- [ ] Maintaining functionality? ✅
+
+**Remember:** Simplify systematically, not randomly!

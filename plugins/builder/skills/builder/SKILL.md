@@ -1224,3 +1224,132 @@ model Task {
 **CONSTRUCTOR AGENT v2.0**
 *Le développeur principal qui construit votre projet*
 ```
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Find existing patterns before implementing
+mgrep "button component with variants" --strategy semantic --glob "**/*.tsx"
+
+# Understand how authentication is implemented
+mgrep "authentication middleware pattern" --strategy hybrid
+
+# Find exact function names
+mgrep "export function Button" --strategy literal
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+// Use mgrep to find existing patterns before implementing
+import { CodeSearchAPI } from '@smite/toolkit';
+
+const search = new CodeSearchAPI();
+
+// Find similar components to maintain consistency
+const components = await search.search('button component with variants', {
+  strategy: 'SEMANTIC',
+  filePatterns: ['**/*.tsx', '**/*.jsx']
+});
+
+// Understand how authentication is implemented
+const authPatterns = await search.search('authentication middleware pattern', {
+  strategy: 'HYBRID',
+  maxResults: 20,
+  includeContext: true
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### 📋 SEARCH STRATEGY MATRIX
+
+| What You Need | Use This Strategy | Why |
+|---------------|-------------------|-----|
+| **Find similar components** | `SEMANTIC` | Understands patterns, not just syntax |
+| **Find exact function names** | `LITERAL` | Exact pattern matching |
+| **Understand architecture** | `RAG` | Uses indexed knowledge base |
+| **Find implementation patterns** | `HYBRID` | Best of both worlds |
+
+### 🎯 IMPLEMENTATION WORKFLOW
+
+**Before implementing ANY feature:**
+1. **Search for existing patterns** using toolkit
+2. **Analyze similar implementations** in codebase
+3. **Follow established conventions**
+4. **Maintain consistency**
+
+#### ❌ WRONG (Implementing without search):
+```typescript
+// Just implementing without checking existing patterns
+export function Button({ variant }) {
+  // ... custom implementation
+}
+```
+
+#### ✅ CORRECT (Using mgrep command first):
+```bash
+# First, search for existing button patterns
+mgrep "button component implementation" --strategy hybrid --glob "components/**/*"
+
+# Then follow the established pattern in code
+export function Button({ variant }) {
+  // Consistent with existing codebase
+}
+```
+
+#### ✅ CORRECT (Using CodeSearchAPI):
+```typescript
+// First, search for existing button patterns
+const buttons = await search.search('button component implementation', {
+  strategy: 'HYBRID',
+  filePatterns: ['components/**/*']
+});
+
+// Then follow the established pattern
+export function Button({ variant }) {
+  // Consistent with existing codebase
+}
+```
+
+### 🔗 TOOLKIT API REFERENCE
+
+**Available Strategies:**
+- `AUTO` - Automatically selects best strategy
+- `SEMANTIC` - Semantic similarity search
+- `LITERAL` - Exact text pattern matching
+- `HYBRID` - Combined semantic + literal
+- `RAG` - Retrieval-augmented generation
+
+### ✅ COMPLIANCE CHECKLIST
+
+Before implementing:
+- [ ] Searched for existing patterns? ✅
+- [ ] Using `CodeSearchAPI`? ✅
+- [ ] Avoided `Grep` tool? ✅
+- [ ] Following codebase conventions? ✅
+- [ ] Maintaining consistency? ✅
+
+**Remember:** The toolkit helps you maintain consistency and reduce technical debt!

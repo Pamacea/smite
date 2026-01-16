@@ -197,3 +197,63 @@ Next Steps:
 
 **Built with ❤️ by SMITE v3.0**
 *Quality & Documentation Excellence*
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Find similar code patterns for consistency review
+mgrep "error handling pattern try catch" --strategy semantic --glob "**/*.ts"
+
+# Search for potential issues
+mgrep "todo console.log fixme" --strategy literal
+
+# Find all implementations of a pattern
+mgrep "throw new Error" --strategy hybrid
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+import { CodeSearchAPI } from '@smite/toolkit';
+const search = new CodeSearchAPI();
+
+// Find all implementations of a pattern for review
+const implementations = await search.search('error handling pattern try catch', {
+  strategy: 'SEMANTIC',
+  filePatterns: ['src/**/*.ts', 'lib/**/*.ts']
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### ✅ COMPLIANCE CHECKLIST
+
+During QA:
+- [ ] Using `mgrep` or `CodeSearchAPI`? ✅
+- [ ] Avoided `Grep` tool completely? ✅
+- [ ] Checking consistency? ✅
+- [ ] Finding all issues? ✅
+
+**Remember:** Toolkit helps you catch issues humans might miss!

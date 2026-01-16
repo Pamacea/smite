@@ -482,3 +482,63 @@ Same prompt fed back until completion, with context from previous iterations.
 
 **🔄 SMITE RALPH v3.0**
 _"Multi-Agent Parallel Orchestration - 2-3x Faster Than Sequential"_
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES FOR ALL AGENTS
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Analyze codebase for PRD dependencies
+mgrep "authentication user login flow" --strategy semantic --max-results 20
+
+# Analyze dependencies between user stories
+mgrep "import depends on uses" --strategy hybrid --glob "**/*.ts"
+
+# Find existing implementations
+mgrep "existing authentication implementation" --strategy literal
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+import { CodeSearchAPI } from '@smite/toolkit';
+const search = new CodeSearchAPI();
+
+// Find existing implementations related to user stories
+const existing = await search.search('authentication user login flow', {
+  strategy: 'SEMANTIC',
+  maxResults: 20
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### ✅ COMPLIANCE CHECKLIST
+
+When orchestrating:
+- [ ] Using `mgrep` or `CodeSearchAPI`? ✅
+- [ ] Agents avoid `Grep` tool? ✅
+- [ ] Enforcing toolkit usage? ✅
+- [ ] Optimizing execution? ✅
+
+**Remember:** Orchestration + Toolkit = Maximum Efficiency!

@@ -600,3 +600,145 @@ sequenceDiagram
 **EXPLORER AGENT v1.0**
 *Your guide through the codebase maze - Discover, understand, and navigate*
 ```
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Semantic search - finds concepts
+mgrep "authentication logic" --strategy semantic
+
+# Literal search - finds exact patterns
+mgrep "function authenticate" --strategy literal --glob "**/*.ts"
+
+# Hybrid search - combines both
+mgrep "user authentication middleware" --strategy hybrid --max-results 30
+
+# Auto - let toolkit decide best strategy
+mgrep "database connection" --strategy auto
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+// Use mgrep for semantic code search
+// The toolkit automatically uses embeddings and RAG for precision
+import { CodeSearchAPI } from '@smite/toolkit';
+
+const search = new CodeSearchAPI();
+
+// Semantic search - finds concepts
+const results = await search.search('authentication logic', {
+  strategy: 'SEMANTIC',
+  maxResults: 20
+});
+
+// Literal search - finds exact patterns
+const results = await search.search('function authenticate', {
+  strategy: 'LITERAL',
+  filePatterns: ['**/*.ts', '**/*.tsx']
+});
+
+// Hybrid search - combines both
+const results = await search.search('user authentication middleware', {
+  strategy: 'HYBRID',
+  maxResults: 30,
+  includeContext: true
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### 📋 SEARCH STRATEGY MATRIX
+
+| What You Need | Use This Strategy | Why |
+|---------------|-------------------|-----|
+| **Find a specific function** | `LITERAL` | Exact pattern matching |
+| **Understand a concept** | `SEMANTIC` | Understands meaning, not just syntax |
+| **Explore codebase** | `RAG` | Uses indexed knowledge base |
+| **Find patterns** | `HYBRID` | Best of both worlds |
+| **Quick search** | `AUTO` | Let toolkit decide best approach |
+
+### 🎯 EXAMPLES
+
+#### ❌ WRONG (Using Grep - FORBIDDEN):
+```
+"Use Grep tool to find all authentication functions"
+```
+
+#### ✅ CORRECT (Using Toolkit):
+```
+"Use CodeSearchAPI with SEMANTIC strategy to find authentication logic"
+```
+
+#### ❌ WRONG (Bash grep - FORBIDDEN):
+```bash
+grep -r "authenticate" src/
+```
+
+#### ✅ CORRECT (Using mgrep command):
+```bash
+mgrep "authenticate" --strategy literal --glob "src/**/*"
+```
+
+#### ✅ CORRECT (Using CodeSearchAPI):
+```typescript
+const results = await search.search('authenticate', {
+  strategy: 'LITERAL',
+  filePatterns: ['src/**/*']
+});
+```
+
+### 🔗 TOOLKIT API REFERENCE
+
+**Available Strategies:**
+- `AUTO` - Automatically selects best strategy
+- `SEMANTIC` - Semantic similarity search
+- `LITERAL` - Exact text pattern matching
+- `HYBRID` - Combined semantic + literal
+- `RAG` - Retrieval-augmented generation
+
+**Search Options:**
+```typescript
+{
+  strategy: SearchStrategy,
+  maxResults: number,        // Default: 50
+  filePatterns: string[],    // Glob patterns
+  includeContext: boolean,   // Show surrounding code
+  contextLines: number,      // Lines of context (default: 3)
+  minScore: number,         // Relevance threshold 0-1
+  useCache: boolean         // Enable caching (default: true)
+}
+```
+
+### ✅ COMPLIANCE CHECKLIST
+
+Before starting any search task:
+- [ ] Am I using `CodeSearchAPI`? ✅
+- [ ] Did I avoid `Grep` tool? ✅
+- [ ] Did I avoid bash `grep`? ✅
+- [ ] Am I using appropriate search strategy? ✅
+- [ ] Will I leverage mgrep's precision? ✅
+
+**Remember:** The toolkit provides 70-85% token savings AND 2x search precision. Use it!

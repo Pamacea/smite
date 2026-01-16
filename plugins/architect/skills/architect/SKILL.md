@@ -258,3 +258,115 @@ Creative thinking and problem-solving.
 
 **Built with ❤️ by SMITE v3.0**
 *Architecture & Design Excellence*
+```
+
+---
+
+## 🔧 TOOLKIT USAGE (MANDATORY)
+
+### ⚠️ CRITICAL RULES
+
+**FORBIDDEN TOOLS:**
+- ❌ **NEVER use `Grep` tool** - This is strictly forbidden
+- ❌ **NEVER use `bash grep` commands** - Use toolkit instead
+- ❌ **NEVER use `find` + `grep` combinations** - Use toolkit instead
+
+**REQUIRED TOOLS:**
+- ✅ **ALWAYS use SMITE Toolkit** for code search
+- ✅ **ALWAYS use `mgrep`** for semantic search with 2x precision
+- ✅ **ALWAYS use toolkit's CodeSearchAPI** for codebase queries
+
+### 🚀 HOW TO USE TOOLKIT
+
+You have **TWO ways** to use the toolkit:
+
+#### Method 1: `mgrep` Command (Direct & Fast)
+
+```bash
+# Understand current architecture before designing
+mgrep "architecture layers data flow" --strategy semantic --max-results 30
+
+# Find existing design patterns
+mgrep "factory pattern implementation" --strategy hybrid --glob "**/*.ts"
+
+# Analyze dependencies
+mgrep "import depends on" --strategy literal
+```
+
+#### Method 2: `CodeSearchAPI` (Programmatic)
+
+```typescript
+// Use mgrep to understand current architecture before designing
+import { CodeSearchAPI } from '@smite/toolkit';
+
+const search = new CodeSearchAPI();
+
+// Analyze existing architectural patterns
+const patterns = await search.search('architecture layers data flow', {
+  strategy: 'SEMANTIC',
+  maxResults: 30,
+  includeContext: true
+});
+
+// Find existing design patterns to maintain consistency
+const designPatterns = await search.search('factory pattern implementation', {
+  strategy: 'HYBRID',
+  filePatterns: ['src/**/*.ts', 'lib/**/*.ts']
+});
+```
+
+**Which to use?**
+- **Quick searches**: Use `mgrep` command directly
+- **In code/agents**: Use `CodeSearchAPI` for programmatic access
+
+### 📋 SEARCH STRATEGY MATRIX
+
+| What You Need | Use This Strategy | Why |
+|---------------|-------------------|-----|
+| **Understand architecture** | `SEMANTIC` | Understands design concepts |
+| **Find specific patterns** | `LITERAL` | Exact pattern matching |
+| **Analyze dependencies** | `RAG` | Uses indexed knowledge base |
+| **Review existing design** | `HYBRID` | Best of both worlds |
+
+### 🎯 ARCHITECTURE WORKFLOW
+
+**Before designing ANY feature:**
+1. **Analyze existing architecture** using toolkit
+2. **Find similar patterns** in codebase
+3. **Review established conventions**
+4. **Design consistent solution**
+
+#### ❌ WRONG (Designing without analysis):
+```
+"Design a new authentication system"
+```
+
+#### ✅ CORRECT (Using mgrep command first):
+```bash
+# First, analyze existing auth architecture
+mgrep "authentication flow architecture" --strategy hybrid --max-results 20
+
+# Then design consistent solution
+```
+
+#### ✅ CORRECT (Using CodeSearchAPI):
+```typescript
+// First, analyze existing auth architecture
+const authSystems = await search.search('authentication flow architecture', {
+  strategy: 'HYBRID',
+  maxResults: 20
+});
+
+// Then design consistent solution
+```
+
+### ✅ COMPLIANCE CHECKLIST
+
+Before architectural decisions:
+- [ ] Analyzed existing architecture? ✅
+- [ ] Using `CodeSearchAPI`? ✅
+- [ ] Avoided `Grep` tool? ✅
+- [ ] Following established patterns? ✅
+- [ ] Maintaining consistency? ✅
+
+**Remember:** Good architecture builds on existing patterns, not against them!
