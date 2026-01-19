@@ -11,6 +11,24 @@ import * as ts from 'typescript';
 import { JudgeLogger } from './logger';
 import { ASTAnalysisContext, FunctionInfo } from './types';
 
+// Node kinds that represent control flow structures
+const CONTROL_FLOW_KINDS = new Set([
+  ts.SyntaxKind.IfStatement,
+  ts.SyntaxKind.ForStatement,
+  ts.SyntaxKind.ForInStatement,
+  ts.SyntaxKind.ForOfStatement,
+  ts.SyntaxKind.WhileStatement,
+  ts.SyntaxKind.DoStatement,
+  ts.SyntaxKind.CaseClause,
+  ts.SyntaxKind.CatchClause,
+]);
+
+// Node kinds that add cyclomatic complexity
+const COMPLEXITY_DECISION_KINDS = new Set([
+  ...CONTROL_FLOW_KINDS,
+  ts.SyntaxKind.ConditionalExpression, // ternary operator
+]);
+
 export class TypeScriptParser {
   private logger: JudgeLogger;
 
@@ -160,23 +178,9 @@ export class TypeScriptParser {
   private calculateCyclomaticComplexity(functionNode: ts.Node): number {
     let complexity = 1; // Base complexity
 
-    function visit(node: ts.Node) {
-      // Decision points that increase complexity
-      switch (node.kind) {
-        case ts.SyntaxKind.IfStatement:
-        case ts.SyntaxKind.ForStatement:
-        case ts.SyntaxKind.ForInStatement:
-        case ts.SyntaxKind.ForOfStatement:
-        case ts.SyntaxKind.WhileStatement:
-        case ts.SyntaxKind.DoStatement:
-        case ts.SyntaxKind.CaseClause:
-        case ts.SyntaxKind.CatchClause:
-        case ts.SyntaxKind.ConditionalExpression: // ternary operator
-          complexity++;
-          break;
-        case ts.SyntaxKind.SwitchStatement:
-          // Switch adds complexity for each case (handled by CaseClause)
-          break;
+    const visitor = (node: ts.Node) => {
+      if (COMPLEXITY_DECISION_KINDS.has(node.kind)) {
+        complexity++;
       }
 
       // Logical operators && and || also add complexity
@@ -188,29 +192,9 @@ export class TypeScriptParser {
           complexity++;
         }
       }
+    };
 
-      ts.forEachChild(node, visit);
-    }
-
-    // Only traverse within the function body
-    if (ts.isFunctionDeclaration(functionNode) || ts.isFunctionExpression(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    } else if (ts.isArrowFunction(functionNode)) {
-      if (functionNode.body) {
-        if (ts.isBlock(functionNode.body)) {
-          ts.forEachChild(functionNode.body, visit);
-        } else {
-          // Arrow function with expression body
-          visit(functionNode.body);
-        }
-      }
-    } else if (ts.isMethodDeclaration(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    }
+    this.traverseFunctionBody(functionNode, visitor);
 
     return complexity;
   }
@@ -225,18 +209,9 @@ export class TypeScriptParser {
     let complexity = 0;
     let nestingLevel = 0;
 
-    function visit(node: ts.Node) {
+    const visitor = (node: ts.Node) => {
       // Increment for nesting structures
-      if (
-        node.kind === ts.SyntaxKind.IfStatement ||
-        node.kind === ts.SyntaxKind.ForStatement ||
-        node.kind === ts.SyntaxKind.ForInStatement ||
-        node.kind === ts.SyntaxKind.ForOfStatement ||
-        node.kind === ts.SyntaxKind.WhileStatement ||
-        node.kind === ts.SyntaxKind.DoStatement ||
-        node.kind === ts.SyntaxKind.CaseClause ||
-        node.kind === ts.SyntaxKind.CatchClause
-      ) {
+      if (CONTROL_FLOW_KINDS.has(node.kind)) {
         complexity += 1 + nestingLevel;
         nestingLevel++;
       }
@@ -250,31 +225,9 @@ export class TypeScriptParser {
           complexity++;
         }
       }
+    };
 
-      // Recurse into children
-      const prevNestingLevel = nestingLevel;
-      ts.forEachChild(node, visit);
-      nestingLevel = prevNestingLevel;
-    }
-
-    // Only traverse within the function body
-    if (ts.isFunctionDeclaration(functionNode) || ts.isFunctionExpression(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    } else if (ts.isArrowFunction(functionNode)) {
-      if (functionNode.body) {
-        if (ts.isBlock(functionNode.body)) {
-          ts.forEachChild(functionNode.body, visit);
-        } else {
-          visit(functionNode.body);
-        }
-      }
-    } else if (ts.isMethodDeclaration(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    }
+    this.traverseFunctionBodyWithNesting(functionNode, visitor, () => nestingLevel);
 
     return complexity;
   }
@@ -286,50 +239,111 @@ export class TypeScriptParser {
     let maxDepth = 0;
     let currentDepth = 0;
 
-    function visit(node: ts.Node) {
-      // Check if this is a nesting structure
-      const isNesting =
-        node.kind === ts.SyntaxKind.IfStatement ||
-        node.kind === ts.SyntaxKind.ForStatement ||
-        node.kind === ts.SyntaxKind.ForInStatement ||
-        node.kind === ts.SyntaxKind.ForOfStatement ||
-        node.kind === ts.SyntaxKind.WhileStatement ||
-        node.kind === ts.SyntaxKind.DoStatement ||
-        node.kind === ts.SyntaxKind.CaseClause ||
-        node.kind === ts.SyntaxKind.CatchClause ||
-        node.kind === ts.SyntaxKind.Block;
+    const visitor = (node: ts.Node) => {
+      const isNesting = this.isNestingStructure(node.kind);
 
       if (isNesting && node.kind !== ts.SyntaxKind.Block) {
         currentDepth++;
         maxDepth = Math.max(maxDepth, currentDepth);
       }
+    };
 
-      ts.forEachChild(node, visit);
-
+    const onExit = (node: ts.Node) => {
+      const isNesting = this.isNestingStructure(node.kind);
       if (isNesting && node.kind !== ts.SyntaxKind.Block) {
         currentDepth--;
       }
-    }
+    };
 
-    // Only traverse within the function body
-    if (ts.isFunctionDeclaration(functionNode) || ts.isFunctionExpression(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    } else if (ts.isArrowFunction(functionNode)) {
-      if (functionNode.body) {
-        if (ts.isBlock(functionNode.body)) {
-          ts.forEachChild(functionNode.body, visit);
-        } else {
-          visit(functionNode.body);
-        }
-      }
-    } else if (ts.isMethodDeclaration(functionNode)) {
-      if (functionNode.body) {
-        ts.forEachChild(functionNode.body, visit);
-      }
-    }
+    this.traverseFunctionBodyWithExit(functionNode, visitor, onExit);
 
     return maxDepth;
+  }
+
+  /**
+   * Check if a node kind represents a nesting structure
+   */
+  private isNestingStructure(kind: ts.SyntaxKind): boolean {
+    return kind === ts.SyntaxKind.Block || CONTROL_FLOW_KINDS.has(kind);
+  }
+
+  /**
+   * Traverse function body with a visitor
+   * Handles different function types (declaration, expression, arrow, method)
+   */
+  private traverseFunctionBody(functionNode: ts.Node, visitor: (node: ts.Node) => void): void {
+    const body = this.getFunctionBody(functionNode);
+    if (body) {
+      if (ts.isBlock(body)) {
+        ts.forEachChild(body, visitor);
+      } else {
+        visitor(body);
+      }
+    }
+  }
+
+  /**
+   * Traverse function body with nesting level tracking
+   */
+  private traverseFunctionBodyWithNesting(
+    functionNode: ts.Node,
+    visitor: (node: ts.Node) => void,
+    getNestingLevel: () => number
+  ): void {
+    const body = this.getFunctionBody(functionNode);
+    if (!body) return;
+
+    const visit = (node: ts.Node) => {
+      visitor(node);
+
+      const prevLevel = getNestingLevel();
+      ts.forEachChild(node, visit);
+    };
+
+    if (ts.isBlock(body)) {
+      ts.forEachChild(body, visit);
+    } else {
+      visit(body);
+    }
+  }
+
+  /**
+   * Traverse function body with enter/exit callbacks
+   */
+  private traverseFunctionBodyWithExit(
+    functionNode: ts.Node,
+    onEnter: (node: ts.Node) => void,
+    onExit: (node: ts.Node) => void
+  ): void {
+    const body = this.getFunctionBody(functionNode);
+    if (!body) return;
+
+    const visit = (node: ts.Node) => {
+      onEnter(node);
+      ts.forEachChild(node, visit);
+      onExit(node);
+    };
+
+    if (ts.isBlock(body)) {
+      ts.forEachChild(body, visit);
+    } else {
+      visit(body);
+    }
+  }
+
+  /**
+   * Get the body node from a function declaration/expression/arrow/method
+   */
+  private getFunctionBody(functionNode: ts.Node): ts.Node | null {
+    if (
+      ts.isFunctionDeclaration(functionNode) ||
+      ts.isFunctionExpression(functionNode) ||
+      ts.isMethodDeclaration(functionNode)
+    ) {
+      return functionNode.body || null;
+    } else if (ts.isArrowFunction(functionNode)) {
+      return functionNode.body || null;
+    }
+    return null;
   }
 }

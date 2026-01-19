@@ -41,6 +41,8 @@ async function main() {
     .option('--files <files>', 'Comma-separated list of files to validate')
     .option('--staged', 'Only validate staged git files')
     .option('--changed', 'Only validate changed git files')
+    .option('--git-diff', 'Only validate files in git diff (working directory)')
+    .option('--batch-size <size>', 'Number of files to process per batch', '10')
     .action(async (options) => {
       await qualityCheckCommand(options);
     });
@@ -81,6 +83,7 @@ async function getFilesToValidate(
     files?: string;
     staged?: boolean;
     changed?: boolean;
+    gitDiff?: boolean;
   },
   config: JudgeConfig,
   configManager: ConfigManager,
@@ -90,11 +93,20 @@ async function getFilesToValidate(
     return options.files.split(',').map((f) => f.trim());
   }
 
-  if (options.staged || options.changed) {
+  if (options.staged || options.changed || options.gitDiff) {
     try {
-      const gitArgs = options.staged
-        ? ['diff', '--cached', '--name-only', '--diff-filter=ACM']
-        : ['diff', '--name-only', '--diff-filter=ACM'];
+      let gitArgs: string[];
+
+      if (options.staged) {
+        gitArgs = ['diff', '--cached', '--name-only', '--diff-filter=ACM'];
+      } else if (options.gitDiff) {
+        // Working directory changes (not staged)
+        gitArgs = ['diff', '--name-only', '--diff-filter=ACM'];
+      } else {
+        // changed = both staged and unstaged
+        gitArgs = ['diff', '--name-only', '--diff-filter=ACM'];
+      }
+
       const gitOutput = execSync(`git ${gitArgs.join(' ')}`, {
         encoding: 'utf-8',
         cwd,
@@ -205,6 +217,8 @@ async function qualityCheckCommand(options: {
   files?: string;
   staged?: boolean;
   changed?: boolean;
+  gitDiff?: boolean;
+  batchSize?: string;
 }) {
   const cwd = process.cwd();
   const configManager = new ConfigManager(cwd);
@@ -232,14 +246,44 @@ async function qualityCheckCommand(options: {
     process.exit(0);
   }
 
-  // Run validation
-  const judge = new Judge(cwd);
+  // Get batch size from config or options
+  const batchSize = options.batchSize
+    ? parseInt(options.batchSize, 10)
+    : (config as any).performance?.batchSize || 10;
+
   const allResults: Array<{ file: string; error?: string }> = [];
 
-  for (const file of filesToValidate) {
-    const result = await validateFile(file, judge, cwd);
-    allResults.push(result);
+  // Process files in batches to manage memory
+  for (let i = 0; i < filesToValidate.length; i += batchSize) {
+    const batch = filesToValidate.slice(i, i + batchSize);
+    const batchNum = Math.floor(i / batchSize) + 1;
+    const totalBatches = Math.ceil(filesToValidate.length / batchSize);
+
+    if (totalBatches > 1) {
+      console.log(chalk.gray(`Processing batch ${batchNum}/${totalBatches} (${batch.length} files)...\n`));
+    }
+
+    // Create new Judge instance for each batch to free memory
+    const judge = new Judge(cwd);
+
+    for (const file of batch) {
+      const result = await validateFile(file, judge, cwd);
+      allResults.push(result);
+
+      // Print progress for large batches
+      if (batch.length > 5) {
+        const status = result.error ? chalk.red('✗') : chalk.green('✓');
+        process.stdout.write(`  ${status} ${file}\n`);
+      }
+    }
+
+    // Force garbage collection between batches if available
+    if (global.gc) {
+      global.gc();
+    }
   }
+
+  console.log(); // Empty line for spacing
 
   // Output results
   outputValidationResults(allResults, options.format || 'table');

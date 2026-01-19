@@ -34,95 +34,163 @@ export class FeedbackGenerator {
     },
     results: ValidationResults
   ): string {
-    const { sessionId, filePath, retryCount, maxRetries } = input;
+    const { filePath, retryCount, maxRetries } = input;
 
     // Group issues by severity
-    const criticalIssues = results.issues.filter((i) => i.severity === 'critical');
-    const errorIssues = results.issues.filter((i) => i.severity === 'error');
-    const warningIssues = results.issues.filter((i) => i.severity === 'warning');
+    const issueGroups = this.groupIssuesBySeverity(results.issues);
 
-    // Build the prompt
-    let prompt = '🛑 CODE QUALITY GATE - VALIDATION FAILED\n\n';
-    prompt += `Your recent code change to \`${filePath}\` has been blocked due to quality issues.\n\n`;
+    // Build prompt sections
+    const sections: string[] = [];
 
-    // Summary section
-    prompt += '## Summary\n';
-    const summary = this.generateSummary(results);
-    prompt += summary;
-    prompt += '\n';
+    sections.push(this.generateHeader(filePath));
+    sections.push(this.generateSummary(results));
 
-    // Critical issues
-    if (criticalIssues.length > 0) {
-      prompt += '## Critical Issues\n\n';
-      for (const issue of criticalIssues) {
-        prompt += this.formatIssue(issue, 1);
-      }
-      prompt += '\n';
-    }
+    const criticalSection = this.generateCriticalSection(issueGroups.critical);
+    if (criticalSection) sections.push(criticalSection);
 
-    // Error issues
-    if (errorIssues.length > 0) {
-      prompt += '## Error Issues\n\n';
-      for (const issue of errorIssues.slice(0, 5)) {
-        // Limit to 5 errors
-        prompt += this.formatIssue(issue, 2);
-      }
-      if (errorIssues.length > 5) {
-        prompt += `... and ${errorIssues.length - 5} more error(s)\n\n`;
-      }
-      prompt += '\n';
-    }
+    const errorSection = this.generateErrorSection(issueGroups.error);
+    if (errorSection) sections.push(errorSection);
 
-    // Warnings (optional - show if no critical/errors)
-    if (criticalIssues.length === 0 && errorIssues.length === 0 && warningIssues.length > 0) {
-      prompt += '## Warnings\n\n';
-      for (const issue of warningIssues.slice(0, 3)) {
-        // Limit to 3 warnings
-        prompt += this.formatIssue(issue, 3);
-      }
-      if (warningIssues.length > 3) {
-        prompt += `... and ${warningIssues.length - 3} more warning(s)\n\n`;
-      }
-      prompt += '\n';
-    }
+    const warningSection = this.generateWarningSection(issueGroups.warning, issueGroups);
+    if (warningSection) sections.push(warningSection);
 
-    // Test failures section
-    if (results.metrics.tests && results.metrics.tests.failedTests > 0) {
-      prompt += '## Test Failures\n\n';
-      for (const failure of results.metrics.tests.failures.slice(0, 5)) {
-        // Limit to 5 test failures
-        prompt += this.formatTestFailure(failure);
-      }
-      if (results.metrics.tests.failures.length > 5) {
-        prompt += `... and ${results.metrics.tests.failures.length - 5} more test failure(s)\n\n`;
-      }
-      prompt += '\n';
-    }
+    const testSection = this.generateTestSection(results.metrics.tests);
+    if (testSection) sections.push(testSection);
 
-    // Suggestions section
     const suggestions = this.generateSuggestions(results);
-    if (suggestions) {
-      prompt += '## Suggestions\n';
-      prompt += suggestions;
-      prompt += '\n';
+    if (suggestions) sections.push(`## Suggestions\n${suggestions}`);
+
+    sections.push(this.generateContextSection(retryCount, maxRetries, results));
+    sections.push('Please revise your code to address these issues before proceeding.\n');
+
+    return sections.join('\n');
+  }
+
+  /**
+   * Group issues by severity
+   */
+  private groupIssuesBySeverity(issues: ValidationIssue[]): {
+    critical: ValidationIssue[];
+    error: ValidationIssue[];
+    warning: ValidationIssue[];
+  } {
+    return {
+      critical: issues.filter((i) => i.severity === 'critical'),
+      error: issues.filter((i) => i.severity === 'error'),
+      warning: issues.filter((i) => i.severity === 'warning'),
+    };
+  }
+
+  /**
+   * Generate prompt header
+   */
+  private generateHeader(filePath: string): string {
+    let header = '🛑 CODE QUALITY GATE - VALIDATION FAILED\n\n';
+    header += `Your recent code change to \`${filePath}\` has been blocked due to quality issues.\n\n`;
+    header += '## Summary\n';
+    return header;
+  }
+
+  /**
+   * Generate critical issues section
+   */
+  private generateCriticalSection(criticalIssues: ValidationIssue[]): string {
+    if (criticalIssues.length === 0) return '';
+
+    let section = '## Critical Issues\n\n';
+    for (const issue of criticalIssues) {
+      section += this.formatIssue(issue, 1);
+    }
+    return section;
+  }
+
+  /**
+   * Generate error issues section
+   */
+  private generateErrorSection(errorIssues: ValidationIssue[]): string {
+    if (errorIssues.length === 0) return '';
+
+    let section = '## Error Issues\n\n';
+    const limitedErrors = errorIssues.slice(0, 5);
+
+    for (const issue of limitedErrors) {
+      section += this.formatIssue(issue, 2);
     }
 
-    // Context section
-    prompt += '## Context\n';
-    prompt += `- Attempt: ${retryCount}/${maxRetries}\n`;
-    prompt += `- Confidence score: ${Math.round(results.confidence * 100)}%\n`;
-    prompt += `- Analysis time: ${results.analysisTimeMs}ms\n`;
+    if (errorIssues.length > 5) {
+      section += `... and ${errorIssues.length - 5} more error(s)\n\n`;
+    }
 
-    // Show retry history
+    return section;
+  }
+
+  /**
+   * Generate warnings section (only if no critical/error issues)
+   */
+  private generateWarningSection(
+    warningIssues: ValidationIssue[],
+    allGroups: { critical: ValidationIssue[]; error: ValidationIssue[] }
+  ): string {
+    // Only show warnings if no critical or error issues
+    if (allGroups.critical.length > 0 || allGroups.error.length > 0) {
+      return '';
+    }
+
+    if (warningIssues.length === 0) return '';
+
+    let section = '## Warnings\n\n';
+    const limitedWarnings = warningIssues.slice(0, 3);
+
+    for (const issue of limitedWarnings) {
+      section += this.formatIssue(issue, 3);
+    }
+
+    if (warningIssues.length > 3) {
+      section += `... and ${warningIssues.length - 3} more warning(s)\n\n`;
+    }
+
+    return section;
+  }
+
+  /**
+   * Generate test failures section
+   */
+  private generateTestSection(testMetrics: ValidationResults['metrics']['tests']): string {
+    if (!testMetrics || testMetrics.failedTests === 0) return '';
+
+    let section = '## Test Failures\n\n';
+    const limitedFailures = testMetrics.failures.slice(0, 5);
+
+    for (const failure of limitedFailures) {
+      section += this.formatTestFailure(failure);
+    }
+
+    if (testMetrics.failures.length > 5) {
+      section += `... and ${testMetrics.failures.length - 5} more test failure(s)\n\n`;
+    }
+
+    return section;
+  }
+
+  /**
+   * Generate context section
+   */
+  private generateContextSection(
+    retryCount: number,
+    maxRetries: number,
+    results: ValidationResults
+  ): string {
+    let context = '## Context\n';
+    context += `- Attempt: ${retryCount}/${maxRetries}\n`;
+    context += `- Confidence score: ${Math.round(results.confidence * 100)}%\n`;
+    context += `- Analysis time: ${results.analysisTimeMs}ms\n`;
+
     const retryState = this.loadRetryState();
     if (retryState && retryState.previousAttempts.length > 0) {
-      prompt += `- Previous attempts: ${retryState.previousAttempts.length}\n`;
+      context += `- Previous attempts: ${retryState.previousAttempts.length}\n`;
     }
-    prompt += '\n';
 
-    prompt += 'Please revise your code to address these issues before proceeding.\n';
-
-    return prompt;
+    return context + '\n';
   }
 
   /**
@@ -131,39 +199,61 @@ export class FeedbackGenerator {
   private generateSummary(results: ValidationResults): string {
     const lines: string[] = [];
 
-    // Complexity summary
+    this.addComplexitySummary(results, lines);
+    this.addSecuritySummary(results, lines);
+    this.addSemanticSummary(results, lines);
+    this.addTestSummary(results, lines);
+
+    return lines.length > 0 ? lines.join('\n') : 'No specific issues detected.';
+  }
+
+  /**
+   * Add complexity summary to lines
+   */
+  private addComplexitySummary(results: ValidationResults, lines: string[]): void {
     if (results.metrics.complexity.highComplexityFunctions > 0) {
       lines.push(
         `- Complexity: ${results.metrics.complexity.highComplexityFunctions} function(s) exceed threshold`
       );
     }
+  }
 
-    // Security summary
+  /**
+   * Add security summary to lines
+   */
+  private addSecuritySummary(results: ValidationResults, lines: string[]): void {
     const securityIssues = results.metrics.security.criticalIssues + results.metrics.security.errorIssues;
-    if (securityIssues > 0) {
-      const categories = Object.entries(results.metrics.security.categories)
-        .filter(([_, count]) => count > 0)
-        .map(([cat, count]) => `${count} ${cat}`)
-        .join(', ');
-      lines.push(`- Security: ${securityIssues} issue(s) (${categories})`);
-    }
+    if (securityIssues === 0) return;
 
-    // Semantic summary
+    const categories = Object.entries(results.metrics.security.categories)
+      .filter(([_, count]) => count > 0)
+      .map(([cat, count]) => `${count} ${cat}`)
+      .join(', ');
+
+    lines.push(`- Security: ${securityIssues} issue(s) (${categories})`);
+  }
+
+  /**
+   * Add semantic summary to lines
+   */
+  private addSemanticSummary(results: ValidationResults, lines: string[]): void {
     if (results.metrics.semantics.namingViolations > 0) {
       lines.push(`- Semantics: ${results.metrics.semantics.namingViolations} naming violation(s)`);
     }
     if (results.metrics.semantics.typeInconsistencies > 0) {
       lines.push(`- Semantics: ${results.metrics.semantics.typeInconsistencies} type inconsistency(ies)`);
     }
+  }
 
-    // Test summary
-    if (results.metrics.tests && results.metrics.tests.failedTests > 0) {
-      lines.push(
-        `- Tests: ${results.metrics.tests.failedTests}/${results.metrics.tests.totalTests} test(s) failed`
-      );
-    }
+  /**
+   * Add test summary to lines
+   */
+  private addTestSummary(results: ValidationResults, lines: string[]): void {
+    if (!results.metrics.tests || results.metrics.tests.failedTests === 0) return;
 
-    return lines.length > 0 ? lines.join('\n') : 'No specific issues detected.';
+    lines.push(
+      `- Tests: ${results.metrics.tests.failedTests}/${results.metrics.tests.totalTests} test(s) failed`
+    );
   }
 
   /**
@@ -183,7 +273,6 @@ export class FeedbackGenerator {
     }
 
     if (issue.codeSnippet && issue.codeSnippet.length > 0) {
-      // Clean up snippet
       const snippet = issue.codeSnippet.trim().substring(0, 200);
       text += `   \`\`\`\n${snippet}\n   \`\`\`\n`;
     }
@@ -200,7 +289,6 @@ export class FeedbackGenerator {
     text += `   File: \`${failure.testFile}:${failure.line}:${failure.column}\`\n`;
 
     if (failure.message) {
-      // Show first few lines of error message
       const messageLines = failure.message.split('\n').slice(0, 3).join('\n');
       text += `   Error: ${messageLines}\n`;
     }
@@ -215,7 +303,6 @@ export class FeedbackGenerator {
   private generateSuggestions(results: ValidationResults): string {
     const suggestions: string[] = [];
 
-    // Analyze issues and generate specific suggestions
     for (const issue of results.issues) {
       if (issue.suggestion && !suggestions.includes(issue.suggestion)) {
         suggestions.push(`1. ${issue.suggestion}`);
@@ -322,12 +409,11 @@ export class FeedbackGenerator {
    * Generate simple hash of content for change detection
    */
   private hashContent(content: string): string {
-    // Simple hash function (for production, consider using crypto)
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
       const char = content.charCodeAt(i);
       hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32bit integer
+      hash = hash & hash;
     }
     return hash.toString(16);
   }

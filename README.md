@@ -184,6 +184,48 @@ Display: `main • $0.15 • 3m0s • [████████░░] 11%`
 /toolkit budget
 ```
 
+### **quality-gate** - Code Quality Validation 🛡️ 🆕
+
+```bash
+/quality-gate:quality-check              # Check all files
+/quality-gate:quality-check --staged     # Only staged files
+/quality-gate:quality-check --changed    # Only modified files
+/quality-gate:docs-sync                  # Update documentation
+```
+
+**Automated code quality validation with complexity, security, and semantic checks:**
+
+- 🔍 **Complexity Analysis** - Cyclomatic & cognitive complexity, nesting depth, function length
+- 🛡️ **Security Scanning** - SQL injection, XSS, weak crypto, hardcoded secrets
+- 📝 **Semantic Checks** - Type consistency, naming conventions, duplicate code
+- ✅ **Test Validation** - Integrated test runner with Jest, Vitest, Mocha, pytest
+- 📚 **Documentation Automation** - Auto-sync OpenAPI specs, README, JSDoc
+
+**Features:**
+- Pre-commit hook integration
+- Configurable thresholds per project
+- Batch processing for large codebases
+- Memory-efficient (8GB default, scalable)
+- Excludes node_modules, .next, dist, build artifacts
+
+**Configuration:** `.claude/.smite/quality.json`
+```json
+{
+  "enabled": true,
+  "exclude": ["**/node_modules/**", "**/.next/**", "**/dist/**"],
+  "complexity": {
+    "maxCyclomaticComplexity": 10,
+    "maxCognitiveComplexity": 15
+  },
+  "performance": {
+    "maxMemoryMB": 8192,
+    "batchSize": 10
+  }
+}
+```
+
+**See:** [docs/plugins/quality-gate/](docs/plugins/quality-gate/)
+
 ### **smite** - Essential Commands ⚡
 
 ```bash
@@ -307,4 +349,4 @@ smite/
 
 **SMITE v3.0**
 
-_11 core plugins • 🛠️ Toolkit with 6 powerful APIs • 🌐 Mandatory web search • Spec-first workflow • Multi-agent parallel orchestration • 2-3x faster • Zero-debt engineering_
+_13 core plugins • 🛠️ Toolkit with 6 powerful APIs • 🌐 Mandatory web search • Spec-first workflow • Multi-agent parallel orchestration • 2-3x faster • Zero-debt engineering_
