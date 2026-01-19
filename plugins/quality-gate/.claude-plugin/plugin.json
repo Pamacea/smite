@@ -1,0 +1,10 @@
+{
+  "name": "quality-gate",
+  "description": "Code quality gate system with automatic validation, testing, and documentation synchronization",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pamacea"
+  },
+  "commands": "./commands/",
+  "skills": "./skills/"
+}
