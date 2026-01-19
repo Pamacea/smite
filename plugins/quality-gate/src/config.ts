@@ -7,7 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import Ajv from 'ajv';
-import { JudgeConfig, DEFAULT_CONFIG } from './types';
+import { JudgeConfig, DEFAULT_CONFIG, ConfigOverrideItem, ComplexityThresholds, TestConfig } from './types';
 import { JudgeLogger } from './logger';
 
 // JSON Schema path
@@ -22,7 +22,7 @@ export interface ConfigValidationResult {
     path: string;
     message: string;
     keyword: string;
-    params?: any;
+    params?: Record<string, unknown>;
   }>;
 }
 
@@ -31,7 +31,7 @@ export class ConfigManager {
   private config: JudgeConfig;
   private overrides: ConfigOverride[];
   private logger: JudgeLogger;
-  private ajv: any;
+  private ajv; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor(cwd: string, logger?: JudgeLogger) {
     this.configPath = path.join(cwd, '.smite', 'quality.json');
@@ -96,7 +96,7 @@ export class ConfigManager {
   /**
    * Validate configuration object against JSON Schema
    */
-  private validateConfig(config: any): ConfigValidationResult {
+  private validateConfig(config: Partial<JudgeConfig>): ConfigValidationResult {
     try {
       const schemaContent = fs.readFileSync(SCHEMA_PATH, 'utf-8');
       const schema = JSON.parse(schemaContent);
@@ -107,11 +107,11 @@ export class ConfigManager {
         return { valid: true, errors: [] };
       }
 
-      const errors = validate.errors.map((err: any) => ({
-        path: err.instancePath || '(root)',
+      const errors = validate.errors.map((err) => ({
+        path: (err as { instancePath?: string }).instancePath || '(root)',
         message: err.message || 'Validation error',
         keyword: err.keyword,
-        params: err.params,
+        params: err.params as Record<string, unknown> | undefined,
       }));
 
       return { valid: false, errors };
@@ -133,34 +133,65 @@ export class ConfigManager {
   private applyEnvironmentOverrides(config: JudgeConfig): JudgeConfig {
     const result = { ...config };
 
-    // Simple boolean/number/string overrides
+    this.applyGeneralOverrides(result);
+    this.applyComplexityOverrides(result);
+    this.applyTestOverrides(result);
+    this.applyMcpOverrides(result);
+    this.applyOutputOverrides(result);
+
+    return result;
+  }
+
+  /**
+   * Apply general configuration overrides
+   */
+  private applyGeneralOverrides(config: JudgeConfig): void {
+    this.applyEnabledOverride(config);
+    this.applyLogLevelOverride(config);
+    this.applyMaxRetriesOverride(config);
+  }
+
+  /**
+   * Apply enabled flag override
+   */
+  private applyEnabledOverride(config: JudgeConfig): void {
     if (process.env[`${ENV_PREFIX}ENABLED`] !== undefined) {
-      result.enabled = process.env[`${ENV_PREFIX}ENABLED`] === 'true';
+      config.enabled = process.env[`${ENV_PREFIX}ENABLED`] === 'true';
     }
+  }
 
-    if (process.env[`${ENV_PREFIX}LOG_LEVEL`]) {
-      const logLevel = process.env[`${ENV_PREFIX}LOG_LEVEL`];
-      if (logLevel && ['debug', 'info', 'warn', 'error'].includes(logLevel)) {
-        result.logLevel = logLevel as any;
+  /**
+   * Apply log level override
+   */
+  private applyLogLevelOverride(config: JudgeConfig): void {
+    const logLevel = process.env[`${ENV_PREFIX}LOG_LEVEL`];
+    if (logLevel && ['debug', 'info', 'warn', 'error'].includes(logLevel)) {
+      config.logLevel = logLevel as 'debug' | 'info' | 'warn' | 'error';
+    }
+  }
+
+  /**
+   * Apply max retries override
+   */
+  private applyMaxRetriesOverride(config: JudgeConfig): void {
+    const maxRetriesStr = process.env[`${ENV_PREFIX}MAX_RETRIES`];
+    if (maxRetriesStr) {
+      const maxRetries = parseInt(maxRetriesStr, 10);
+      if (!isNaN(maxRetries)) {
+        config.maxRetries = maxRetries;
       }
     }
+  }
 
-    if (process.env[`${ENV_PREFIX}MAX_RETRIES`]) {
-      const maxRetriesStr = process.env[`${ENV_PREFIX}MAX_RETRIES`];
-      if (maxRetriesStr) {
-        const maxRetries = parseInt(maxRetriesStr, 10);
-        if (!isNaN(maxRetries)) {
-          result.maxRetries = maxRetries;
-        }
-      }
-    }
-
-    // Complexity overrides
+  /**
+   * Apply complexity threshold overrides
+   */
+  private applyComplexityOverrides(config: JudgeConfig): void {
     const cyclomatic = process.env[`${ENV_PREFIX}COMPLEXITY_MAX_CYCLOMATIC_COMPLEXITY`];
     if (cyclomatic) {
       const value = parseInt(cyclomatic, 10);
       if (!isNaN(value)) {
-        result.complexity.maxCyclomaticComplexity = value;
+        config.complexity.maxCyclomaticComplexity = value;
       }
     }
 
@@ -168,17 +199,21 @@ export class ConfigManager {
     if (cognitive) {
       const value = parseInt(cognitive, 10);
       if (!isNaN(value)) {
-        result.complexity.maxCognitiveComplexity = value;
+        config.complexity.maxCognitiveComplexity = value;
       }
     }
+  }
 
-    // Test overrides
+  /**
+   * Apply test configuration overrides
+   */
+  private applyTestOverrides(config: JudgeConfig): void {
     if (process.env[`${ENV_PREFIX}TESTS_ENABLED`] !== undefined) {
-      result.tests.enabled = process.env[`${ENV_PREFIX}TESTS_ENABLED`] === 'true';
+      config.tests.enabled = process.env[`${ENV_PREFIX}TESTS_ENABLED`] === 'true';
     }
 
     if (process.env[`${ENV_PREFIX}TESTS_COMMAND`]) {
-      result.tests.command = process.env[`${ENV_PREFIX}TESTS_COMMAND`];
+      config.tests.command = process.env[`${ENV_PREFIX}TESTS_COMMAND`];
     }
 
     if (process.env[`${ENV_PREFIX}TESTS_TIMEOUT_MS`]) {
@@ -186,29 +221,35 @@ export class ConfigManager {
       if (timeoutStr) {
         const timeout = parseInt(timeoutStr, 10);
         if (!isNaN(timeout)) {
-          result.tests.timeoutMs = timeout;
+          config.tests.timeoutMs = timeout;
         }
       }
     }
+  }
 
-    // MCP overrides
+  /**
+   * Apply MCP configuration overrides
+   */
+  private applyMcpOverrides(config: JudgeConfig): void {
     if (process.env[`${ENV_PREFIX}MCP_ENABLED`] !== undefined) {
-      result.mcp.enabled = process.env[`${ENV_PREFIX}MCP_ENABLED`] === 'true';
+      config.mcp.enabled = process.env[`${ENV_PREFIX}MCP_ENABLED`] === 'true';
     }
 
     if (process.env[`${ENV_PREFIX}MCP_SERVER_PATH`]) {
-      result.mcp.serverPath = process.env[`${ENV_PREFIX}MCP_SERVER_PATH`] || '';
+      config.mcp.serverPath = process.env[`${ENV_PREFIX}MCP_SERVER_PATH`] || '';
     }
+  }
 
-    // Output format
+  /**
+   * Apply output format overrides
+   */
+  private applyOutputOverrides(config: JudgeConfig): void {
     if (process.env[`${ENV_PREFIX}OUTPUT_FORMAT`]) {
       const format = process.env[`${ENV_PREFIX}OUTPUT_FORMAT`];
       if (format && ['json', 'text'].includes(format)) {
-        result.output.format = format as any;
+        config.output.format = format as 'json' | 'text';
       }
     }
-
-    return result;
   }
 
   /**
@@ -283,7 +324,32 @@ export class ConfigManager {
     }
 
     // Apply override to base config
-    return this.mergeConfigs(this.config, matchedOverride.config);
+    return this.mergeConfigs(this.config, this.overrideToPartial(matchedOverride.config));
+  }
+
+  /**
+   * Convert ConfigOverrideItem to Partial<JudgeConfig>
+   */
+  private overrideToPartial(override: ConfigOverrideItem): Partial<JudgeConfig> {
+    const partial: Partial<JudgeConfig> = {};
+
+    if (override.complexity) {
+      partial.complexity = override.complexity as ComplexityThresholds;
+    }
+
+    if (override.security) {
+      partial.security = override.security as JudgeConfig['security'];
+    }
+
+    if (override.semantics) {
+      partial.semantics = override.semantics as JudgeConfig['semantics'];
+    }
+
+    if (override.tests) {
+      partial.tests = override.tests as TestConfig;
+    }
+
+    return partial;
   }
 
   /**
@@ -335,5 +401,5 @@ export class ConfigManager {
  */
 interface ConfigOverride {
   pattern: string;
-  config: any; // ConfigOverrideItem from types
+  config: ConfigOverrideItem;
 }
