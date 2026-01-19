@@ -22,6 +22,7 @@ import {
   ValidationIssue,
   ASTAnalysisContext,
   TestMetrics,
+  JudgeConfig,
 } from './types';
 
 export class Judge {
@@ -140,7 +141,40 @@ export class Judge {
     }
 
     // Initialize analysis context
-    const context: ASTAnalysisContext = {
+    const context = this.initializeAnalysisContext(sourceFile, config);
+
+    try {
+      // Run all analyses
+      await this.runAnalyses(sourceFile, context, config);
+
+      // Calculate analysis time
+      const analysisTimeMs = Date.now() - this.startTime;
+
+      // Make decision
+      const results: ValidationResults = {
+        decision: this.makeDecision(context),
+        confidence: this.calculateConfidence(context),
+        issues: context.issues,
+        metrics: context.metrics,
+        analysisTimeMs,
+      };
+
+      // Log validation results
+      this.logger.logValidation(input, results);
+
+      // Handle decision
+      return this.handleValidationDecision(results, input, filePath, content, config);
+    } catch (error) {
+      this.logger.error('judge', 'Validation error', error);
+      return this.ask(`Validation error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  /**
+   * Initialize analysis context with default values
+   */
+  private initializeAnalysisContext(sourceFile: ts.SourceFile, config: JudgeConfig): ASTAnalysisContext {
+    return {
       sourceFile,
       config,
       issues: [],
@@ -174,123 +208,155 @@ export class Judge {
         },
       },
     };
+  }
 
-    try {
-      // Run complexity analysis
-      const complexityAnalyzer = new ComplexityAnalyzer(this.parser, this.logger, config.complexity);
-      complexityAnalyzer.analyze(sourceFile, context);
+  /**
+   * Run all configured analyses on the source file
+   */
+  private async runAnalyses(
+    sourceFile: ts.SourceFile,
+    context: ASTAnalysisContext,
+    config: JudgeConfig
+  ): Promise<void> {
+    // Run complexity analysis
+    const complexityAnalyzer = new ComplexityAnalyzer(this.parser, this.logger, config.complexity);
+    complexityAnalyzer.analyze(sourceFile, context);
 
-      // Run security scanning
-      if (config.security.enabled) {
-        const securityScanner = new SecurityScanner(this.parser, this.logger, config.security.rules);
-        securityScanner.scan(sourceFile, context);
-      }
-
-      // Run semantic checks
-      if (config.semantics.enabled) {
-        const semanticChecker = new SemanticChecker(this.parser, this.logger, config.semantics.checks);
-        semanticChecker.check(sourceFile, context);
-      }
-
-      // Run tests if enabled
-      let testMetrics: TestMetrics | undefined;
-      if (config.tests.enabled) {
-        const testResults = await this.testRunner.runTests(config.tests);
-
-        // Add test failures as validation issues
-        if (!testResults.skipped && testResults.failures.length > 0) {
-          for (const failure of testResults.failures) {
-            context.issues.push({
-              type: 'test',
-              severity: config.tests.failOnTestFailure ? 'error' : 'warning',
-              location: {
-                file: failure.testFile,
-                line: failure.line,
-                column: failure.column,
-              },
-              message: `Test failure: ${failure.testName}`,
-              rule: 'test-failure',
-              suggestion: failure.message,
-            });
-          }
-        }
-
-        // Store test metrics
-        testMetrics = {
-          totalTests: testResults.totalTests,
-          passedTests: testResults.passedTests,
-          failedTests: testResults.failedTests,
-          skippedTests: testResults.skippedTests,
-          failures: testResults.failures,
-        };
-
-        context.metrics.tests = testMetrics;
-      }
-
-      // Calculate analysis time
-      const analysisTimeMs = Date.now() - this.startTime;
-
-      // Make decision
-      const results: ValidationResults = {
-        decision: this.makeDecision(context),
-        confidence: this.calculateConfidence(context),
-        issues: context.issues,
-        metrics: context.metrics,
-        analysisTimeMs,
-      };
-
-      // Log validation results
-      this.logger.logValidation(input, results);
-
-      // Handle decision
-      if (results.decision === 'allow') {
-        this.logger.info('judge', `Validation passed for ${filePath}`);
-        this.feedbackGenerator.clearRetryState();
-
-        // Trigger MCP documentation updates after successful validation
-        await this.triggerDocumentationUpdates(input.cwd, filePath, results);
-
-        return this.allow('Code quality validation passed');
-      } else {
-        this.logger.warn('judge', `Validation failed for ${filePath}`, {
-          issuesCount: results.issues.length,
-          critical: results.issues.filter((i) => i.severity === 'critical').length,
-        });
-
-        // Check if max retries reached
-        if (this.feedbackGenerator.hasMaxRetriesReached(config.maxRetries)) {
-          this.logger.warn('judge', 'Max retries reached, allowing with warning');
-          this.feedbackGenerator.clearRetryState();
-          return this.allow('⚠️ Maximum validation retries reached. Proceeding with potential quality issues.');
-        }
-
-        // Update retry state
-        this.feedbackGenerator.updateRetryState(
-          input.session_id,
-          filePath,
-          content,
-          results,
-          config.maxRetries
-        );
-
-        // Generate correction prompt
-        const retryState = this.feedbackGenerator.loadRetryState();
-        const correctionPrompt = this.feedbackGenerator.generateCorrectionPrompt(
-          {
-            sessionId: input.session_id,
-            filePath,
-            retryCount: retryState?.retryCount || 1,
-            maxRetries: config.maxRetries,
-          },
-          results
-        );
-
-        return this.deny(correctionPrompt);
-      }
-    } catch (error) {
-      this.logger.error('judge', 'Validation error', error);
-      return this.ask(`Validation error: ${error instanceof Error ? error.message : String(error)}`);
+    // Run security scanning
+    if (config.security.enabled) {
+      const securityScanner = new SecurityScanner(this.parser, this.logger, config.security.rules);
+      securityScanner.scan(sourceFile, context);
     }
+
+    // Run semantic checks
+    if (config.semantics.enabled) {
+      const semanticChecker = new SemanticChecker(this.parser, this.logger, config.semantics.checks);
+      semanticChecker.check(sourceFile, context);
+    }
+
+    // Run tests if enabled
+    if (config.tests.enabled) {
+      await this.runTestsAndAddIssues(context, config.tests);
+    }
+  }
+
+  /**
+   * Run tests and add failures as validation issues
+   */
+  private async runTestsAndAddIssues(
+    context: ASTAnalysisContext,
+    testConfig: JudgeConfig['tests']
+  ): Promise<void> {
+    const testResults = await this.testRunner.runTests(testConfig);
+
+    // Add test failures as validation issues
+    if (!testResults.skipped && testResults.failures.length > 0) {
+      for (const failure of testResults.failures) {
+        context.issues.push({
+          type: 'test',
+          severity: testConfig.failOnTestFailure ? 'error' : 'warning',
+          location: {
+            file: failure.testFile,
+            line: failure.line,
+            column: failure.column,
+          },
+          message: `Test failure: ${failure.testName}`,
+          rule: 'test-failure',
+          suggestion: failure.message,
+        });
+      }
+    }
+
+    // Store test metrics
+    const testMetrics: TestMetrics = {
+      totalTests: testResults.totalTests,
+      passedTests: testResults.passedTests,
+      failedTests: testResults.failedTests,
+      skippedTests: testResults.skippedTests,
+      failures: testResults.failures,
+    };
+
+    context.metrics.tests = testMetrics;
+  }
+
+  /**
+   * Handle the validation decision and return appropriate response
+   */
+  private async handleValidationDecision(
+    results: ValidationResults,
+    input: JudgeHookInput,
+    filePath: string,
+    content: string,
+    config: JudgeConfig
+  ): Promise<JudgeHookOutput> {
+    if (results.decision === 'allow') {
+      return this.handleAllowDecision(results, input, filePath);
+    }
+
+    return this.handleDenyDecision(results, input, filePath, content, config);
+  }
+
+  /**
+   * Handle allow decision
+   */
+  private async handleAllowDecision(
+    results: ValidationResults,
+    input: JudgeHookInput,
+    filePath: string
+  ): Promise<JudgeHookOutput> {
+    this.logger.info('judge', `Validation passed for ${filePath}`);
+    this.feedbackGenerator.clearRetryState();
+
+    // Trigger MCP documentation updates after successful validation
+    await this.triggerDocumentationUpdates(input.cwd, filePath, results);
+
+    return this.allow('Code quality validation passed');
+  }
+
+  /**
+   * Handle deny decision
+   */
+  private async handleDenyDecision(
+    results: ValidationResults,
+    input: JudgeHookInput,
+    filePath: string,
+    content: string,
+    config: JudgeConfig
+  ): Promise<JudgeHookOutput> {
+    this.logger.warn('judge', `Validation failed for ${filePath}`, {
+      issuesCount: results.issues.length,
+      critical: results.issues.filter((i) => i.severity === 'critical').length,
+    });
+
+    // Check if max retries reached
+    if (this.feedbackGenerator.hasMaxRetriesReached(config.maxRetries)) {
+      this.logger.warn('judge', 'Max retries reached, allowing with warning');
+      this.feedbackGenerator.clearRetryState();
+      return this.allow('⚠️ Maximum validation retries reached. Proceeding with potential quality issues.');
+    }
+
+    // Update retry state
+    this.feedbackGenerator.updateRetryState(
+      input.session_id,
+      filePath,
+      content,
+      results,
+      config.maxRetries
+    );
+
+    // Generate correction prompt
+    const retryState = this.feedbackGenerator.loadRetryState();
+    const correctionPrompt = this.feedbackGenerator.generateCorrectionPrompt(
+      {
+        sessionId: input.session_id,
+        filePath,
+        retryCount: retryState?.retryCount || 1,
+        maxRetries: config.maxRetries,
+      },
+      results
+    );
+
+    return this.deny(correctionPrompt);
   }
 
   /**
@@ -338,33 +404,59 @@ export class Judge {
    * Make allow/deny decision based on issues found
    */
   private makeDecision(context: ASTAnalysisContext): Decision {
-    const { issues, metrics } = context;
-
-    // Critical issues always deny
-    if (issues.some((i) => i.severity === 'critical')) {
+    if (this.hasCriticalIssues(context)) {
       return 'deny';
     }
 
-    // Error issues deny
-    if (issues.some((i) => i.severity === 'error')) {
+    if (this.hasErrorIssues(context)) {
       return 'deny';
     }
 
-    // Security issues always deny
-    if (metrics.security.criticalIssues > 0 || metrics.security.errorIssues > 0) {
+    if (this.hasSecurityIssues(context)) {
       return 'deny';
     }
 
-    // Test failures deny if configured to do so
-    if (metrics.tests && metrics.tests.failedTests > 0) {
-      const config = this.configManager.getConfig();
-      if (config.tests.failOnTestFailure) {
-        return 'deny';
-      }
+    if (this.hasTestFailures(context)) {
+      return 'deny';
     }
 
-    // Allow if no issues or only warnings
     return 'allow';
+  }
+
+  /**
+   * Check if context has critical issues
+   */
+  private hasCriticalIssues(context: ASTAnalysisContext): boolean {
+    return context.issues.some((i) => i.severity === 'critical');
+  }
+
+  /**
+   * Check if context has error issues
+   */
+  private hasErrorIssues(context: ASTAnalysisContext): boolean {
+    return context.issues.some((i) => i.severity === 'error');
+  }
+
+  /**
+   * Check if context has security issues
+   */
+  private hasSecurityIssues(context: ASTAnalysisContext): boolean {
+    const { metrics } = context;
+    return metrics.security.criticalIssues > 0 || metrics.security.errorIssues > 0;
+  }
+
+  /**
+   * Check if context has test failures that should deny
+   */
+  private hasTestFailures(context: ASTAnalysisContext): boolean {
+    const { metrics } = context;
+
+    if (!metrics.tests || metrics.tests.failedTests === 0) {
+      return false;
+    }
+
+    const config = this.configManager.getConfig();
+    return config.tests.failOnTestFailure;
   }
 
   /**
