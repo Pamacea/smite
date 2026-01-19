@@ -1,6 +1,6 @@
 {
   "_comment": "Smite Docs Editor MCP Configuration Example",
-  "_description": "Copy this file to .smite/docs-config.json and customize for your project",
+  "_description": "Copy this file to .claude/.smite/docs-config.json and customize for your project",
 
   "enabled": true,
   "_enabled_note": "Master switch for the docs editor. Set to false to disable automatic documentation updates.",

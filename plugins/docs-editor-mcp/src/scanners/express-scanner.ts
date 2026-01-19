@@ -7,7 +7,7 @@ import { parse } from "@typescript-eslint/typescript-estree";
 import { TSESTree } from "@typescript-eslint/types";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { glob } from "fast-glob";
+import glob from "fast-glob";
 import type { Endpoint, RouteScanner, ScanConfig } from "../openapi-types.js";
 
 export class ExpressRouteScanner implements RouteScanner {

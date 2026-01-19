@@ -106,7 +106,7 @@
         "type": "mcp-server",
         "protocol": "stdio",
         "entryPoint": "./dist/index.js",
-        "configFile": ".smite/docs-config.json",
+        "configFile": ".claude/.smite/docs-config.json",
         "autoInstall": false
       },
       "dependencies": {

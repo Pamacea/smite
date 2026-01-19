@@ -72,7 +72,7 @@ MCP server running on stdio
 
 ## Configuration
 
-After installation, create your configuration file at `.smite/docs-config.json`:
+After installation, create your configuration file at `.claude/.smite/docs-config.json`:
 
 ```json
 {
@@ -228,7 +228,7 @@ If using with the Quality Gate, add to `.claude/.smite/quality.json`:
 
 ### 3. Customize Sections
 
-Edit `.smite/docs-config.json` to control which sections are updated:
+Edit `.claude/.smite/docs-config.json` to control which sections are updated:
 
 ```json
 {
@@ -301,13 +301,13 @@ npm start
 **Solution**:
 ```bash
 # Verify config exists
-cat .smite/docs-config.json
+cat .claude/.smite/docs-config.json
 
 # Validate JSON syntax
-cat .smite/docs-config.json | jq .
+cat .claude/.smite/docs-config.json | jq .
 
 # Check file permissions
-ls -la .smite/docs-config.json
+ls -la .claude/.smite/docs-config.json
 ```
 
 ### README Not Updating
@@ -320,7 +320,7 @@ ls -la .smite/docs-config.json
 grep "SMITE:MANUAL" README.md
 
 # Verify sections are enabled
-cat .smite/docs-config.json | grep sections
+cat .claude/.smite/docs-config.json | grep sections
 
 # Test manually
 npm start
@@ -337,7 +337,7 @@ cd plugins/docs-editor-mcp
 npm uninstall
 
 # Remove config (optional)
-rm -f .smite/docs-config.json
+rm -f .claude/.smite/docs-config.json
 
 # Remove build artifacts
 rm -rf dist/

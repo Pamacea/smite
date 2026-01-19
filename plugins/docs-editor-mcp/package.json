@@ -44,7 +44,7 @@
     "type": "mcp-server",
     "protocol": "stdio",
     "minVersion": "1.0.0",
-    "configFile": ".smite/docs-config.json",
+    "configFile": ".claude/.smite/docs-config.json",
     "categories": ["documentation", "automation"]
   },
   "dependencies": {

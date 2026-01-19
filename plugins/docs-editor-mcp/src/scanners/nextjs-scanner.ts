@@ -5,7 +5,7 @@
 
 import { readFileSync, existsSync } from "fs";
 import { join, dirname, basename } from "path";
-import { glob } from "fast-glob";
+import glob from "fast-glob";
 import { parse } from "@typescript-eslint/typescript-estree";
 import { TSESTree } from "@typescript-eslint/types";
 import type { Endpoint, RouteScanner, ScanConfig } from "../openapi-types.js";
