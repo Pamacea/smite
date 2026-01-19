@@ -10,6 +10,7 @@ Automatically rename your Claude Code sessions with intelligent, context-aware n
 - **Manual Override**: Use `/rename` command for custom names
 - **Smart Triggers**: Renames at optimal moments (session start, after significant actions)
 - **Format Consistency**: All names follow "Action: Context" pattern
+- **Slash Command Filtering**: Automatically removes commands like `/debug`, `/commit` from session names
 
 ## Installation
 
@@ -33,10 +34,12 @@ The plugin automatically renames your session at these moments:
 ### Name Generation
 
 The plugin analyzes:
-- Your first request in the session
+- Your first request in the session (with slash commands filtered out)
 - Recent tools and commands used
 - Project context
 - Conversation patterns
+
+**Slash Command Filtering**: Commands like `/debug`, `/commit`, `/smite:debug` are automatically removed from the content before analysis, so your session names focus on the actual work being done.
 
 Then generates a concise name following this format:
 ```
@@ -167,6 +170,19 @@ This makes session names visible when you:
 - Search through sessions
 
 ## Troubleshooting
+
+### Session Names Include Commands (e.g., "Debug: /debug fix...")
+
+The plugin automatically filters out slash commands, but if you still see them:
+1. Make sure you're using the latest version
+2. Commands are filtered before LLM analysis
+3. The name should reflect the task, not the command
+
+Example:
+```
+Input:  "/debug fix the auto rename system"
+Output: "Fix: auto rename system"  ✓ Not "Debug: /debug fix..."
+```
 
 ### Plugin Not Working
 

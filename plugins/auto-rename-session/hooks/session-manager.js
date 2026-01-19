@@ -112,20 +112,37 @@ class SessionManager {
 
   extractContent(message) {
     if (typeof message === 'string') {
-      return message;
+      return this.cleanSlashCommands(message);
     }
 
     if (Array.isArray(message)) {
       return message
-        .map(m => typeof m === 'string' ? m : (m.text || ''))
+        .map(m => typeof m === 'string' ? this.cleanSlashCommands(m) : (m.text || ''))
         .join(' ');
     }
 
     if (message.text) {
-      return message.text;
+      return this.cleanSlashCommands(message.text);
     }
 
     return '';
+  }
+
+  cleanSlashCommands(text) {
+    // Remove slash commands from the beginning of messages
+    // Examples: "/debug fix this", "/commit message", "/clear description"
+    const slashCommandPattern = /^\/[\w\-:]+(\s+(.+))?$/;
+    const match = text.match(slashCommandPattern);
+
+    if (match && match[2]) {
+      // Return only the content after the slash command
+      return match[2].trim();
+    }
+
+    // If no match or no content after command, return original
+    // Also handle cases where command is at start but text continues after
+    const cleaned = text.replace(/^\/[\w\-:]+\s*/, '');
+    return cleaned.trim() || text;
   }
 
   generateSessionNamePrompt(context) {
@@ -143,15 +160,16 @@ Generate a name following these rules:
 1. Maximum 50 characters
 2. Format: "Action: Context" (e.g., "Fix: bug login", "Add: API endpoint", "Refactor: database")
 3. Use these action prefixes: Fix, Add, Update, Delete, Refactor, Debug, Test, Docs, Config
-4. Keep it concise and specific
-5. Return ONLY the name, no explanation
+4. Focus on WHAT is being done, not the command used
+5. Summarize the core task/problem, not the exact wording
+6. Return ONLY the name, no explanation
 
 Examples:
-- "Fix: authentication bug"
-- "Add: user CRUD API"
-- "Refactor: database schema"
-- "Debug: memory leak"
-- "Docs: API README"
+- "Fix: authentication bug" (not "Debug: fix authentication")
+- "Add: user CRUD API" (not "Feat: add user CRUD")
+- "Refactor: database schema" (not "Update: refactor database")
+- "Debug: memory leak" (not "Debug: debug memory issue")
+- "Docs: API README" (not "Add: documentation")
 
 Generate the name now:`;
   }

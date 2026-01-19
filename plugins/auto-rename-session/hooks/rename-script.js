@@ -57,12 +57,17 @@ class RenameScript {
       return;
     }
 
-    await this.delay(2000);
+    // Wait longer at session start to gather more initial context
+    await this.delay(3000);
 
     const entries = this.manager.readSession(sessionPath);
 
-    if (entries.length < 2) {
-      setTimeout(() => this.attemptRename(sessionPath, entries, 'session-start'), 3000);
+    // If we still don't have much context, wait a bit more
+    if (entries.length < 3) {
+      setTimeout(() => {
+        const updatedEntries = this.manager.readSession(sessionPath);
+        this.attemptRename(sessionPath, updatedEntries, 'session-start');
+      }, 5000);
       return;
     }
 
