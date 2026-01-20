@@ -5,7 +5,7 @@ Synchronize documentation with codebase using MCP Scribe integration.
 ## Usage
 
 ```bash
-quality-gate docs-sync [options]
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync [options]
 ```
 
 ## Options
@@ -21,19 +21,19 @@ quality-gate docs-sync [options]
 
 ```bash
 # Sync all documentation
-quality-gate docs-sync
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync
 
 # Generate OpenAPI spec only
-quality-gate docs-sync --openapi
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync --openapi
 
 # Update README architecture
-quality-gate docs-sync --readme
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync --readme
 
 # Add JSDoc to codebase
-quality-gate docs-sync --jsdoc
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync --jsdoc
 
 # Watch for changes
-quality-gate docs-sync --watch
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync --watch
 ```
 
 ## What it does

@@ -5,7 +5,7 @@ Run quality gate checks on your codebase.
 ## Usage
 
 ```bash
-quality-gate quality-check [options]
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check [options]
 ```
 
 ## Options
@@ -21,16 +21,16 @@ quality-gate quality-check [options]
 
 ```bash
 # Check entire codebase
-quality-gate quality-check
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check
 
-# Check specific file
-quality-gate quality-check --scope src/components/Button.tsx
+# Check specific files
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check --files src/components/Button.tsx,src/utils/helpers.ts
 
-# Check only security issues
-quality-gate quality-check --security
+# Check only staged files
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check --staged
 
-# Auto-fix issues
-quality-gate quality-check --fix
+# Check with detailed output
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check --print
 ```
 
 ## What it checks

@@ -120,20 +120,22 @@ Works with:
 
 ```bash
 # Initialize configuration
-quality-gate quality-config init
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config --init
 
 # Run quality checks
-quality-gate quality-check
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check
 
 # Check specific file
-quality-gate quality-check --scope src/auth/jwt.ts
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check --files src/auth/jwt.ts
+
+# Check only staged files
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-check --staged
 
 # Sync documentation
-quality-gate docs-sync
+node ~/.claude/plugins/quality-gate/dist/cli.js docs-sync
 
-# Enable complexity checking
-quality-gate quality-config set complexity.enabled true
-quality-gate quality-config set complexity.threshold 15
+# Show current configuration
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config --show
 ```
 
 ## Error Handling

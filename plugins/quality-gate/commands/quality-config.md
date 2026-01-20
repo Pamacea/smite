@@ -5,7 +5,7 @@ Configure the quality gate system interactively or via CLI.
 ## Usage
 
 ```bash
-quality-gate quality-config [action] [options]
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config [action] [options]
 ```
 
 ## Actions
@@ -14,30 +14,30 @@ quality-gate quality-config [action] [options]
 Creates `.claude/.smite/quality.json` with default settings.
 
 ```bash
-quality-gate quality-config init
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config --init
 ```
 
 ### `validate` - Validate configuration
 Check if current config is valid.
 
 ```bash
-quality-gate quality-config validate
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config --show
 ```
 
 ### `set` - Set configuration value
 Update a specific configuration value.
 
 ```bash
-quality-gate quality-config set complexity.threshold 15
-quality-gate quality-config set security.enabled true
-quality-gate quality-config set tests.command "npm run test:unit"
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config set complexity.threshold 15
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config set security.enabled true
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config set tests.command "npm run test:unit"
 ```
 
 ### `get` - Get configuration value
 Display current configuration value.
 
 ```bash
-quality-gate quality-config get complexity
+node ~/.claude/plugins/quality-gate/dist/cli.js quality-config get complexity
 quality-gate quality-config get security.enabled
 ```
 
