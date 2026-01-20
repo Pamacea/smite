@@ -104,8 +104,10 @@ async function writeSettings(settingsPath, settings, options) {
 }
 function createStatuslineCommand(platform) {
     // Use simplified statusline script (cross-platform, reliable)
-    const statuslineScript = path.join(platform.home, '.claude', 'statusline.js');
-    return `node ${statuslineScript}`;
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    const statuslineScript = path.join(platform.home, '.claude', 'statusline.js').replace(/\\/g, '/');
+    const runtime = platform.runtime === 'bun' ? 'bun' : 'node';
+    return `${runtime} ${statuslineScript}`;
 }
 async function configureSettings(settings, platform, options) {
     const currentSettings = settings || {};
