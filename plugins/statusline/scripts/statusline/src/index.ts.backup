@@ -170,7 +170,7 @@ async function trackWorkingDirectory(
                   currentWorkingDir = targetDir;
                 } else if (targetDir === "..") {
                   // Remonter d'un niveau
-                  const parts: string[] = (currentWorkingDir || initialDir).split(/[/\\]/);
+                  const parts = (currentWorkingDir || initialDir).split(/[/\\]/);
                   parts.pop();
                   currentWorkingDir = parts.join("/");
                 } else if (targetDir === "~") {
@@ -183,7 +183,7 @@ async function trackWorkingDirectory(
                   }
                 } else {
                   // Chemin relatif
-                  const basePath: string = currentWorkingDir || initialDir;
+                  const basePath = currentWorkingDir || initialDir;
                   const separator = basePath.includes("/") ? "/" : "\\";
                   currentWorkingDir = basePath + separator + targetDir;
                 }
@@ -219,7 +219,6 @@ async function loadConfig(): Promise<StatuslineConfig> {
 interface ContextInfo {
   tokens: number | null;
   percentage: number | null;
-  lastOutputTokens: number | null;
 }
 
 async function getContextInfo(
@@ -253,7 +252,7 @@ async function getContextInfo(
         100,
         Math.round((tokens / maxTokens) * 100)
       );
-      result = { tokens, percentage, lastOutputTokens: null };
+      result = { tokens, percentage };
 
       // Mettre en cache uniquement si on a des données valides
       if (tokens > 0) {
@@ -281,7 +280,6 @@ async function getContextInfo(
   result = {
     tokens: contextData.tokens,
     percentage: contextData.percentage,
-    lastOutputTokens: contextData.lastOutputTokens,
   };
 
   // Mettre en cache
@@ -356,7 +354,6 @@ async function main() {
       sessionDuration: formatDuration(input.cost.total_duration_ms),
       contextTokens: contextInfo.tokens,
       contextPercentage: contextInfo.percentage,
-      lastOutputTokens: contextInfo.lastOutputTokens,
       ...(getUsageLimits && {
         usageLimits: {
           five_hour: usageLimits.five_hour

@@ -21,9 +21,14 @@ function renderSessionInfo(data, config) {
     }
     if (config.session.tokens.enabled && data.contextTokens !== null) {
         const maxTokens = config.context.maxContextTokens;
-        const tokensStr = config.session.tokens.showMax
-            ? `${formatTokens(data.contextTokens, config.session.tokens.showDecimals)}/${formatTokens(maxTokens, false)}`
-            : formatTokens(data.contextTokens, config.session.tokens.showDecimals);
+        let tokensStr = formatTokens(data.contextTokens, config.session.tokens.showDecimals);
+        // Add last output tokens if available
+        if (data.lastOutputTokens !== null && data.lastOutputTokens > 0) {
+            tokensStr += ` + ${data.lastOutputTokens}`;
+        }
+        if (config.session.tokens.showMax) {
+            tokensStr += `/${formatTokens(maxTokens, false)}`;
+        }
         sessionParts.push(tokensStr);
     }
     if (config.session.percentage.enabled && data.contextPercentage !== null) {

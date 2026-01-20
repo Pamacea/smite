@@ -45,4 +45,5 @@ export interface UsageLimit {
 export interface ContextData {
     tokens: number | null;
     percentage: number | null;
+    lastOutputTokens: number | null;
 }

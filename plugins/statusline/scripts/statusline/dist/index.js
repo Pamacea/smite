@@ -59,35 +59,93 @@ async function trackWorkingDirectory(transcriptPath, initialDir) {
         for (const entry of recentEntries) {
             // Si c'est une commande de l'utilisateur ou de l'IA
             if (entry.type === "user" || entry.type === "assistant") {
-                const content = entry.content || "";
-                // Extraire les commandes bash/cd
-                // Format: {"command": "cd plugins"} ou <command>cd plugins</command>
-                const cdMatch = content.match(/(?:cd\s+)([^\s\n]+)/);
-                if (cdMatch) {
-                    const targetDir = cdMatch[1];
-                    // Résoudre le chemin relatif ou absolu
-                    if (targetDir.startsWith("/") || targetDir.match(/^[A-Za-z]:\\/)) {
-                        // Chemin absolu
-                        currentWorkingDir = targetDir;
+                const entryContent = entry.content || "";
+                // Tenter d'extraire les commandes bash des tool calls
+                // Format 1: <function=Bash>...command...</function>
+                // Format 2: Tool use blocks avec "command" field
+                let bashCommands = [];
+                // Essayer de trouver les tool calls Bash dans le contenu
+                const functionMatches = entryContent.match(/<function=Bash>([\s\S]*?)<\/function>/g);
+                if (functionMatches) {
+                    for (const match of functionMatches) {
+                        // Extraire le contenu entre les balises
+                        const innerContent = match.replace(/<\/?function=Bash>/g, "");
+                        // Chercher "command": "..." ou juste cd
+                        const commandMatch = innerContent.match(/"command"\s*:\s*"([^"]*cd[^"]*)"/);
+                        if (commandMatch) {
+                            bashCommands.push(commandMatch[1]);
+                        }
+                        else if (innerContent.includes("cd")) {
+                            // Fallback: prendre tout le contenu qui contient cd
+                            bashCommands.push(innerContent);
+                        }
                     }
-                    else if (targetDir === "..") {
-                        // Remonter d'un niveau
-                        const parts = (currentWorkingDir || initialDir).split(/[/\\]/);
-                        parts.pop();
-                        currentWorkingDir = parts.join("/");
+                }
+                // Aussi chercher les commandes directes dans le contenu (cas simple)
+                if (bashCommands.length === 0) {
+                    const directCdMatch = entryContent.match(/(?:^\s*|\n)(cd\s+[^\n]+)/g);
+                    if (directCdMatch) {
+                        bashCommands.push(...directCdMatch);
                     }
-                    else if (targetDir === "~") {
-                        // Home directory
-                        currentWorkingDir = initialDir.split(/[/\\]/).slice(0, 2).join("/");
-                    }
-                    else {
-                        // Chemin relatif
-                        const separator = (currentWorkingDir || initialDir).includes("/") ? "/" : "\\";
-                        currentWorkingDir = (currentWorkingDir || initialDir) + separator + targetDir;
-                    }
-                    // Normaliser le chemin
-                    if (currentWorkingDir) {
-                        currentWorkingDir = currentWorkingDir.replace(/\\/g, "/");
+                }
+                // Analyser chaque commande pour trouver les cd
+                for (const cmd of bashCommands) {
+                    // Normaliser la commande
+                    const normalizedCmd = cmd.replace(/\\'/g, "'").replace(/\\"/g, '"');
+                    // Chercher cd avec différents patterns
+                    // Pattern 1: cd && other_command
+                    // Pattern 2: cd dir
+                    // Pattern 3: command && cd dir
+                    const cdPatterns = [
+                        /(?:^|&&\s*|;\s*)cd\s+([^\s&;]+)/,
+                        /cd\s+&&/,
+                        /cd\s+"([^"]+)"/,
+                        /cd\s+'([^']+)'/,
+                    ];
+                    for (const pattern of cdPatterns) {
+                        const match = normalizedCmd.match(pattern);
+                        if (match) {
+                            let targetDir = match[1];
+                            if (!targetDir && match[0]?.includes("cd &&")) {
+                                // Cas "cd &&" sans argument = utiliser le répertoire initial
+                                continue;
+                            }
+                            if (targetDir) {
+                                // Nettoyer les quotes et guillemets restants
+                                targetDir = targetDir.replace(/^["']|["']$/g, "").trim();
+                                // Résoudre le chemin relatif ou absolu
+                                if (targetDir.startsWith("/") || targetDir.match(/^[A-Za-z]:\\/)) {
+                                    // Chemin absolu
+                                    currentWorkingDir = targetDir;
+                                }
+                                else if (targetDir === "..") {
+                                    // Remonter d'un niveau
+                                    const parts = (currentWorkingDir || initialDir).split(/[/\\]/);
+                                    parts.pop();
+                                    currentWorkingDir = parts.join("/");
+                                }
+                                else if (targetDir === "~") {
+                                    // Home directory - utiliser le home directory du workspace
+                                    const workspaceParts = initialDir.split(/[/\\]/);
+                                    if (workspaceParts.length >= 2) {
+                                        currentWorkingDir = workspaceParts.slice(0, 2).join("/");
+                                    }
+                                    else {
+                                        currentWorkingDir = initialDir;
+                                    }
+                                }
+                                else {
+                                    // Chemin relatif
+                                    const basePath = currentWorkingDir || initialDir;
+                                    const separator = basePath.includes("/") ? "/" : "\\";
+                                    currentWorkingDir = basePath + separator + targetDir;
+                                }
+                                // Normaliser le chemin (utiliser / partout)
+                                if (currentWorkingDir) {
+                                    currentWorkingDir = currentWorkingDir.replace(/\\/g, "/");
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -127,7 +185,7 @@ async function getContextInfo(input, config) {
             const maxTokens = input.context_window?.context_window_size ||
                 config.context.maxContextTokens;
             const percentage = Math.min(100, Math.round((tokens / maxTokens) * 100));
-            result = { tokens, percentage };
+            result = { tokens, percentage, lastOutputTokens: null };
             // Mettre en cache uniquement si on a des données valides
             if (tokens > 0) {
                 contextCache = { timestamp: now, data: result };
@@ -151,6 +209,7 @@ async function getContextInfo(input, config) {
     result = {
         tokens: contextData.tokens,
         percentage: contextData.percentage,
+        lastOutputTokens: contextData.lastOutputTokens,
     };
     // Mettre en cache
     if (contextData.tokens !== null && contextData.percentage !== null) {
@@ -203,6 +262,7 @@ async function main() {
             sessionDuration: formatDuration(input.cost.total_duration_ms),
             contextTokens: contextInfo.tokens,
             contextPercentage: contextInfo.percentage,
+            lastOutputTokens: contextInfo.lastOutputTokens,
             ...(getUsageLimits && {
                 usageLimits: {
                     five_hour: usageLimits.five_hour

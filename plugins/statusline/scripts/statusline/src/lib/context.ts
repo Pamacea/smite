@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 export interface ContextData {
   tokens: number | null;
   percentage: number | null;
+  lastOutputTokens: number | null;
 }
 
 export interface ContextOptions {
@@ -58,15 +59,27 @@ export async function getContextData(
       Math.round((usableTokens / maxContextTokens) * 100)
     );
 
+    // Get last output tokens from the most recent assistant message
+    let lastOutputTokens = null;
+    for (let i = transcript.length - 1; i >= 0; i--) {
+      const entry = transcript[i];
+      if (entry.type === 'assistant' && entry.usage?.output_tokens) {
+        lastOutputTokens = entry.usage.output_tokens;
+        break;
+      }
+    }
+
     return {
       tokens: usableTokens,
       percentage,
+      lastOutputTokens,
     };
   } catch {
     // Transcript not available or parse error
     return {
       tokens: null,
       percentage: null,
+      lastOutputTokens: null,
     };
   }
 }

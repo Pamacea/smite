@@ -11,6 +11,7 @@ export interface StatuslineData {
     sessionDuration: string;
     contextTokens: number | null;
     contextPercentage: number | null;
+    lastOutputTokens: number | null;
     usageLimits?: {
         five_hour: UsageLimit | null;
         seven_day: UsageLimit | null;

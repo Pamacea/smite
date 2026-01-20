@@ -26,9 +26,19 @@ export async function getContextData(options) {
         }
         // Calculate percentage
         const percentage = Math.min(100, Math.round((usableTokens / maxContextTokens) * 100));
+        // Get last output tokens from the most recent assistant message
+        let lastOutputTokens = null;
+        for (let i = transcript.length - 1; i >= 0; i--) {
+            const entry = transcript[i];
+            if (entry.type === 'assistant' && entry.usage?.output_tokens) {
+                lastOutputTokens = entry.usage.output_tokens;
+                break;
+            }
+        }
         return {
             tokens: usableTokens,
             percentage,
+            lastOutputTokens,
         };
     }
     catch {
@@ -36,6 +46,7 @@ export async function getContextData(options) {
         return {
             tokens: null,
             percentage: null,
+            lastOutputTokens: null,
         };
     }
 }
