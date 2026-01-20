@@ -9,7 +9,15 @@ Engineering Zero-Dette via GLM 4.7/4.6.
 - **Multi-Agent Ops**: `.claude/rules/agents.md`
 
 ## ⚓ Sync Hook
-Dès qu'une tâche est identifiée comme "Frontend" ou "Engineering", l'agent DOIT lire (`cat`) le fichier de règles correspondant avant de coder.
+When a task is identified, the agent MUST automatically load the corresponding rules:
+
+**Automatic Rule Loading:**
+- Frontend tasks → Load `.claude/rules/frontend.md`
+- Engineering tasks → Load `.claude/rules/engineering.md`
+- **Code search/exploration → Load `.claude/rules/mgrep.md` [MANDATORY]**
+- Multi-agent operations → Load `.claude/rules/agents.md`
+
+**Critical Rule:** Before ANY code exploration or file search, agents MUST follow the workflow defined in the global CLAUDE.md under "MANDATORY WORKFLOW - TOKEN OPTIMIZATION".
 
 ## 🛡️ Quality Gate (Automated Code Validation)
 

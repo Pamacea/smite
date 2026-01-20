@@ -41,27 +41,34 @@ const LAST_PAYLOAD_PATH = join(__dirname, "..", "data", "last_payload.txt");
 const CACHE_FILE_PATH = join(__dirname, "..", "data", "context_cache.json");
 const TOKEN_TRACKER_PATH = join(homedir(), ".claude", ".token-tracker.json");
 const TOKEN_DIFF_TIMEOUT = 5000; // 5 seconds - hide token diff after this time
-const SESSION_TIMEOUT = 300000; // 5 minutes - reset tracker after this time
+const SESSION_TIMEOUT = 1800000; // 30 minutes - reset tracker after this time
 let contextCache = null;
 const CACHE_TTL = 2000; // 2 secondes - éviter les flickers
 /**
  * Load token tracker from disk
  */
-async function loadTokenTracker(currentUsage) {
+async function loadTokenTracker(currentUsage, sessionId) {
     try {
         if (existsSync(TOKEN_TRACKER_PATH)) {
             const content = await readFile(TOKEN_TRACKER_PATH, "utf-8");
             const tracker = JSON.parse(content);
             const now = Date.now();
-            // Reset if the tracker is too old (> 5 minutes = likely a new session)
-            // or if current usage is lower than last usage (new session started)
+            // Reset tracker if:
+            // 1. The tracker is too old (> 30 minutes = likely a new session)
+            // 2. Session ID changed (parallel session detected)
+            // DO NOT reset based on currentUsage < tracker.lastUsage as this causes false resets
             if (now - tracker.timestamp > SESSION_TIMEOUT ||
-                currentUsage < tracker.lastUsage) {
+                (sessionId && tracker.sessionId && sessionId !== tracker.sessionId)) {
                 return {
                     lastUsage: currentUsage,
                     timestamp: now,
                     lastDiffTime: now,
+                    sessionId,
                 };
+            }
+            // Update sessionId if it wasn't set before
+            if (sessionId && !tracker.sessionId) {
+                tracker.sessionId = sessionId;
             }
             return tracker;
         }
@@ -73,6 +80,7 @@ async function loadTokenTracker(currentUsage) {
         lastUsage: currentUsage,
         timestamp: Date.now(),
         lastDiffTime: Date.now(),
+        sessionId,
     };
 }
 /**
@@ -89,12 +97,15 @@ async function saveTokenTracker(tracker) {
 }
 /**
  * Calculate token difference and determine if it should be shown
+ * Handles parallel sessions by only showing positive diffs
  */
 function getTokenDiff(currentUsage, tracker) {
+    // Calculate the actual difference
     const tokenDiff = currentUsage - tracker.lastUsage;
     const now = Date.now();
     const timeSinceLastDiff = now - (tracker.lastDiffTime || 0);
-    // Show token diff if there was a positive diff
+    // Only show positive token diffs (new tokens added)
+    // Negative diffs (context clearing, compaction) are hidden to avoid confusion
     // The timeout only applies to HIDING the diff after activity stops
     const shouldShow = tokenDiff > 0 && timeSinceLastDiff < TOKEN_DIFF_TIMEOUT;
     return { diff: tokenDiff, shouldShow };
@@ -103,14 +114,29 @@ function getTokenDiff(currentUsage, tracker) {
  * Update tracker with new usage if tokens have changed
  * IMPORTANT: Only update lastDiffTime when NEW tokens are added
  * This allows the timeout to work and hide the +X.XK after 5s
+ *
+ * Parallel session handling:
+ * - If currentUsage >= lastUsage: Normal progression, update tracker
+ * - If currentUsage < lastUsage: Context was cleared/compacted or parallel session
+ *   In this case, we update lastUsage but DON'T update lastDiffTime to avoid
+ *   showing confusing negative diffs
  */
 function updateTracker(tracker, currentUsage) {
     const tokenDiff = currentUsage - tracker.lastUsage;
-    // Only update when NEW tokens are actually added
+    const now = Date.now();
     if (tokenDiff > 0) {
+        // New tokens added - normal progression
         tracker.lastUsage = currentUsage;
-        tracker.lastDiffTime = Date.now(); // Update timestamp only on new tokens
+        tracker.lastDiffTime = now;
     }
+    else if (tokenDiff < 0) {
+        // Context cleared or parallel session detected
+        // Update lastUsage to prevent showing huge positive diffs later
+        // but DON'T update lastDiffTime (don't show the negative diff)
+        tracker.lastUsage = currentUsage;
+        // lastDiffTime stays the same - existing timeout continues
+    }
+    // If tokenDiff === 0, no update needed
     return tracker;
 }
 // Tracking du répertoire de travail dynamique
@@ -269,8 +295,13 @@ async function getContextInfo(input, config) {
     }
     // Fallback sur le transcript SEULEMENT si le payload n'est pas disponible
     // et qu'on n'a pas de cache récent (éviter les sauts 36% → 0%)
+    // Extended cache (3x CACHE_TTL = 6 seconds) prevents flickering when:
+    // - Payload context is temporarily unavailable
+    // - Context is being recalculated
+    // - Cache is being invalidated
     if (contextCache && (now - contextCache.timestamp) < (CACHE_TTL * 3)) {
         // Garder la valeur cached pendant 6 secondes de plus pour éviter les sauts
+        // This smooths transitions between different context calculation methods
         return contextCache.data;
     }
     const contextData = await getContextData({
@@ -328,7 +359,9 @@ async function main() {
         const spendInfo = await getSpendInfo(currentResetsAt);
         // Token tracking
         const currentUsage = contextInfo.tokens || 0;
-        const tokenTracker = await loadTokenTracker(currentUsage);
+        // Generate session ID from workspace path to detect parallel sessions
+        const sessionId = input.workspace.current_dir;
+        const tokenTracker = await loadTokenTracker(currentUsage, sessionId);
         const { diff: tokenDiff, shouldShow: showTokenDiff } = getTokenDiff(currentUsage, tokenTracker);
         // Always update timestamp even if no new tokens (for timeout to work)
         const updatedTracker = updateTracker(tokenTracker, currentUsage);
