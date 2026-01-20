@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "SMITE statusline plugin for Claude Code",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "bun run src/index.ts",
-    "start": "bun run src/index.ts"
+    "dev": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
+    "preinstall": "npm run build"
   },
   "keywords": [
     "smite",
@@ -16,15 +17,21 @@
   ],
   "author": "SMITE",
   "license": "MIT",
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "package.json",
+    "README.md"
+  ],
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/node": "^20.10.0",
     "@types/better-sqlite3": "^7.6.9",
     "typescript": "^5.3.3"
   },
-  "peerDependencies": {
-    "bun": ">=1.0.0"
-  },
   "optionalDependencies": {
     "better-sqlite3": "^9.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
