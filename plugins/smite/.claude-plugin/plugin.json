@@ -6,5 +6,6 @@
     "name": "Pamacea"
   },
   "commands": "./commands/",
+  "agents": "./agents/",
   "skills": "./skills/"
 }
