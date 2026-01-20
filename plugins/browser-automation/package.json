@@ -1,7 +1,7 @@
 {
   "name": "@smite/browser-automation",
-  "version": "1.0.0",
-  "description": "Browser automation plugin for SMITE using Playwright - Automate web browsing, search, screenshots, and more",
+  "version": "2.0.0",
+  "description": "Browser automation plugin for SMITE using MCP servers - Web search, content reading, image analysis, and GitHub research",
   "author": {
     "name": "Pamacea",
     "email": "contact@pamacea.com",
@@ -24,9 +24,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "postbuild": "node dist/post-install.js",
     "dev": "tsc --watch",
-    "install-playwright": "npx playwright install chromium"
+    "typecheck": "tsc --noEmit",
+    "demo:performance": "tsc && node dist/examples/performance-demo.js"
   },
   "smite": {
     "type": "tool",
@@ -39,12 +39,14 @@
     "smite-plugin",
     "browser",
     "automation",
-    "playwright",
+    "mcp",
+    "web-search",
     "web-scraping",
-    "testing"
+    "image-analysis",
+    "github",
+    "research"
   ],
   "dependencies": {
-    "playwright": "^1.49.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

@@ -94,9 +94,8 @@ function getTokenDiff(currentUsage, tracker) {
     const tokenDiff = currentUsage - tracker.lastUsage;
     const now = Date.now();
     const timeSinceLastDiff = now - (tracker.lastDiffTime || 0);
-    // Only show token diff if:
-    // 1. There was a positive diff AND
-    // 2. It was less than TOKEN_DIFF_TIMEOUT ago (30 seconds)
+    // Show token diff if there was a positive diff
+    // The timeout only applies to HIDING the diff after activity stops
     const shouldShow = tokenDiff > 0 && timeSinceLastDiff < TOKEN_DIFF_TIMEOUT;
     return { diff: tokenDiff, shouldShow };
 }
