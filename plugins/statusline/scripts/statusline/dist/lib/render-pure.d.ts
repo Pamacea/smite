@@ -12,6 +12,7 @@ export interface StatuslineData {
     contextTokens: number | null;
     contextPercentage: number | null;
     lastOutputTokens: number | null;
+    tokenDiff?: number;
     usageLimits?: {
         five_hour: UsageLimit | null;
         seven_day: UsageLimit | null;

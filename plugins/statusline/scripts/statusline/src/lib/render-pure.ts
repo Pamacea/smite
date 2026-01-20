@@ -15,6 +15,7 @@ export interface StatuslineData {
   contextTokens: number | null;
   contextPercentage: number | null;
   lastOutputTokens: number | null;
+  tokenDiff?: number; // Optional: tokens added since last update
   usageLimits?: {
     five_hour: UsageLimit | null;
     seven_day: UsageLimit | null;
@@ -51,6 +52,14 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
   if (config.session.tokens.enabled && data.contextTokens !== null) {
     const maxTokens = config.context.maxContextTokens;
     let tokensStr = formatTokens(data.contextTokens, config.session.tokens.showDecimals);
+
+    // Add token diff if available and recent (shows tokens added since last update)
+    if (data.tokenDiff && data.tokenDiff > 0) {
+      const diffK = (data.tokenDiff / 1000).toFixed(1);
+      const diffColor = data.tokenDiff > 50000 ? colors.red :
+                        data.tokenDiff > 20000 ? colors.yellow : colors.green;
+      tokensStr += `${diffColor} +${diffK}K${colors.reset}`;
+    }
 
     // Add last output tokens if available
     if (data.lastOutputTokens !== null && data.lastOutputTokens > 0) {

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdir } from "node:fs/promises";
+import { homedir } from "node:os";
 // Import core modules
 import { defaultConfig } from "./lib/config.js";
 import { getContextData } from "./lib/context.js";
@@ -37,8 +39,81 @@ const __dirname = dirname(__filename);
 const CONFIG_FILE_PATH = join(__dirname, "..", "statusline.config.json");
 const LAST_PAYLOAD_PATH = join(__dirname, "..", "data", "last_payload.txt");
 const CACHE_FILE_PATH = join(__dirname, "..", "data", "context_cache.json");
+const TOKEN_TRACKER_PATH = join(homedir(), ".claude", ".token-tracker.json");
+const TOKEN_DIFF_TIMEOUT = 5000; // 5 seconds - hide token diff after this time
+const SESSION_TIMEOUT = 300000; // 5 minutes - reset tracker after this time
 let contextCache = null;
 const CACHE_TTL = 2000; // 2 secondes - éviter les flickers
+/**
+ * Load token tracker from disk
+ */
+async function loadTokenTracker(currentUsage) {
+    try {
+        if (existsSync(TOKEN_TRACKER_PATH)) {
+            const content = await readFile(TOKEN_TRACKER_PATH, "utf-8");
+            const tracker = JSON.parse(content);
+            const now = Date.now();
+            // Reset if the tracker is too old (> 5 minutes = likely a new session)
+            // or if current usage is lower than last usage (new session started)
+            if (now - tracker.timestamp > SESSION_TIMEOUT ||
+                currentUsage < tracker.lastUsage) {
+                return {
+                    lastUsage: currentUsage,
+                    timestamp: now,
+                    lastDiffTime: now,
+                };
+            }
+            return tracker;
+        }
+    }
+    catch (e) {
+        // File doesn't exist or is invalid
+    }
+    return {
+        lastUsage: currentUsage,
+        timestamp: Date.now(),
+        lastDiffTime: Date.now(),
+    };
+}
+/**
+ * Save token tracker to disk
+ */
+async function saveTokenTracker(tracker) {
+    try {
+        tracker.timestamp = Date.now();
+        await writeFile(TOKEN_TRACKER_PATH, JSON.stringify(tracker, null, 2), "utf-8");
+    }
+    catch (e) {
+        // Fail silently - don't break statusline if we can't save
+    }
+}
+/**
+ * Calculate token difference and determine if it should be shown
+ */
+function getTokenDiff(currentUsage, tracker) {
+    const tokenDiff = currentUsage - tracker.lastUsage;
+    const now = Date.now();
+    const timeSinceLastDiff = now - (tracker.lastDiffTime || 0);
+    // Only show token diff if:
+    // 1. There was a positive diff AND
+    // 2. It was less than TOKEN_DIFF_TIMEOUT ago (30 seconds)
+    const shouldShow = tokenDiff > 0 && timeSinceLastDiff < TOKEN_DIFF_TIMEOUT;
+    return { diff: tokenDiff, shouldShow };
+}
+/**
+ * Update tracker with new usage if tokens have changed
+ * IMPORTANT: Only update lastDiffTime when NEW tokens are added
+ * This allows the timeout to work and hide the +X.XK after 5s
+ */
+function updateTracker(tracker, currentUsage) {
+    const tokenDiff = currentUsage - tracker.lastUsage;
+    // Only update when NEW tokens are actually added
+    if (tokenDiff > 0) {
+        tracker.lastUsage = currentUsage;
+        tracker.lastDiffTime = Date.now(); // Update timestamp only on new tokens
+    }
+    return tracker;
+}
 // Tracking du répertoire de travail dynamique
 let currentWorkingDir = null;
 /**
@@ -252,6 +327,13 @@ async function main() {
         const git = await getGitStatus();
         const contextInfo = await getContextInfo(input, config);
         const spendInfo = await getSpendInfo(currentResetsAt);
+        // Token tracking
+        const currentUsage = contextInfo.tokens || 0;
+        const tokenTracker = await loadTokenTracker(currentUsage);
+        const { diff: tokenDiff, shouldShow: showTokenDiff } = getTokenDiff(currentUsage, tokenTracker);
+        // Always update timestamp even if no new tokens (for timeout to work)
+        const updatedTracker = updateTracker(tokenTracker, currentUsage);
+        await saveTokenTracker(updatedTracker);
         // Tracker le répertoire de travail dynamique
         const workingDir = await trackWorkingDirectory(input.transcript_path, input.workspace.current_dir);
         const data = {
@@ -263,6 +345,7 @@ async function main() {
             contextTokens: contextInfo.tokens,
             contextPercentage: contextInfo.percentage,
             lastOutputTokens: contextInfo.lastOutputTokens,
+            tokenDiff: showTokenDiff ? tokenDiff : undefined,
             ...(getUsageLimits && {
                 usageLimits: {
                     five_hour: usageLimits.five_hour

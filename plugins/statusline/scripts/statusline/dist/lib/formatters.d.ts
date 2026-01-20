@@ -30,6 +30,7 @@ export declare function formatCost(cost: number, format: "decimal1" | "decimal2"
 export declare function formatDuration(ms: number): string;
 /**
  * Format file path
+ * Shows home-relative path (~/...) when possible
  */
 export declare function formatPath(path: string, mode: "full" | "truncated" | "basename"): string;
 /**

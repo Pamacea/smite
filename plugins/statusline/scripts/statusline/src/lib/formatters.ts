@@ -91,13 +91,26 @@ export function formatDuration(ms: number): string {
 
 /**
  * Format file path
+ * Shows home-relative path (~/...) when possible
  */
 export function formatPath(
   path: string,
   mode: "full" | "truncated" | "basename"
 ): string {
   // Normaliser les séparateurs de chemin
-  const normalizedPath = path.replace(/\\/g, "/");
+  let normalizedPath = path.replace(/\\/g, "/");
+
+  // Replace home directory with ~ for cleaner display
+  const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+  if (homeDir && normalizedPath.startsWith(homeDir)) {
+    normalizedPath = "~" + normalizedPath.slice(homeDir.length);
+  } else if (process.platform === "win32") {
+    // On Windows, remove drive letter (C:\) if not using home
+    const match = path.match(/^.:\\/);
+    if (match) {
+      normalizedPath = normalizedPath.substring(3); // Remove "C:\"
+    }
+  }
 
   if (mode === "basename") {
     const parts = normalizedPath.split("/").filter(p => p && p !== ".");
