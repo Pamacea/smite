@@ -16,6 +16,7 @@ export interface ContextOptions {
 
 /**
  * Calculate context tokens from transcript file
+ * NOTE: The payload's current_usage is always 0, so we estimate from transcript content
  */
 export async function getContextData(
   options: ContextOptions
@@ -30,27 +31,39 @@ export async function getContextData(
 
   try {
     const content = await readFile(transcriptPath, "utf-8");
-    const transcript = JSON.parse(content);
+    const lines = content.split("\n").filter((line) => line.trim());
 
-    let totalTokens = 0;
+    // Estimate tokens by counting characters in user/assistant messages
+    // The transcript's `usage` fields are always 0, so we estimate from content size
+    let totalChars = 0;
+    let messageCount = 0;
 
-    // Count tokens from transcript entries
-    for (const entry of transcript) {
-      if (entry.usage) {
-        totalTokens += entry.usage.input_tokens || 0;
-        totalTokens += entry.usage.output_tokens || 0;
-        totalTokens += entry.usage.cache_creation_input_tokens || 0;
-        totalTokens += entry.usage.cache_read_input_tokens || 0;
+    for (const line of lines) {
+      try {
+        const entry = JSON.parse(line);
+
+        // Count user and assistant messages (these are in the context)
+        if (entry.type === "user" || entry.type === "assistant") {
+          totalChars += line.length;
+          messageCount++;
+        }
+      } catch {
+        // Skip lines that can't be parsed
+        continue;
       }
     }
 
+    // Rough estimate: ~3 characters per token (conservative estimate)
+    // This is approximate but better than relying on empty `usage` fields
+    let estimatedTokens = Math.round(totalChars / 3);
+
     // Add overhead tokens
-    totalTokens += overheadTokens;
+    estimatedTokens += overheadTokens;
 
     // Calculate usable context
-    let usableTokens = totalTokens;
+    let usableTokens = estimatedTokens;
     if (useUsableContextOnly) {
-      usableTokens = Math.max(0, totalTokens - autocompactBufferTokens);
+      usableTokens = Math.max(0, estimatedTokens - autocompactBufferTokens);
     }
 
     // Calculate percentage
@@ -59,15 +72,8 @@ export async function getContextData(
       Math.round((usableTokens / maxContextTokens) * 100)
     );
 
-    // Get last output tokens from the most recent assistant message
-    let lastOutputTokens = null;
-    for (let i = transcript.length - 1; i >= 0; i--) {
-      const entry = transcript[i];
-      if (entry.type === 'assistant' && entry.usage?.output_tokens) {
-        lastOutputTokens = entry.usage.output_tokens;
-        break;
-      }
-    }
+    // lastOutputTokens can't be reliably determined from transcript (usage is always 0)
+    const lastOutputTokens = null;
 
     return {
       tokens: usableTokens,
