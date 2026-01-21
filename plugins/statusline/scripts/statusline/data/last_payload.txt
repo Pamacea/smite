@@ -1,0 +1,27 @@
+{
+  "session_id": "e2e4cf91-7ab7-4b0a-907c-f00308887a29",
+  "transcript_path": "C:\\Users\\Yanis\\.claude\\projects\\C--Users-Yanis-Projects-smite\\e2e4cf91-7ab7-4b0a-907c-f00308887a29.jsonl",
+  "workspace": {
+    "current_dir": "C:\\Users\\Yanis\\Projects\\smite",
+    "project_dir": "C:\\Users\\Yanis\\Projects\\smite"
+  },
+  "model": {
+    "id": "claude-sonnet-4-5-20250929",
+    "display_name": "Sonnet 4.5"
+  },
+  "cost": {
+    "total_cost_usd": 1.8577269,
+    "total_duration_ms": 1137514
+  },
+  "context_window": {
+    "total_input_tokens": 202266,
+    "total_output_tokens": 19802,
+    "context_window_size": 200000,
+    "current_usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0
+    }
+  }
+}
