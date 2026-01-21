@@ -43,7 +43,7 @@ function estimateTokens(text: string): number {
  * Read and tokenize all base context files
  * Caches results for performance
  */
-async function getBaseContextTokens(
+export async function getBaseContextTokens(
   baseContextPath: string,
   workspaceDir?: string
 ): Promise<number> {

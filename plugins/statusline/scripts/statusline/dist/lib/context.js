@@ -15,7 +15,7 @@ function estimateTokens(text) {
  * Read and tokenize all base context files
  * Caches results for performance
  */
-async function getBaseContextTokens(baseContextPath, workspaceDir) {
+export async function getBaseContextTokens(baseContextPath, workspaceDir) {
     const now = Date.now();
     if (baseContextCache &&
         now - baseContextCache.timestamp < BASE_CONTEXT_CACHE_TTL) {

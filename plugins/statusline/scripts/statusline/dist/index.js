@@ -270,6 +270,13 @@ async function loadConfig() {
 async function getContextInfo(input, config) {
     const now = Date.now();
     let result;
+    // DEBUG: Log what we're receiving
+    console.error(`[DEBUG] usePayloadContextWindow: ${config.context.usePayloadContextWindow}`);
+    console.error(`[DEBUG] input.context_window: ${!!input.context_window}`);
+    if (input.context_window) {
+        console.error(`[DEBUG] total_input_tokens: ${input.context_window.total_input_tokens}`);
+        console.error(`[DEBUG] current_usage:`, input.context_window.current_usage);
+    }
     // Priorité absolue au payload si disponible (plus précis)
     const usePayloadContext = config.context.usePayloadContextWindow && input.context_window;
     if (usePayloadContext && input.context_window) {
@@ -291,11 +298,36 @@ async function getContextInfo(input, config) {
         // Otherwise fall back to transcript-based calculation
         if (tokens > 0) {
             const percentage = Math.min(100, Math.round((tokens / maxTokens) * 100));
-            result = { tokens, percentage, lastOutputTokens: null };
+            console.error(`[DEBUG] Using payload context: ${tokens} tokens (${percentage}%)`);
+            // Calculate base context for display breakdown
+            let baseContextTokens = 0;
+            if (config.context.includeBaseContext && config.context.baseContextPath) {
+                try {
+                    const { getBaseContextTokens } = await import("./lib/context.js");
+                    baseContextTokens = await getBaseContextTokens(config.context.baseContextPath, input.workspace.current_dir);
+                    if (!isFinite(baseContextTokens) || baseContextTokens < 0) {
+                        baseContextTokens = 0;
+                    }
+                }
+                catch {
+                    baseContextTokens = 0;
+                }
+            }
+            // Estimate transcript: total - base context
+            // (payload includes everything, so we reverse-calculate transcript)
+            const transcriptTokens = Math.max(0, tokens - baseContextTokens);
+            result = {
+                tokens,
+                percentage,
+                lastOutputTokens: null,
+                baseContext: baseContextTokens,
+                transcriptContext: transcriptTokens
+            };
             // Mettre en cache uniquement si on a des données valides
             contextCache = { timestamp: now, data: result };
             return result;
         }
+        console.error(`[DEBUG] Payload context not available, falling back to transcript`);
     }
     // Fallback sur le transcript SEULEMENT si le payload n'est pas disponible
     // et qu'on n'a pas de cache récent (éviter les sauts 36% → 0%)

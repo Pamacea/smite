@@ -16,6 +16,11 @@ export interface ContextOptions {
     workspaceDir?: string;
 }
 /**
+ * Read and tokenize all base context files
+ * Caches results for performance
+ */
+export declare function getBaseContextTokens(baseContextPath: string, workspaceDir?: string): Promise<number>;
+/**
  * Calculate context tokens from transcript file
  * NOTE: The payload's current_usage is always 0, so we estimate from transcript content
  */
