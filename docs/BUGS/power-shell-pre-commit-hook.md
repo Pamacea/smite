@@ -28,22 +28,37 @@ Git hooks are traditionally written as bash scripts (with `#!/bin/sh` shebang) a
 
 ## ✅ Solution
 
-The `/commit` skill now **automatically detects and handles** this error:
+The `/commit` skill now **automatically detects and handles** this error in a **cross-platform** manner:
 
-1. **First attempt**: Normal `git commit -m "message"`
-2. **Error detection**: If output contains `.ps1 extension` or `Processing -File`
-3. **Automatic retry**: Re-run with `git commit --no-verify -m "message"`
-4. **User notification**: "Bypassed failing pre-commit hook (PowerShell compatibility issue)"
+### Platform Detection
 
-### Code Changes
+1. **First attempt**: Normal `git commit -m "message"` (all platforms)
+2. **Platform detection**: Check if running on Windows (MINGW/MSYS Git Bash)
+3. **Error detection**: If output contains `.ps1 extension` or `Processing -File`
+4. **Automatic retry** (Windows only): Re-run with `git commit --no-verify -m "message"`
+5. **User notification**: "ℹ️  Bypassed failing pre-commit hook (PowerShell compatibility issue)"
+
+### Cross-Platform Implementation
 
 **File**: `plugins/smite/commands/commit.md`
 
+The solution is fully cross-platform:
+
+- **Platform Detection**: Uses `uname` to detect MINGW/MSYS (Windows Git Bash)
+- **Windows-specific fixes**: Only applied on Windows platforms
+- **Linux/Mac compatibility**: No Windows-specific operations run on Unix-like systems
+- **Universal error handling**: stderr redirection (`2>&1`) works on all platforms
+
 ```markdown
+2. **Platform detection and Windows cleanup**:
+   - Detect platform: Check if `uname` contains "MINGW" or "MSYS"
+   - **On Windows only**: Run Windows cleanup for device files
+   - On Linux/Mac: Skip Windows cleanup
+
 6. **Create commit**: Execute `git commit -m "message" 2>&1`
-   - **CRITICAL Windows PowerShell Hook Bug**: If commit fails with ".ps1 extension" error:
-     - Automatically retry with: `git commit --no-verify -m "message"`
-     - Inform user: "Bypassed failing pre-commit hook (PowerShell compatibility issue)"
+   - **Cross-platform stderr handling**: Always use `2>&1` (works on all platforms)
+   - **Windows-only**: PowerShell hook errors → Automatic retry with --no-verify
+   - **All platforms**: Other hook failures → Show error and suggest manual bypass
 ```
 
 ## 🛠️ Alternative Workarounds
@@ -90,25 +105,43 @@ git commit --no-verify -m "message"
 
 - **Affected Users**: Windows users with PowerShell 7.2+
 - **Affected Commands**: `/commit`, manual `git commit` with hooks
-- **Fix Version**: Commit `70cf5fe` (2026-01-21)
-- **Auto-handled**: Yes, the `/commit` skill handles this transparently
+- **Platform Support**: Cross-platform (Windows/Linux/Mac)
+  - Windows: Automatic hook error detection and retry
+  - Linux/Mac: Standard git workflow (no Windows-specific operations)
+- **Fix Version**: Commit `cf3945a` (2026-01-21) - Cross-platform implementation
+- **Auto-handled**: Yes, the `/commit` skill handles this transparently on all platforms
 
 ## 🧪 Testing
 
-To verify the fix works:
+### Cross-Platform Testing
+
+To verify the fix works on different platforms:
 
 ```bash
-# The /commit command should now automatically handle hook errors
+# All platforms: The /commit command should work seamlessly
 /commit
 
-# Manual verification:
+# Windows-specific: Verify hook error handling
 git commit -m "test" 2>&1 | grep ".ps1"
-# If error appears, run:
+# If error appears, verify automatic retry happens:
+# ℹ️  Bypassed failing pre-commit hook (PowerShell compatibility issue)
+
+# Manual verification (all platforms):
 git commit --no-verify -m "test"
+```
+
+### Platform Detection Test
+
+```bash
+# Should show MINGW64_NT-... on Windows
+# Should show Darwin on Mac
+# Should show Linux on Linux
+uname
 ```
 
 ---
 
 **Last Updated**: 2026-01-21
-**Status**: ✅ Resolved
-**Auto-Recovery**: Enabled in `/commit` skill
+**Status**: ✅ Resolved (Cross-Platform)
+**Auto-Recovery**: Enabled in `/commit` skill on all platforms
+**Platform Detection**: Automatic (MINGW/MSYS for Windows, standard for Linux/Mac)
