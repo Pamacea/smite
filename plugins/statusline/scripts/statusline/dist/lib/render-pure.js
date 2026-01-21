@@ -13,6 +13,17 @@ function renderPathAndModel(data, config) {
  */
 function renderSessionInfo(data, config) {
     const sessionParts = [];
+    // Show context breakdown if enabled and data is available
+    if (config.context.showContextBreakdown &&
+        data.baseContext !== undefined &&
+        data.transcriptContext !== undefined) {
+        const baseK = (data.baseContext / 1000).toFixed(1);
+        const transcriptK = (data.transcriptContext / 1000).toFixed(1);
+        const totalK = ((data.baseContext + data.transcriptContext) / 1000).toFixed(1);
+        sessionParts.push(`${colors.cyan}Base:${colors.reset} ${baseK}K ${colors.gray}${config.separator}${colors.reset} `);
+        sessionParts.push(`${colors.magenta}Transcript:${colors.reset} ${transcriptK}K ${colors.gray}${config.separator}${colors.reset} `);
+        sessionParts.push(`${colors.white}${totalK}K${colors.reset}`);
+    }
     if (config.session.cost.enabled) {
         sessionParts.push(data.sessionCost);
     }

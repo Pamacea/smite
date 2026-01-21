@@ -41,6 +41,9 @@ export const defaultConfigJson = {
     autocompactBufferTokens: 45000,
     useUsableContextOnly: true,
     overheadTokens: 0,
+    includeBaseContext: true,
+    baseContextPath: "~/.claude",
+    showContextBreakdown: false,
   },
   limits: {
     enabled: true,

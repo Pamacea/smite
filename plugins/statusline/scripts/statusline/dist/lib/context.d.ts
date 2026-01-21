@@ -2,6 +2,8 @@ export interface ContextData {
     tokens: number | null;
     percentage: number | null;
     lastOutputTokens: number | null;
+    baseContext?: number;
+    transcriptContext?: number;
 }
 export interface ContextOptions {
     transcriptPath: string;
@@ -9,6 +11,9 @@ export interface ContextOptions {
     autocompactBufferTokens: number;
     useUsableContextOnly: boolean;
     overheadTokens: number;
+    includeBaseContext?: boolean;
+    baseContextPath?: string;
+    workspaceDir?: string;
 }
 /**
  * Calculate context tokens from transcript file

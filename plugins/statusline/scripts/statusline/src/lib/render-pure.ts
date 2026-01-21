@@ -16,6 +16,8 @@ export interface StatuslineData {
   contextPercentage: number | null;
   lastOutputTokens: number | null;
   tokenDiff?: number; // Optional: tokens added since last update
+  baseContext?: number; // Base context tokens (system messages + config files)
+  transcriptContext?: number; // Transcript context tokens (user/assistant messages)
   usageLimits?: {
     five_hour: UsageLimit | null;
     seven_day: UsageLimit | null;
@@ -40,6 +42,24 @@ function renderPathAndModel(data: StatuslineData, config: StatuslineConfig): str
  */
 function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): string | null {
   const sessionParts: string[] = [];
+
+  // Show context breakdown if enabled and data is available
+  if (
+    config.context.showContextBreakdown &&
+    data.baseContext !== undefined &&
+    data.transcriptContext !== undefined
+  ) {
+    const baseK = (data.baseContext / 1000).toFixed(1);
+    const transcriptK = (data.transcriptContext / 1000).toFixed(1);
+    const totalK = ((data.baseContext + data.transcriptContext) / 1000).toFixed(1);
+    sessionParts.push(
+      `${colors.cyan}Base:${colors.reset} ${baseK}K ${colors.gray}${config.separator}${colors.reset} `
+    );
+    sessionParts.push(
+      `${colors.magenta}Transcript:${colors.reset} ${transcriptK}K ${colors.gray}${config.separator}${colors.reset} `
+    );
+    sessionParts.push(`${colors.white}${totalK}K${colors.reset}`);
+  }
 
   if (config.session.cost.enabled) {
     sessionParts.push(data.sessionCost);

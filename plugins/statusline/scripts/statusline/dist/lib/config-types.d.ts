@@ -43,6 +43,9 @@ export interface ContextConfig {
     autocompactBufferTokens: number;
     useUsableContextOnly: boolean;
     overheadTokens: number;
+    includeBaseContext: boolean;
+    baseContextPath: string;
+    showContextBreakdown: boolean;
 }
 export interface LimitsConfig {
     enabled: boolean;

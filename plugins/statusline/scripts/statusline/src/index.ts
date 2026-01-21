@@ -349,6 +349,8 @@ interface ContextInfo {
   tokens: number | null;
   percentage: number | null;
   lastOutputTokens: number | null;
+  baseContext?: number;
+  transcriptContext?: number;
 }
 
 async function getContextInfo(
@@ -410,6 +412,9 @@ async function getContextInfo(
     autocompactBufferTokens: config.context.autocompactBufferTokens,
     useUsableContextOnly: config.context.useUsableContextOnly,
     overheadTokens: config.context.overheadTokens,
+    includeBaseContext: config.context.includeBaseContext,
+    baseContextPath: config.context.baseContextPath,
+    workspaceDir: input.workspace.current_dir,
   });
 
   result = {
@@ -475,17 +480,32 @@ async function main() {
 
     // Token tracking
     const currentUsage = contextInfo.tokens || 0;
-    // Generate session ID from workspace path to detect parallel sessions
-    const sessionId = input.workspace.current_dir;
+    // Use transcript path as unique session ID (changes with /new command)
+    const sessionId = input.transcript_path;
     const tokenTracker = await loadTokenTracker(currentUsage, sessionId);
-    const { diff: tokenDiff, shouldShow: showTokenDiff } = getTokenDiff(
+    let { diff: tokenDiff, shouldShow: showTokenDiff } = getTokenDiff(
       currentUsage,
       tokenTracker
     );
 
-    // Always update timestamp even if no new tokens (for timeout to work)
-    const updatedTracker = updateTracker(tokenTracker, currentUsage);
-    await saveTokenTracker(updatedTracker);
+    // Detect spurious diffs from base context calculation changes or session resets
+    // If diff is unreasonably large (>50K in either direction), it's likely due to:
+    // - Base context being added/changed in config
+    // - New session (/new command) starting from 0
+    // - Context window reset/clear
+    // Threshold of 50K is safe because normal token additions are <10K per update
+    const SPURIOUS_DIFF_THRESHOLD = 50000;
+    if (Math.abs(tokenDiff) > SPURIOUS_DIFF_THRESHOLD) {
+      // This is likely a spurious diff - don't show it and reset baseline
+      showTokenDiff = false;
+      tokenTracker.lastUsage = currentUsage;
+      tokenTracker.timestamp = Date.now();
+      await saveTokenTracker(tokenTracker);
+    } else {
+      // Normal path: update tracker with actual changes
+      const updatedTracker = updateTracker(tokenTracker, currentUsage);
+      await saveTokenTracker(updatedTracker);
+    }
 
     // Tracker le répertoire de travail dynamique
     let workingDir = await trackWorkingDirectory(
@@ -533,6 +553,8 @@ async function main() {
       contextPercentage: contextInfo.percentage,
       lastOutputTokens: contextInfo.lastOutputTokens,
       tokenDiff: showTokenDiff ? tokenDiff : undefined,
+      baseContext: contextInfo.baseContext,
+      transcriptContext: contextInfo.transcriptContext,
       ...(getUsageLimits && {
         usageLimits: {
           five_hour: usageLimits.five_hour

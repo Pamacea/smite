@@ -50,6 +50,9 @@ export declare const defaultConfigJson: {
         autocompactBufferTokens: number;
         useUsableContextOnly: boolean;
         overheadTokens: number;
+        includeBaseContext: boolean;
+        baseContextPath: string;
+        showContextBreakdown: boolean;
     };
     limits: {
         enabled: boolean;
