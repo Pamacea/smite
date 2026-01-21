@@ -150,9 +150,9 @@ export async function getContextData(
       try {
         const entry = JSON.parse(line);
 
-        if (entry.type === "system") {
-          systemChars += line.length;
-        } else if (entry.type === "user" || entry.type === "assistant") {
+        // System messages (reminders) are already counted in baseContext
+        // so we skip them here to avoid double-counting
+        if (entry.type === "user" || entry.type === "assistant") {
           transcriptChars += line.length;
           messageCount++;
         }
@@ -163,7 +163,6 @@ export async function getContextData(
 
     // Estimate transcript tokens (using improved 3.5 ratio)
     const transcriptTokens = Math.round(transcriptChars / 3.5) || 0;
-    const systemTokens = Math.round(systemChars / 3.5) || 0;
 
     // Calculate base context from files if enabled
     let baseContextTokens = 0;
@@ -179,8 +178,9 @@ export async function getContextData(
       }
     }
 
-    // Total = transcript + system messages + base context files + overhead
-    const totalTokens = (transcriptTokens + systemTokens + baseContextTokens + overheadTokens) || 0;
+    // Total = transcript + base context files + overhead
+    // (system messages are excluded as they're already in baseContext)
+    const totalTokens = (transcriptTokens + baseContextTokens + overheadTokens) || 0;
 
     // Calculate usable context
     let usableTokens = totalTokens;
@@ -205,7 +205,7 @@ export async function getContextData(
       tokens: usableTokens,
       percentage,
       lastOutputTokens,
-      baseContext: baseContextTokens + systemTokens,
+      baseContext: baseContextTokens,
       transcriptContext: transcriptTokens,
     };
   } catch (error) {
