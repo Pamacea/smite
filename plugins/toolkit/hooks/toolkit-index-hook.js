@@ -22,6 +22,9 @@ const indexPath = path.join(toolkitDir, 'index.json');
 // Config
 const MAX_AGE_HOURS = 3; // 3 hours freshness
 const CHUNK_SIZE_LINES = 100; // ~1000 tokens per chunk
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB max file size
+const MAX_CHUNKS = 10000; // Maximum total chunks to prevent memory issues
+const MAX_DEPTH = 15; // Maximum directory depth to scan
 
 /**
  * Check if index needs rebuild
@@ -51,7 +54,12 @@ function scanFiles(projectDir) {
     const extensions = ['.ts', '.tsx', '.js', '.jsx'];
     const excludeDirs = ['node_modules', 'dist', '.next', 'coverage', 'build'];
 
-    function scanDir(dir) {
+    function scanDir(dir, depth = 0) {
+      // Prevent infinite recursion with depth limit
+      if (depth > MAX_DEPTH) {
+        return;
+      }
+
       try {
         const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -63,7 +71,7 @@ function scanFiles(projectDir) {
             if (excludeDirs.includes(entry.name)) {
               continue;
             }
-            scanDir(fullPath);
+            scanDir(fullPath, depth + 1);
           } else if (entry.isFile()) {
             const ext = path.extname(entry.name);
             // Skip test files
@@ -100,6 +108,13 @@ function scanFiles(projectDir) {
  * Create chunks from file content
  */
 function createChunks(filePath, content) {
+  // Check file size before processing
+  const stats = fs.statSync(filePath);
+  if (stats.size > MAX_FILE_SIZE) {
+    console.warn(`⚠️  Skipping large file: ${filePath} (${Math.round(stats.size / 1024)}KB)`);
+    return [];
+  }
+
   const lines = content.split('\n');
   const chunks = [];
 
@@ -133,9 +148,24 @@ function buildFullIndex(projectDir) {
   const chunks = [];
 
   for (const file of files) {
+    // Stop if we've hit the chunk limit
+    if (chunks.length >= MAX_CHUNKS) {
+      console.warn(`⚠️  Reached maximum chunk limit (${MAX_CHUNKS}), stopping...`);
+      break;
+    }
+
     try {
       const content = fs.readFileSync(file, 'utf-8');
       const fileChunks = createChunks(file, content);
+
+      // Only add chunks if we haven't exceeded the limit
+      const remainingSpace = MAX_CHUNKS - chunks.length;
+      if (fileChunks.length > remainingSpace) {
+        chunks.push(...fileChunks.slice(0, remainingSpace));
+        console.warn(`⚠️  Reached chunk limit, partially processed file: ${file}`);
+        break;
+      }
+
       chunks.push(...fileChunks);
     } catch (error) {
       // Skip unreadable files
@@ -172,9 +202,24 @@ function updateIndex(projectDir, oldIndex) {
   let chunks = oldIndex.chunks.filter(c => !removedFiles.includes(c.file));
 
   for (const file of newFiles) {
+    // Stop if we've hit the chunk limit
+    if (chunks.length >= MAX_CHUNKS) {
+      console.warn(`⚠️  Reached maximum chunk limit (${MAX_CHUNKS}), stopping...`);
+      break;
+    }
+
     try {
       const content = fs.readFileSync(file, 'utf-8');
       const fileChunks = createChunks(file, content);
+
+      // Only add chunks if we haven't exceeded the limit
+      const remainingSpace = MAX_CHUNKS - chunks.length;
+      if (fileChunks.length > remainingSpace) {
+        chunks.push(...fileChunks.slice(0, remainingSpace));
+        console.warn(`⚠️  Reached chunk limit, partially processed file: ${file}`);
+        break;
+      }
+
       chunks.push(...fileChunks);
     } catch (error) {
       // Skip unreadable files
