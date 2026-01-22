@@ -2,7 +2,9 @@
   "name": "predator",
   "version": "1.0.0",
   "description": "Advanced skill workflow system with modular step-based commands for systematic development",
-  "author": "Pamacea",
+  "author": {
+    "name": "Pamacea"
+  },
   "license": "MIT",
   "keywords": [
     "workflow",
@@ -11,55 +13,6 @@
     "development",
     "systematic"
   ],
-  "hooks": {
-    "PostPluginInstall": "hooks/install.js"
-  },
-  "skills": [
-    {
-      "name": "predator",
-      "path": "skills/predator/SKILL.md"
-    }
-  ],
-  "commands": [
-    {
-      "name": "predator",
-      "path": "commands/predator.md",
-      "description": "Advanced workflow with modular step-based execution (APEX methodology)"
-    },
-    {
-      "name": "debug-predator",
-      "path": "commands/debug-predator.md",
-      "description": "Systematic bug debugging with step-by-step analysis"
-    },
-    {
-      "name": "brainstorm",
-      "path": "commands/brainstorm.md",
-      "description": "Collaborative brainstorming workflow with challenge phase"
-    },
-    {
-      "name": "review-code",
-      "path": "commands/review-code.md",
-      "description": "Comprehensive code review with security and quality checks"
-    },
-    {
-      "name": "clean-code",
-      "path": "commands/clean-code.md",
-      "description": "Transform messy code into clean, idiomatic code"
-    },
-    {
-      "name": "create-workflow",
-      "path": "commands/create-workflow.md",
-      "description": "Generate custom workflow templates from descriptions"
-    }
-  ],
-  "categories": [
-    "Development",
-    "Workflow",
-    "Automation"
-  ],
   "homepage": "https://github.com/Pamacea/smite",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Pamacea/smite"
-  }
+  "repository": "https://github.com/Pamacea/smite"
 }
