@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "plugin-name",
   "description": "One-line description",
   "version": "3.1.0",
@@ -11,7 +10,6 @@
   "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
   "keywords": ["keyword1", "keyword2", "keyword3"],
-  "category": "development",
   "commands": "./commands/",
   "skills": "./skills/",
   "agents": "./agents/",
