@@ -230,10 +230,7 @@ function renderDailySpend(data: StatuslineData, config: StatuslineConfig): strin
 /**
  * Render statusline output
  *
- * CRITICAL: Put tokens + progressbar + percentage FIRST after branch
- * so they're always visible even on narrow terminals
- *
- * Order: Branch • Tokens • Progressbar • Model • Cost • Duration • GitChanges • Path
+ * Order: Branch • Model • Path • Cost • Duration • Tokens • Separator • Progressbar • Percentage
  */
 export function renderStatusline(
   data: StatuslineData,
@@ -248,7 +245,25 @@ export function renderStatusline(
     parts.push(`${colors.white}${branchName}${colors.reset}`);
   }
 
-  // CRITICAL: Tokens + Progressbar + Percentage - RIGHT AFTER BRANCH
+  // Model name (short)
+  const modelDisplay =
+    config.showSonnetModel || !data.modelName.includes("Sonnet")
+      ? data.modelName
+      : "Sonnet";
+  parts.push(`${colors.orange}${modelDisplay}${colors.reset}`);
+
+  // Path/repo name (after model as requested)
+  parts.push(`${colors.cyan}${formatPath(data.dirPath, config.pathDisplayMode)}${colors.reset}`);
+
+  // Cost and duration
+  if (config.session.cost.enabled) {
+    parts.push(data.sessionCost);
+  }
+  if (config.session.duration.enabled) {
+    parts.push(data.sessionDuration);
+  }
+
+  // Tokens + Progressbar + Percentage - with separator between tokens and bar
   if (config.session.tokens.enabled && data.contextTokens !== null) {
     const maxTokens = config.context.maxContextTokens;
     const userTokens = data.userTokens ?? data.contextTokens;
@@ -265,7 +280,7 @@ export function renderStatusline(
     }
     parts.push(`${colors.magenta}${tokensStr}${colors.reset}`);
 
-    // Progressbar + percentage RIGHT after tokens
+    // Progressbar + percentage with separator before bar
     if (config.session.percentage.enabled) {
       const { progressBar, showValue } = config.session.percentage;
       const maxTokensVal = config.context.maxContextTokens || 200000;
@@ -290,21 +305,6 @@ export function renderStatusline(
         }
       }
     }
-  }
-
-  // Model name (short)
-  const modelDisplay =
-    config.showSonnetModel || !data.modelName.includes("Sonnet")
-      ? data.modelName
-      : "Sonnet";
-  parts.push(`${colors.orange}${modelDisplay}${colors.reset}`);
-
-  // Cost and duration
-  if (config.session.cost.enabled) {
-    parts.push(data.sessionCost);
-  }
-  if (config.session.duration.enabled) {
-    parts.push(data.sessionDuration);
   }
 
   // Git changes (if any) - compact format

@@ -64,7 +64,10 @@ export function formatCost(cost: number, format: "decimal1" | "decimal2" | "deci
     decimal2: 2,
     decimal3: 3,
   };
-  return `$${cost.toFixed(decimals[format])}`;
+  const costStr = cost < 1
+    ? `$${(cost * 100).toFixed(0)}`
+    : `$${cost.toFixed(decimals[format])}`;
+  return `${colors.green}${costStr}${colors.reset}`;
 }
 
 /**
@@ -75,13 +78,16 @@ export function formatDuration(ms: number): string {
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
 
+  let timeStr: string;
   if (hours > 0) {
-    return `${hours}h ${minutes % 60}m`;
+    timeStr = `${hours}h ${minutes % 60}m`;
   } else if (minutes > 0) {
-    return `${minutes}m ${seconds % 60}s`;
+    timeStr = `${minutes}m ${seconds % 60}s`;
   } else {
-    return `${seconds}s`;
+    timeStr = `${seconds}s`;
   }
+
+  return `${colors.blue}${timeStr}${colors.reset}`;
 }
 
 /**
