@@ -70,8 +70,20 @@ const LAST_PAYLOAD_PATH = join(__dirname, "..", "data", "last_payload.txt");
 const CACHE_FILE_PATH = join(__dirname, "..", "data", "context_cache.json");
 const TOKEN_TRACKER_PATH = join(homedir(), ".claude", ".token-tracker.json");
 
-const TOKEN_DIFF_TIMEOUT = 5000; // 5 seconds - hide token diff after this time
-const SESSION_TIMEOUT = 1800000; // 30 minutes - reset tracker after this time
+/**
+ * Time to show token diff after activity stops.
+ * 10 seconds balances visibility (long enough to see) with
+ * recency (fades out before it becomes stale).
+ */
+const TOKEN_DIFF_TIMEOUT = 10000;
+
+/**
+ * Session timeout for token tracker.
+ * 30 minutes = 1800000ms. After this period, we assume a new
+ * work session and reset the baseline. Prevents showing old
+ * token diffs from previous sessions.
+ */
+const SESSION_TIMEOUT = 1800000;
 
 interface TokenTrackerData {
   lastUsage: number;
@@ -87,7 +99,13 @@ interface ContextCache {
 }
 
 let contextCache: ContextCache | null = null;
-const CACHE_TTL = 2000; // 2 secondes - éviter les flickers
+
+/**
+ * Time-to-live for context info cache.
+ * 2 seconds prevents flickering when context calculation methods
+ * switch (e.g., from payload to transcript-based).
+ */
+const CACHE_TTL = 2000;
 
 /**
  * Check if payload tokens are trustworthy for the given transcript path.
@@ -289,11 +307,22 @@ function updateTracker(
 ): TokenTrackerData {
   const tokenDiff = currentUsage - tracker.lastUsage;
   const now = Date.now();
+  const timeSinceLastDiff = now - (tracker.lastDiffTime || 0);
 
   if (tokenDiff > 0) {
-    // New tokens added - normal progression
-    tracker.lastUsage = currentUsage;
-    tracker.lastDiffTime = now;
+    // New tokens added - active work in progress
+    // Keep the baseline (lastUsage) UNCHANGED to ACCUMULATE the diff
+    // Only update lastDiffTime to keep the diff visible
+
+    // Only reset baseline when timeout expires (5s of no activity)
+    if (timeSinceLastDiff >= TOKEN_DIFF_TIMEOUT) {
+      // Timeout expired - activity stopped, reset baseline
+      tracker.lastUsage = currentUsage;
+      tracker.lastDiffTime = now;
+    } else {
+      // Still active - just update the timestamp to keep diff visible
+      tracker.lastDiffTime = now;
+    }
   } else if (tokenDiff < 0) {
     // Context cleared or parallel session detected
     // Update lastUsage to prevent showing huge positive diffs later
@@ -306,18 +335,117 @@ function updateTracker(
   return tracker;
 }
 
-// Tracking du répertoire de travail dynamique
+// Dynamic working directory tracking
 let currentWorkingDir: string | null = null;
 
 /**
- * Parse le transcript pour détecter les changements de répertoire (cd)
- * et retourne le répertoire de travail actuel
+ * Extract bash commands from transcript entry content.
+ * Handles both <function=Bash> tags and direct command patterns.
+ */
+function extractBashCommands(entryContent: string): string[] {
+  const bashCommands: string[] = [];
+
+  // Try to find Bash tool calls in the content
+  const functionMatches = entryContent.match(/<function=Bash>([\s\S]*?)<\/function>/g);
+  if (functionMatches) {
+    for (const match of functionMatches) {
+      // Extract content between the tags
+      const innerContent = match.replace(/<\/?function=Bash>/g, "");
+      // Look for "command": "..." or just cd
+      const commandMatch = innerContent.match(/"command"\s*:\s*"([^"]*cd[^"]*)"/);
+      if (commandMatch) {
+        bashCommands.push(commandMatch[1]);
+      } else if (innerContent.includes("cd")) {
+        // Fallback: take all content containing cd
+        bashCommands.push(innerContent);
+      }
+    }
+  }
+
+  // Also look for direct commands in content (simple case)
+  if (bashCommands.length === 0) {
+    const directCdMatch = entryContent.match(/(?:^\s*|\n)(cd\s+[^\n]+)/g);
+    if (directCdMatch) {
+      bashCommands.push(...directCdMatch);
+    }
+  }
+
+  return bashCommands;
+}
+
+/**
+ * Extract cd target directory from a command string.
+ * Returns null if no valid cd target found.
+ */
+function extractCdTarget(command: string): string | null {
+  // Normalize the command
+  const normalizedCmd = command.replace(/\\'/g, "'").replace(/\\"/g, '"');
+
+  // Look for cd with different patterns
+  // Pattern 1: cd && other_command
+  // Pattern 2: cd dir
+  // Pattern 3: command && cd dir
+  const cdPatterns = [
+    /(?:^|&&\s*|;\s*)cd\s+([^\s&;]+)/,
+    /cd\s+"([^"]+)"/,
+    /cd\s+'([^']+)'/,
+  ];
+
+  for (const pattern of cdPatterns) {
+    const match = normalizedCmd.match(pattern);
+    if (match?.[1]) {
+      // Clean remaining quotes and return
+      return match[1].replace(/^["']|["']$/g, "").trim();
+    }
+  }
+
+  // Handle "cd &&" case (no argument)
+  if (normalizedCmd.includes("cd &&")) {
+    return null;
+  }
+
+  return null;
+}
+
+/**
+ * Resolve a target path relative to a base path.
+ * Handles absolute paths, relative paths, special cases (.., ~), and normalizes separators.
+ */
+function resolveTargetPath(targetDir: string, basePath: string): string {
+  // Absolute path
+  if (targetDir.startsWith("/") || targetDir.match(/^[A-Za-z]:\\/)) {
+    return targetDir;
+  }
+
+  // Go up one level
+  if (targetDir === "..") {
+    const parts: string[] = basePath.split(/[/\\]/);
+    parts.pop();
+    return parts.join("/");
+  }
+
+  // Home directory - use workspace home directory
+  if (targetDir === "~") {
+    const workspaceParts = basePath.split(/[/\\]/);
+    return workspaceParts.length >= 2
+      ? workspaceParts.slice(0, 2).join("/")
+      : basePath;
+  }
+
+  // Relative path
+  const separator = basePath.includes("/") ? "/" : "\\";
+  return basePath + separator + targetDir;
+}
+
+/**
+ * Parse the transcript to detect directory changes (cd commands)
+ * and return the current working directory.
  */
 async function trackWorkingDirectory(
   transcriptPath: string,
   initialDir: string
 ): Promise<string> {
-  // Si c'est la première fois, initialiser avec le répertoire initial
+  // Initialize with the initial directory on first run
   if (!currentWorkingDir) {
     currentWorkingDir = initialDir;
   }
@@ -326,38 +454,38 @@ async function trackWorkingDirectory(
     const content = await readFile(transcriptPath, "utf-8");
     const transcript = JSON.parse(content);
 
-    // Chercher les dernières commandes cd dans le transcript
-    // On regarde seulement les 20 dernières entrées pour éviter de tout parser
+    // Look for recent cd commands in the transcript
+    // Only check the last 20 entries to avoid parsing everything
     const recentEntries = transcript.slice(-20);
 
     for (const entry of recentEntries) {
-      // Si c'est une commande de l'utilisateur ou de l'IA
+      // Check if this is a user or AI command
       if (entry.type === "user" || entry.type === "assistant") {
         const entryContent = entry.content || "";
 
-        // Tenter d'extraire les commandes bash des tool calls
+        // Try to extract bash commands from tool calls
         // Format 1: <function=Bash>...command...</function>
-        // Format 2: Tool use blocks avec "command" field
+        // Format 2: Tool use blocks with "command" field
         let bashCommands: string[] = [];
 
-        // Essayer de trouver les tool calls Bash dans le contenu
+        // Try to find Bash tool calls in the content
         const functionMatches = entryContent.match(/<function=Bash>([\s\S]*?)<\/function>/g);
         if (functionMatches) {
           for (const match of functionMatches) {
-            // Extraire le contenu entre les balises
+            // Extract content between the tags
             const innerContent = match.replace(/<\/?function=Bash>/g, "");
-            // Chercher "command": "..." ou juste cd
+            // Look for "command": "..." or just cd
             const commandMatch = innerContent.match(/"command"\s*:\s*"([^"]*cd[^"]*)"/);
             if (commandMatch) {
               bashCommands.push(commandMatch[1]);
             } else if (innerContent.includes("cd")) {
-              // Fallback: prendre tout le contenu qui contient cd
+              // Fallback: take all content containing cd
               bashCommands.push(innerContent);
             }
           }
         }
 
-        // Aussi chercher les commandes directes dans le contenu (cas simple)
+        // Also look for direct commands in content (simple case)
         if (bashCommands.length === 0) {
           const directCdMatch = entryContent.match(/(?:^\s*|\n)(cd\s+[^\n]+)/g);
           if (directCdMatch) {
@@ -365,12 +493,12 @@ async function trackWorkingDirectory(
           }
         }
 
-        // Analyser chaque commande pour trouver les cd
+        // Analyze each command to find cd commands
         for (const cmd of bashCommands) {
-          // Normaliser la commande
+          // Normalize the command
           const normalizedCmd = cmd.replace(/\\'/g, "'").replace(/\\"/g, '"');
 
-          // Chercher cd avec différents patterns
+          // Look for cd with different patterns
           // Pattern 1: cd && other_command
           // Pattern 2: cd dir
           // Pattern 3: command && cd dir
@@ -387,25 +515,25 @@ async function trackWorkingDirectory(
               let targetDir = match[1];
 
               if (!targetDir && match[0]?.includes("cd &&")) {
-                // Cas "cd &&" sans argument = utiliser le répertoire initial
+                // Case "cd &&" without argument = use initial directory
                 continue;
               }
 
               if (targetDir) {
-                // Nettoyer les quotes et guillemets restants
+                // Clean remaining quotes
                 targetDir = targetDir.replace(/^["']|["']$/g, "").trim();
 
-                // Résoudre le chemin relatif ou absolu
+                // Resolve relative or absolute path
                 if (targetDir.startsWith("/") || targetDir.match(/^[A-Za-z]:\\/)) {
-                  // Chemin absolu
+                  // Absolute path
                   currentWorkingDir = targetDir;
                 } else if (targetDir === "..") {
-                  // Remonter d'un niveau
+                  // Go up one level
                   const parts: string[] = (currentWorkingDir || initialDir).split(/[/\\]/);
                   parts.pop();
                   currentWorkingDir = parts.join("/");
                 } else if (targetDir === "~") {
-                  // Home directory - utiliser le home directory du workspace
+                  // Home directory - use workspace home directory
                   const workspaceParts = initialDir.split(/[/\\]/);
                   if (workspaceParts.length >= 2) {
                     currentWorkingDir = workspaceParts.slice(0, 2).join("/");
@@ -413,13 +541,13 @@ async function trackWorkingDirectory(
                     currentWorkingDir = initialDir;
                   }
                 } else {
-                  // Chemin relatif
+                  // Relative path
                   const basePath: string = currentWorkingDir || initialDir;
                   const separator = basePath.includes("/") ? "/" : "\\";
                   currentWorkingDir = basePath + separator + targetDir;
                 }
 
-                // Normaliser le chemin (utiliser / partout)
+                // Normalize path (use / everywhere)
                 if (currentWorkingDir) {
                   currentWorkingDir = currentWorkingDir.replace(/\\/g, "/");
                 }
@@ -432,7 +560,7 @@ async function trackWorkingDirectory(
 
     return currentWorkingDir || initialDir;
   } catch {
-    // En cas d'erreur, retourner le répertoire initial
+    // On error, return the initial directory
     return initialDir;
   }
 }
@@ -476,10 +604,10 @@ async function getContextInfo(
     console.error(`[DEBUG] current_usage:`, input.context_window.current_usage);
   }
 
-  // Priorité absolue au payload si disponible (plus précis)
-  // Le payload contient total_input_tokens qui est le total exact de la session
-  // MAIS: après /clear ou /new, le payload a les tokens de l'ANCIENNE session
-  // On doit donc vérifier que le payload correspond au transcript actuel
+  // Absolute priority to payload if available (more accurate)
+  // The payload contains total_input_tokens which is the exact session total
+  // BUT: after /clear or /new, the payload has tokens from the OLD session
+  // So we must verify that the payload corresponds to the current transcript
   let usePayloadContext = config.context.usePayloadContextWindow && !!input.context_window;
 
   // Check if we should trust the payload data for THIS session
@@ -553,7 +681,7 @@ async function getContextInfo(
         userTokens: transcriptTokens // User tokens exclude system/base context
       };
 
-      // Mettre en cache uniquement si on a des données valides
+      // Cache only if we have valid data
       // Use actualTranscriptPath as sessionId - it changes with /new and /clear
       contextCache = { timestamp: now, sessionId: actualTranscriptPath, data: result };
       return result;
@@ -561,8 +689,8 @@ async function getContextInfo(
     console.error(`[DEBUG] Payload context not available, falling back to transcript`);
   }
 
-  // Fallback sur le transcript SEULEMENT si le payload n'est pas disponible
-  // et qu'on n'a pas de cache récent (éviter les sauts 36% → 0%)
+  // Fallback to transcript ONLY if payload is not available
+  // and we don't have recent cache (to avoid jumps 36% → 0%)
   // Extended cache (3x CACHE_TTL = 6 seconds) prevents flickering when:
   // - Payload context is temporarily unavailable
   // - Context is being recalculated
@@ -576,7 +704,7 @@ async function getContextInfo(
     contextCache.data.tokens !== null &&
     contextCache.data.tokens > 0
   ) {
-    // Garder la valeur cached pendant 6 secondes de plus pour éviter les sauts
+    // Keep the cached value for 6 more seconds to avoid jumps
     // This smooths transitions between different context calculation methods
     return contextCache.data;
   }
@@ -601,7 +729,7 @@ async function getContextInfo(
     userTokens: contextData.userTokens,
   };
 
-  // Mettre en cache (use actualTranscriptPath as sessionId)
+  // Cache the result (use actualTranscriptPath as sessionId)
   if (contextData.tokens !== null && contextData.percentage !== null) {
     contextCache = { timestamp: now, sessionId: actualTranscriptPath, data: result };
   }
@@ -676,11 +804,14 @@ async function main() {
     );
 
     // Detect spurious diffs from base context calculation changes or session resets
-    // If diff is unreasonably large (>50K in either direction), it's likely due to:
-    // - Base context being added/changed in config
-    // - New session (/new command) starting from 0
-    // - Context window reset/clear
-    // Threshold of 50K is safe because normal token additions are <10K per update
+    /**
+     * Threshold for detecting spurious token diffs.
+     * 50K tokens = far more than typical single action (<10K).
+     * Diffs above this threshold are likely from:
+     * - Base context configuration changes
+     * - Session resets (/new command)
+     * - Context window compaction
+     */
     const SPURIOUS_DIFF_THRESHOLD = 50000;
     if (Math.abs(tokenDiff) > SPURIOUS_DIFF_THRESHOLD) {
       // This is likely a spurious diff - don't show it and reset baseline
@@ -694,7 +825,7 @@ async function main() {
       await saveTokenTracker(updatedTracker);
     }
 
-    // Tracker le répertoire de travail dynamique
+    // Track the dynamic working directory
     let workingDir = await trackWorkingDirectory(
       actualTranscriptPath,
       input.workspace.current_dir

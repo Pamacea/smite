@@ -22,7 +22,9 @@ const hooks = [
   'toolkit-save-hook.js',
   'toolkit-index-hook.js',
   'toolkit-deps-hook.js',
-  'toolkit-enforcer-hook.js'
+  'tool-usage-enforcer-grep.js',
+  'tool-usage-enforcer-glob.js',
+  'tool-usage-enforcer-bash.js'
 ];
 
 console.log('🔧 Installing SMITE Toolkit hooks...');

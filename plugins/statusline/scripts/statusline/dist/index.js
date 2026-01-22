@@ -212,10 +212,18 @@ function getTokenDiff(currentUsage, tracker) {
 function updateTracker(tracker, currentUsage) {
     const tokenDiff = currentUsage - tracker.lastUsage;
     const now = Date.now();
+    const timeSinceLastDiff = now - (tracker.lastDiffTime || 0);
     if (tokenDiff > 0) {
-        // New tokens added - normal progression
-        tracker.lastUsage = currentUsage;
+        // New tokens added - active work in progress
+        // Keep the baseline (lastUsage) UNCHANGED to ACCUMULATE the diff
+        // Only update lastDiffTime to keep the diff visible
         tracker.lastDiffTime = now;
+        // Only reset baseline when timeout expires (5s of no activity)
+        if (timeSinceLastDiff >= TOKEN_DIFF_TIMEOUT) {
+            // Timeout expired - activity stopped, reset baseline
+            tracker.lastUsage = currentUsage;
+            tracker.lastDiffTime = now;
+        }
     }
     else if (tokenDiff < 0) {
         // Context cleared or parallel session detected

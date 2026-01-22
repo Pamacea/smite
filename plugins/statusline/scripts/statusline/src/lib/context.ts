@@ -32,12 +32,37 @@ interface BaseContextCache {
 }
 
 let baseContextCache: BaseContextCache | null = null;
-const BASE_CONTEXT_CACHE_TTL = 60000; // 60 seconds
+
+/**
+ * Time-to-live for base context cache.
+ * 60 seconds prevents excessive file I/O while ensuring changes
+ * to CLAUDE.md or rules are picked up reasonably quickly.
+ */
+const BASE_CONTEXT_CACHE_TTL = 60000;
 
 // Memory management limits
-const MAX_TRANSCRIPT_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_TRANSCRIPT_LINES = 5000; // Only read last 5000 lines for large files
-const MAX_FILE_SIZE_MB = 1; // 1MB limit for context files
+
+/**
+ * Maximum transcript file size before switching to streaming.
+ * 5MB = ~1.4M tokens (theoretical max). Ensures we don't load
+ * massive files into memory which could cause performance issues.
+ */
+const MAX_TRANSCRIPT_FILE_SIZE = 5 * 1024 * 1024;
+
+/**
+ * Maximum lines to read from large transcripts.
+ * 5000 lines = ~100-200K tokens typical. Balances accuracy
+ * with performance for large sessions. Reading more lines would
+ * give diminishing returns on accuracy while hurting performance.
+ */
+const MAX_TRANSCRIPT_LINES = 5000;
+
+/**
+ * Maximum file size for context files (CLAUDE.md, rules/*.md).
+ * 1MB = ~285K tokens. Prevents loading unexpectedly large files
+ * that could indicate misconfiguration or corrupted data.
+ */
+const MAX_FILE_SIZE_MB = 1;
 
 /**
  * Estimate tokens from text using ~3.5 characters per token
@@ -45,6 +70,14 @@ const MAX_FILE_SIZE_MB = 1; // 1MB limit for context files
  */
 function estimateTokens(text: string): number {
   return Math.round(text.length / 3.5);
+}
+
+/**
+ * Estimate tokens from character count using ~3.5 characters per token
+ * Use this when you already have the character count (avoids string conversion)
+ */
+function estimateTokensFromCharCount(charCount: number): number {
+  return Math.round(charCount / 3.5);
 }
 
 /**
@@ -179,15 +212,15 @@ export async function getBaseContextTokens(
     if (existsSync(rulesDir)) {
       try {
         const readDirRecursive = async (dir: string) => {
-          const files = await readdir(dir);
-          for (const file of files) {
-            const filePath = join(dir, file);
+          // Use withFileTypes to get file type info without extra stat() calls
+          const entries = await readdir(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const fullPath = join(dir, entry.name);
             try {
-              const stats = await stat(filePath);
-              if (stats.isDirectory()) {
-                await readDirRecursive(filePath);
-              } else if (file.endsWith(".md")) {
-                const content = await safeReadFile(filePath, MAX_FILE_SIZE_MB);
+              if (entry.isDirectory()) {
+                await readDirRecursive(fullPath);
+              } else if (entry.isFile() && entry.name.endsWith(".md")) {
+                const content = await safeReadFile(fullPath, MAX_FILE_SIZE_MB);
                 if (content) {
                   totalTokens += estimateTokens(content);
                 }
@@ -277,7 +310,7 @@ export async function getContextData(
     }
 
     // Estimate transcript tokens (using improved 3.5 ratio)
-    const transcriptTokens = Math.round(transcriptChars / 3.5) || 0;
+    const transcriptTokens = estimateTokensFromCharCount(transcriptChars);
 
     // Calculate base context from files if enabled
     // NOTE: Only counts global ~/.claude/ files, NOT workspace .claude/
