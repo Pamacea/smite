@@ -52,15 +52,28 @@
       "license": "MIT"
     },
     {
-      "name": "smite",
-      "source": "./plugins/smite",
+      "name": "predator",
+      "source": "./plugins/predator",
+      "description": "Advanced workflow system with modular step-based execution for systematic development, debugging, and brainstorming. Features 8-step workflows (00-07) with on-demand instruction loading for optimal token usage and MCP integration",
+      "version": "1.0.0",
+      "author": { "name": "Pamacea" },
+      "category": "development",
+      "tags": ["workflow", "development", "debug", "brainstorm", "mcp", "steps", "systematic"],
+      "keywords": ["predator", "workflow", "debug", "brainstorm", "steps", "mcp", "modular", "token-optimization"],
+      "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/predator",
+      "repository": "https://github.com/Pamacea/smite",
+      "license": "MIT"
+    },
+    {
+      "name": "basics",
+      "source": "./plugins/basics",
       "description": "Essential commands (oneshot, debug, commit, explore, epct, apex, smite)",
       "version": "3.1.0",
       "author": { "name": "Melvynx" },
       "category": "development",
       "tags": ["commands", "workflow", "development", "productivity"],
       "keywords": ["smite", "commands", "oneshot", "epct", "apex"],
-      "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/smite",
+      "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/basics",
       "repository": "https://github.com/Pamacea/smite",
       "license": "MIT"
     },
