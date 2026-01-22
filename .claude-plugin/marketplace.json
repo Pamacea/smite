@@ -2,13 +2,13 @@
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "smite",
   "version": "3.1.0",
-  "description": "Zero-debt engineering agents with multi-agent parallel orchestration",
+  "description": "Zero-debt engineering with multi-agent orchestration (ralph) and modular agents (mobs)",
   "owner": {
     "name": "Pamacea",
     "email": "[email protected]"
   },
   "metadata": {
-    "description": "Complete SMITE development workflow with 7 plugins for orchestration, analysis, and productivity. Features token optimization (75% savings), parallel execution (2-3x speedup), and automated code review.",
+    "description": "Complete SMITE development workflow with 7 plugins for orchestration, analysis, and productivity. Features token optimization (75% savings), parallel execution (2-3x speedup), and spec-first multi-agent system.",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -41,12 +41,12 @@
     {
       "name": "mobs",
       "source": "./plugins/mobs",
-      "description": "Multi-agent orchestration system with spec-first workflow - Architect, Builder, Explorer, Finalize, Simplifier, and Note agents",
-      "version": "3.1.0",
+      "description": "Multi-agent orchestration system with spec-first workflow - Architect, Builder, Finalize, Refactor, and Note agents",
+      "version": "4.0.0",
       "author": { "name": "Pamacea" },
       "category": "agents",
-      "tags": ["agents", "workflow", "spec-first", "orchestration", "architecture", "implementation", "qa", "exploration", "notes"],
-      "keywords": ["agents", "architect", "builder", "explorer", "finalize", "simplifier", "note"],
+      "tags": ["agents", "workflow", "spec-first", "orchestration", "architecture", "implementation", "qa", "refactoring", "notes"],
+      "keywords": ["agents", "architect", "builder", "finalize", "refactor", "note"],
       "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/mobs",
       "repository": "https://github.com/Pamacea/smite",
       "license": "MIT"

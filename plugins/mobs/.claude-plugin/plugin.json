@@ -1,7 +1,7 @@
 {
   "name": "mobs",
-  "description": "Multi-agent orchestration system - Spec-First development workflow with parallel agent execution",
-  "version": "3.1.0",
+  "description": "Multi-agent orchestration system - Spec-First development workflow with creative design and systematic refactoring",
+  "version": "4.0.0",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
@@ -19,7 +19,9 @@
     "implementation",
     "qa",
     "exploration",
-    "simplification",
+    "refactoring",
+    "code-review",
+    "validation",
     "notes",
     "obsidian"
   ],

@@ -11,16 +11,17 @@ Orchestrates multiple agents to complete complex development tasks by executing 
 ## 🚀 Quick Start
 
 ```bash
-# Install
+# 1. Install Ralph and required dependencies
 /plugin install ralph@smite
+/plugin install mobs@smite
 
-# Auto-generate PRD and execute
+# 2. Auto-generate PRD and execute
 /ralph "Build a todo app with authentication"
 
-# Auto-iterating (keeps going until done)
+# 3. Auto-iterating (keeps going until done)
 /loop "Build a full SaaS platform"
 
-# Use existing PRD
+# 4. Use existing PRD
 /ralph execute .claude/.smite/prd.json
 ```
 
@@ -66,6 +67,12 @@ Orchestrates multiple agents to complete complex development tasks by executing 
 }
 ```
 
+**Available agents** (from mobs plugin):
+- `architect` - Design & strategy
+- `builder` - Implementation
+- `finalize` - QA & documentation
+- `refactor` - Systematic refactoring
+
 **Status & control**:
 ```bash
 /ralph status    # Show progress
@@ -86,16 +93,15 @@ Orchestrates multiple agents to complete complex development tasks by executing 
 
 ## 🔗 Integration
 
-- **Requires**: architect, builder, finalize (SMITE agents)
+- **Requires**: mobs (architect, builder, finalize agents)
 - **Used by**: All complex workflows
 - **Compatible with**: toolkit (semantic search)
 
-**Agents orchestrated**:
-- `architect` - Design & strategy
-- `builder` - Implementation
-- `finalize` - QA & documentation
-- `explorer` - Codebase analysis
-- `simplifier` - Refactoring
+**Agents orchestrated** (from mobs plugin):
+- `/architect` - Design & strategy
+- `/builder` - Implementation
+- `/finalize` - QA & documentation
+- `/refactor` - Systematic refactoring
 
 ## 📚 Documentation
 

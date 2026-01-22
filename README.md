@@ -45,13 +45,39 @@ mgrep "authentication"                   # 2nd choice (semantic search)
 
 ---
 
-## 🤖 Core Plugins (13)
+## 🤖 Core Plugins (7)
 
 ### Orchestration
 **[ralph](plugins/ralph)** - Multi-agent orchestrator with parallel execution (2-3x speedup)
 ```bash
 /ralph "Build a REST API"
 /loop "Full SaaS platform"  # Auto-iterating
+```
+
+**[mobs](plugins/mobs)** - Multi-agent system with spec-first workflow (architect, builder, finalize, refactor, note)
+```bash
+/architect "Design authentication system"
+/builder "Implement user dashboard"
+/finalize                    # QA + documentation
+/refactor                    # Systematic refactoring
+/note inbox "Quick note"
+```
+
+### Development
+**[basics](plugins/basics)** - Essential commands (oneshot, epct, debug, explore, commit)
+```bash
+/oneshot "Add user login"    # Ultra-fast
+/epct "Build dashboard"      # Systematic
+/debug "Fix memory leak"
+/explore "How does auth work?"
+/commit
+```
+
+**[predator](plugins/predator)** - Advanced modular workflow with 8-step systematic execution
+```bash
+/predator develop "Feature implementation"
+/predator debug "Bug investigation"
+/predator brainstorm "Solutions exploration"
 ```
 
 ### Analysis
@@ -62,58 +88,10 @@ mgrep "authentication"                   # 2nd choice (semantic search)
 /toolkit graph --impact
 ```
 
-**[explorer](plugins/explorer)** - Codebase exploration & dependency mapping
-```bash
-/explore --task=map-architecture
-/explore --task=find-patterns
-```
-
-### Development
-**[architect](plugins/architect)** - Design & strategy (init + strategy + design + brainstorm)
-```bash
-/design --mode=init "Setup Next.js"
-/design --mode=strategy "Product roadmap"
-```
-
-**[builder](plugins/builder)** - Implementation (Next.js, Rust, Python)
-```bash
-/build "Implement authentication"
-/build --tech=nextjs "Build dashboard"
-```
-
-**[smite](plugins/smite)** - Essential commands (oneshot, epct, apex, debug, commit, pr)
-```bash
-/oneshot "Add user login"    # Ultra-fast
-/debug "Fix memory leak"
-/commit
-```
-
-### Quality
-**[finalize](plugins/finalize)** - QA + documentation (test + review + lint + docs)
-```bash
-/finalize                    # Full QA + Docs
-/finalize --mode=qa
-/finalize --mode=docs
-```
-
-**[quality-gate](plugins/quality-gate)** - Automated code review (complexity + security + semantics)
-```bash
-/quality-check --staged     # Only staged files
-/quality-check --changed    # Only modified files
-```
-
-**[simplifier](plugins/simplifier)** - Code simplification & refactoring
-```bash
-/simplifier                  # Recent changes
-/simplifier --scope=all
-```
-
 ### Productivity
 **[statusline](plugins/statusline)** - Auto-configuring statusline (tokens, git, session)
-**[obsidian-note-agent](plugins/obsidian-note-agent)** - AI-powered note writing
-**[docs-editor-mcp](plugins/docs-editor-mcp)** - Automatic documentation maintenance
-**[shell-aliases](plugins/shell-aliases)** - Shell shortcuts (cc, ccc)
-**[auto-rename-session](plugins/auto-rename-session)** - Intelligent session renaming
+**[shell](plugins/shell)** - Shell shortcuts (cc, ccc)
+**[auto-rename](plugins/auto-rename)** - Intelligent session renaming
 
 ---
 
@@ -144,24 +122,18 @@ mgrep "authentication"                   # 2nd choice (semantic search)
 ```
 smite/
 ├── .claude-plugin/           # Marketplace manifest
-│   └── marketplace.json      # 14 plugins catalog
+│   └── marketplace.json      # 7 plugins catalog
 ├── .claude/
 │   └── .smite/              # State (PRD, spec, quality config)
-├── plugins/                  # 13 plugins
-│   ├── ralph/               # Orchestrator
-│   ├── toolkit/             # Token optimization
-│   ├── architect/           # Design
-│   ├── builder/             # Implementation
-│   ├── finalize/            # QA + docs
-│   ├── explorer/            # Analysis
-│   ├── simplifier/          # Refactor
-│   ├── quality-gate/        # Validation
-│   ├── smite/               # Commands
+├── plugins/                  # 7 plugins
+│   ├── ralph/               # Orchestrator (parallel execution)
+│   ├── mobs/                # Multi-agent system (architect, builder, finalize, refactor, note)
+│   ├── basics/              # Essential commands (oneshot, epct, debug, explore, commit)
+│   ├── predator/            # Modular workflow (8-step systematic execution)
+│   ├── toolkit/             # Token optimization (semantic search, 75% savings)
 │   ├── statusline/          # Status UI
-│   ├── obsidian-note-agent/ # Notes
-│   ├── docs-editor-mcp/     # Docs sync
-│   ├── shell-aliases/       # Shortcuts
-│   └── auto-rename-session/ # Naming
+│   ├── shell/               # Shell shortcuts
+│   └── auto-rename/         # Session naming
 ├── docs/                    # Documentation hub
 └── README.md                # This file
 ```
@@ -171,7 +143,7 @@ smite/
 ## 📚 Documentation
 
 - **[All docs](docs/INDEX.md)** - Complete documentation index
-- **[Plugins](plugins/README.md)** - 13 plugins catalog
+- **[Plugins](plugins/README.md)** - 7 plugins catalog
 - **[Ralph Guide](docs/RALPH_GUIDE.md)** - Complete Ralph usage
 - **[Spec-First](docs/SPEC_FIRST.md)** - Spec-driven workflow
 - **[Decision Tree](docs/DECISION_TREE.md)** - Tool selection guide
@@ -187,6 +159,6 @@ smite/
 
 ---
 
-**SMITE v3.1** • **14 plugins** • **Official Anthropic schema** • **Refactored documentation** • **Zero-debt engineering**
+**SMITE v3.1** • **7 plugins** • **Official Anthropic schema** • **Refactored documentation** • **Zero-debt engineering**
 
 **License:** MIT • **Repository:** [github.com/Pamacea/smite](https://github.com/Pamacea/smite)
