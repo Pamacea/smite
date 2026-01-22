@@ -16,7 +16,6 @@ const commands = [
   'debug.md',
   'commit.md',
   'epct.md',
-  'apex.md',
   'smite.md'
 ];
 

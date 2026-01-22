@@ -36,12 +36,6 @@ Structured 4-phase workflow for complex features.
 - **Workflow**: Explore → Plan → Code → Test
 - **Philosophy**: Correctness > Speed
 
-#### `/apex` - Quality-Focused Implementation
-4-phase methodology with verification gates.
-- **Best for**: Production code, critical features
-- **Workflow**: Analyze → Plan → Execute → eXamine
-- **Philosophy**: Quality-first with user approval
-
 ### 🔍 Exploration & Analysis
 
 #### `/explore` - Deep Codebase Exploration
@@ -104,7 +98,6 @@ Execute GitHub issues with full EPCT workflow and PR creation.
 |-----------|-------------|
 | Quick feature or fix | `/oneshot` |
 | Complex feature (2-5 files) | `/epct` |
-| Production-critical feature | `/apex` |
 | Understanding codebase | `/explore` |
 | Documenting architecture | `/explain-architecture` |
 | Bug investigation | `/debug` |
@@ -156,7 +149,6 @@ debug User gets 500 error when checking out with PayPal
 ├─────────────┼──────────┼───────────┼──────────┤
 │ /oneshot    │ ⚡⚡⚡    │ ⚡⚡       │ Small    │
 │ /epct       │ ⚡⚡      │ ⚡⚡⚡      │ Medium   │
-│ /apex       │ ⚡        │ ⚡⚡⚡⚡     │ Large    │
 └─────────────┴──────────┴───────────┴──────────┘
 ```
 
@@ -192,7 +184,6 @@ After installation, commands are available at:
 ├── commit.md
 ├── claude-memory.md
 ├── epct.md
-├── apex.md
 ├── explain-architecture.md
 ├── cleanup-context.md
 ├── create-pull-request.md

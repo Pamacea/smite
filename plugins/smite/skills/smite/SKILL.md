@@ -1,6 +1,6 @@
 ---
 name: smite
-description: SMITE essential commands - oneshot, debug, commit, explore, epct, apex, and smite
+description: SMITE essential commands - oneshot, debug, commit, explore, epct, and smite
 version: 3.1.0
 ---
 
@@ -14,8 +14,8 @@ Provide rapid development commands for quick iteration, debugging, and code mana
 
 1. **Input**: Command invocation by user or agent
 2. **Process**:
-   - Execute specialized workflow (oneshot/debug/explore/commit/epct/apex/smite)
-   - Apply methodology (Explore→Code→Test, APEX, E-P-C-T, etc.)
+   - Execute specialized workflow (oneshot/debug/explore/commit/epct/smite)
+   - Apply methodology (Explore→Code→Test, E-P-C-T, etc.)
    - Handle git operations and code quality
 3. **Output**: Completed task with commits as needed
 
@@ -24,7 +24,7 @@ Provide rapid development commands for quick iteration, debugging, and code mana
 - **Quick implementation**: oneshot for well-defined tasks
 - **Systematic debugging**: debug for error diagnosis
 - **Clean git history**: commit with descriptive messages
-- **Advanced workflows**: apex and epct for systematic implementation
+- **Advanced workflows**: epct for systematic implementation
 
 ## Commands
 
@@ -37,7 +37,6 @@ Provide rapid development commands for quick iteration, debugging, and code mana
 - **`/commit`**: Quick commit and push with clean messages
 
 ### Advanced Workflows
-- **`/apex`**: APEX methodology (Analyze → Plan → Execute → eXamine)
 - **`/epct`**: E-P-C-T workflow (Explore → Plan → Code → Test)
 
 ### Installation
@@ -52,13 +51,13 @@ Provide rapid development commands for quick iteration, debugging, and code mana
 ## Configuration
 
 - **Command selection**: Choose based on task complexity and type
-- **Workflow preference**: oneshot (fast), apex (systematic), epct (methodical)
+- **Workflow preference**: oneshot (fast), epct (methodical)
 - **Git operations**: Automatic staging, clean messages, optional push
 
 ## Error Handling
 
 - **Wrong command chosen**: Suggest appropriate alternative
-- **Task too complex**: Switch from oneshot to apex/epct
+- **Task too complex**: Switch from oneshot to epct
 - **Git conflicts**: Report conflict, require manual resolution
 
 ---
