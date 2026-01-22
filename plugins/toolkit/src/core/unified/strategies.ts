@@ -9,7 +9,7 @@
 import { SearchStrategy, SearchResult, StrategyResult } from './types.js';
 import { MgrepClient } from '../mgrep/client.js';
 import { SemanticSearch } from '../mgrep/search.js';
-import { RAGOptimizer } from '../rag/optimizer.js';
+import { mapMgrepResults } from '../mgrep/mappers.js';
 
 /**
  * Base strategy interface
@@ -47,12 +47,7 @@ export class SemanticSearchStrategy implements ISearchStrategy {
         maxResults,
       });
 
-      const results: SearchResult[] = result.results.map(r => ({
-        filePath: r.file,
-        lineNumber: r.startLine || 0,
-        content: r.snippet || '',
-        score: r.score,
-      }));
+      const results: SearchResult[] = mapMgrepResults(result.results);
 
       return {
         strategy: this.name,
@@ -114,12 +109,7 @@ export class LiteralSearchStrategy implements ISearchStrategy {
         };
       }
 
-      const results: SearchResult[] = result.results.map(r => ({
-        filePath: r.file,
-        lineNumber: r.startLine || 0,
-        content: r.snippet || '',
-        score: r.score,
-      }));
+      const results: SearchResult[] = mapMgrepResults(result.results);
 
       return {
         strategy: this.name,
@@ -231,58 +221,6 @@ export class HybridSearchStrategy implements ISearchStrategy {
 }
 
 /**
- * RAG-based search strategy
- */
-export class RAGSearchStrategy implements ISearchStrategy {
-  readonly name = SearchStrategy.RAG;
-  private optimizer: RAGOptimizer;
-
-  constructor(config?: Record<string, unknown>) {
-    this.optimizer = new RAGOptimizer({
-      maxTokens: (config?.maxTokens as number) || 8000,
-    });
-  }
-
-  async search(query: string, options: Record<string, unknown>): Promise<StrategyResult> {
-    const startTime = Date.now();
-
-    try {
-      // Use RAG optimizer to find relevant code
-      const maxResults = (options.maxResults as number) || 50;
-
-      // This is a simplified RAG implementation
-      // In a full implementation, you would:
-      // 1. Generate embeddings for the query
-      // 2. Search through indexed code
-      // 3. Use the surgeon to extract relevant code
-      // 4. Optimize the results for token budget
-
-      const results: SearchResult[] = []; // Placeholder
-
-      return {
-        strategy: this.name,
-        score: 0,
-        results,
-        executionTime: Date.now() - startTime,
-        metadata: {
-          note: 'RAG strategy not fully implemented',
-        },
-      };
-    } catch (error) {
-      return {
-        strategy: this.name,
-        score: 0,
-        results: [],
-        executionTime: Date.now() - startTime,
-        metadata: {
-          error: error instanceof Error ? error.message : String(error),
-        },
-      };
-    }
-  }
-}
-
-/**
  * Strategy factory
  */
 export class StrategyFactory {
@@ -293,7 +231,6 @@ export class StrategyFactory {
     this.strategies.set(SearchStrategy.SEMANTIC, new SemanticSearchStrategy(config));
     this.strategies.set(SearchStrategy.LITERAL, new LiteralSearchStrategy(config));
     this.strategies.set(SearchStrategy.HYBRID, new HybridSearchStrategy(config));
-    this.strategies.set(SearchStrategy.RAG, new RAGSearchStrategy(config));
   }
 
   /**

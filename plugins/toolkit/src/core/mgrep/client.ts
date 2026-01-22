@@ -124,9 +124,7 @@ export class MgrepClient {
     }
 
     return new Promise((resolve) => {
-      const proc = spawn(this.config.executable!, ['--version'], {
-        shell: true,
-      });
+      const proc = spawn(this.config.executable!, ['--version']);
 
       proc.on('error', () => {
         this.available = false;
@@ -159,9 +157,7 @@ export class MgrepClient {
       let stdout = '';
       let stderr = '';
 
-      const proc = spawn(this.config.executable!, args, {
-        shell: true,
-      });
+      const proc = spawn(this.config.executable!, args);
 
       proc.stdout?.on('data', (data) => {
         stdout += data.toString();

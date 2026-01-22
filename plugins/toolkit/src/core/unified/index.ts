@@ -30,7 +30,6 @@ export {
   SemanticSearchStrategy,
   LiteralSearchStrategy,
   HybridSearchStrategy,
-  RAGSearchStrategy,
   StrategyFactory,
   type ISearchStrategy,
 } from './strategies.js';

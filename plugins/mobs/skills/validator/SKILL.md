@@ -431,4 +431,111 @@ Evaluate performance impact:
 
 ---
 
+## 🔧 Toolkit Usage (MANDATORY)
+
+### CRITICAL RULE: Validator Must Use Toolkit for Safety Analysis
+
+**⚠️ Validator MUST use toolkit before approving any refactoring!**
+
+Validation without understanding dependencies is dangerous. Toolkit ensures:
+- **Find all usages** - Know what you're affecting
+- **Check dependencies** - Validate impact analysis
+- **Find test patterns** - Learn what tests exist
+- **Security validation** - Detect vulnerabilities
+
+### When Validator Uses Toolkit
+
+#### Before ANY Validation (MANDATORY)
+
+```bash
+# Find where code is used
+/toolkit search "functionName usage calls" --mode=hybrid
+
+# Analyze dependencies
+/toolkit graph --target=file-to-change --impact
+
+# Find existing tests
+/toolkit search "test for functionName" --mode=literal
+```
+
+#### During Validation
+
+```bash
+# Check for similar patterns
+/toolkit search "similar implementation pattern" --mode=hybrid
+
+# Find security issues
+/toolkit detect --scope=affected-files --patterns="security"
+
+# Validate test coverage
+/toolkit search "test coverage patterns" --mode=hybrid
+```
+
+#### After Validation
+
+```bash
+# Final safety check
+/toolkit detect --scope=changed-area --patterns="logic,security"
+
+# Verify consistency
+/toolkit search "similar refactored code" --mode=hybrid
+```
+
+### Toolkit Commands for Validation Tasks
+
+| Validation Task | Toolkit Command | Purpose |
+|----------------|----------------|---------|
+| **Find usage** | `/toolkit search "functionName" --mode=hybrid` | All call sites |
+| **Dependencies** | `/toolkit graph --target=file --impact` | Impact analysis |
+| **Find tests** | `/toolkit search "test pattern" --mode=literal` | Test coverage |
+| **Security** | `/toolkit detect --scope=dir --patterns="security"` | Vulnerabilities |
+| **Similar code** | `/toolkit search "pattern" --mode=hybrid` | Consistency check |
+
+### Example Validator Workflow with Toolkit
+
+**Task**: Validate extraction of validation logic from UserForm
+
+```bash
+# ===== BEFORE VALIDATION =====
+# 1. Find where UserForm is used
+/toolkit search "UserForm usage" --mode=hybrid
+
+# 2. Analyze dependencies
+/toolkit graph --target=src/components/UserForm.tsx --impact
+
+# 3. Find existing tests
+/toolkit search "UserForm test" --mode=literal
+
+# ===== VALIDATION =====
+# 4. Check for similar patterns
+/toolkit search "form validation pattern" --mode=hybrid
+
+# 5. Security check
+/toolkit detect --scope=src/components/UserForm.tsx --patterns="security"
+
+# ===== AFTER VALIDATION =====
+# 6. Final verification
+/toolkit search "validation function" --mode=hybrid
+```
+
+### Benefits for Validator
+
+- **Comprehensive Analysis**: Find ALL affected code
+- **Accurate Impact**: Real dependencies, not guesses
+- **Better Coverage**: Find all existing tests
+- **Security Aware**: Detect vulnerabilities before approval
+- **Confidence**: Validate with evidence, not assumptions
+
+### Token Savings with Validator
+
+| Validation Type | Manual | Toolkit | Savings |
+|-----------------|--------|---------|---------|
+| **Usage analysis** | 35k tokens | 8k tokens | **77%** |
+| **Dependencies** | 40k tokens | 7k tokens | **82%** |
+| **Test discovery** | 25k tokens | 6k tokens | **76%** |
+| **Security check** | 30k tokens | 5k tokens | **83%** |
+| **Total** | **130k** | **26k** | **80%** |
+
+---
+
 *Validator Subagent - Safety and validation expert*

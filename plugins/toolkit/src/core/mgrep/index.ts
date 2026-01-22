@@ -31,6 +31,12 @@ export {
   DEFAULT_SEARCH_CONFIG,
 } from './search.js';
 
+// Mapper exports
+export {
+  mapMgrepResultToSearchResult,
+  mapMgrepResults,
+} from './mappers.js';
+
 // MCP exports
 export {
   McpIntegration,

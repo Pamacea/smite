@@ -22,9 +22,6 @@ export enum SearchStrategy {
 
   /** Hybrid approach combining semantic and literal search */
   HYBRID = 'hybrid',
-
-  /** RAG-based search with context optimization */
-  RAG = 'rag',
 }
 
 /**

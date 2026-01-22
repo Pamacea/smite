@@ -8,13 +8,7 @@
  */
 
 import { QueryAnalyzer } from './analyzer.js';
-import {
-  StrategyFactory,
-  SemanticSearchStrategy,
-  LiteralSearchStrategy,
-  HybridSearchStrategy,
-  RAGSearchStrategy,
-} from './strategies.js';
+import { StrategyFactory } from './strategies.js';
 import {
   SearchStrategy,
   UnifiedSearchOptions,
