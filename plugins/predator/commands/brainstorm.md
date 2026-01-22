@@ -38,7 +38,7 @@ You will execute the Brainstorm workflow by following the steps defined in the w
 ### Step 00: INIT
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/00_INIT.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/00_INIT.md`
 
 Initialize the brainstorm session.
 
@@ -47,7 +47,7 @@ Initialize the brainstorm session.
 ### Step 01: ANALYZE
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/01_ANALYZE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/01_ANALYZE.md`
 
 Understand the problem space and context.
 
@@ -56,7 +56,7 @@ Understand the problem space and context.
 ### Step 02: PLAN
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/02_PLAN.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/02_PLAN.md`
 
 Create exploration and challenge strategy.
 
@@ -67,7 +67,7 @@ Create exploration and challenge strategy.
 ### Step 03: EXECUTE
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/03_EXECUTE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/03_EXECUTE.md`
 
 Launch PARTICIPANTS parallel idea generators, challenge ideas adversarially, and synthesize top solutions using TodoWrite.
 
@@ -76,7 +76,7 @@ Launch PARTICIPANTS parallel idea generators, challenge ideas adversarially, and
 ### Step 04: VALIDATE
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/04_VALIDATE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/04_VALIDATE.md`
 
 Verify solutions meet criteria and assess feasibility.
 
@@ -85,7 +85,7 @@ Verify solutions meet criteria and assess feasibility.
 ### Step 05: EXAMINE (Conditional)
 
 **Check EXAMINE_MODE**: If enabled, read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/05_EXAMINE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/05_EXAMINE.md`
 
 Launch adversarial solution review agents.
 
@@ -94,7 +94,7 @@ Launch adversarial solution review agents.
 ### Step 06: RESOLVE (Conditional)
 
 If EXAMINE found issues, read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/06_RESOLVE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/06_RESOLVE.md`
 
 Refine solutions based on feedback.
 
@@ -103,7 +103,7 @@ Refine solutions based on feedback.
 ### Step 07: FINISH
 
 Read and execute:
-!`cat plugins/predator/workflows/brainstorm/steps/07_FINISH.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/brainstorm/steps/07_FINISH.md`
 
 **Check PR_MODE**: If enabled, create documentation PR. Otherwise, save summary locally.
 

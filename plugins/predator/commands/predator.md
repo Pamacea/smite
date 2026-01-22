@@ -37,7 +37,7 @@ You will execute the Predator workflow by following the steps defined in the wor
 ### Step 00: INIT
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/00_INIT.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/00_INIT.md`
 
 Parse the flags and initialize the workflow state.
 
@@ -46,7 +46,7 @@ Parse the flags and initialize the workflow state.
 ### Step 01: ANALYZE
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/01_ANALYZE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/01_ANALYZE.md`
 
 Gather context and understand the codebase.
 
@@ -55,7 +55,7 @@ Gather context and understand the codebase.
 ### Step 02: PLAN
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/02_PLAN.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/02_PLAN.md`
 
 Create the implementation strategy.
 
@@ -66,7 +66,7 @@ Create the implementation strategy.
 ### Step 03: EXECUTE
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/03_EXECUTE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/03_EXECUTE.md`
 
 Implement the changes using TodoWrite to track progress.
 
@@ -75,7 +75,7 @@ Implement the changes using TodoWrite to track progress.
 ### Step 04: VALIDATE
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/04_VALIDATE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/04_VALIDATE.md`
 
 Run quality checks and verify the implementation.
 
@@ -84,7 +84,7 @@ Run quality checks and verify the implementation.
 ### Step 05: EXAMINE (Conditional)
 
 **Check EXAMINE_MODE**: If enabled, read and execute:
-!`cat plugins/predator/workflows/predator/steps/05_EXAMINE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/05_EXAMINE.md`
 
 Launch adversarial code review agents.
 
@@ -93,7 +93,7 @@ Launch adversarial code review agents.
 ### Step 06: RESOLVE (Conditional)
 
 If EXAMINE found critical issues, read and execute:
-!`cat plugins/predator/workflows/predator/steps/06_RESOLVE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/06_RESOLVE.md`
 
 Fix all identified issues.
 
@@ -102,7 +102,7 @@ Fix all identified issues.
 ### Step 07: FINISH
 
 Read and execute:
-!`cat plugins/predator/workflows/predator/steps/07_FINISH.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/predator/steps/07_FINISH.md`
 
 **Check PR_MODE**: If enabled, create a pull request. Otherwise, complete the workflow with a commit.
 

@@ -37,7 +37,7 @@ You will execute the Debug workflow by following the steps defined in the workfl
 ### Step 00: INIT
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/00_INIT.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/00_INIT.md`
 
 Initialize the debug session.
 
@@ -46,7 +46,7 @@ Initialize the debug session.
 ### Step 01: ANALYZE
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/01_ANALYZE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/01_ANALYZE.md`
 
 Gather error context and identify patterns.
 
@@ -55,7 +55,7 @@ Gather error context and identify patterns.
 ### Step 02: PLAN
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/02_PLAN.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/02_PLAN.md`
 
 Create hypotheses and investigation strategy.
 
@@ -66,7 +66,7 @@ Create hypotheses and investigation strategy.
 ### Step 03: EXECUTE
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/03_EXECUTE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/03_EXECUTE.md`
 
 Test hypotheses and implement the fix using TodoWrite.
 
@@ -77,7 +77,7 @@ Loop until fix verified or MAX_ATTEMPTS reached.
 ### Step 04: VALIDATE
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/04_VALIDATE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/04_VALIDATE.md`
 
 Verify bug is resolved and no side effects.
 
@@ -86,7 +86,7 @@ Verify bug is resolved and no side effects.
 ### Step 05: EXAMINE (Conditional)
 
 **Check EXAMINE_MODE**: If enabled, read and execute:
-!`cat plugins/predator/workflows/debug/steps/05_EXAMINE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/05_EXAMINE.md`
 
 Launch adversarial fix review agents.
 
@@ -95,7 +95,7 @@ Launch adversarial fix review agents.
 ### Step 06: RESOLVE (Conditional)
 
 If EXAMINE found critical issues, read and execute:
-!`cat plugins/predator/workflows/debug/steps/06_RESOLVE.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/06_RESOLVE.md`
 
 Address all review findings.
 
@@ -104,7 +104,7 @@ Address all review findings.
 ### Step 07: FINISH
 
 Read and execute:
-!`cat plugins/predator/workflows/debug/steps/07_FINISH.md`
+!`cat ~/.claude/plugins/cache/smite/predator/1.0.0/workflows/debug/steps/07_FINISH.md`
 
 **Check PR_MODE**: If enabled, create a PR. Otherwise, commit the fix.
 
