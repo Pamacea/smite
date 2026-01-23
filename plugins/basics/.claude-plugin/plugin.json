@@ -1,5 +1,4 @@
 {
-  "$schema": "../core/validation/schemas/plugin.schema.json",
   "name": "basics",
   "description": "Essential Claude commands for rapid development - oneshot, explore, debug, commit, claude-memory, and more",
   "version": "3.2.0",
@@ -14,7 +13,7 @@
   "commands": "./commands/",
   "skills": "./skills/",
   "hooks": {
-    "PostPluginInstall": [
+    "SessionStart": [
       {
         "hooks": [
           {
@@ -24,13 +23,5 @@
         ]
       }
     ]
-  },
-  "dependencies": {
-    "required": ["core"],
-    "optional": ["toolkit"]
-  },
-  "mcp": {
-    "required": [],
-    "optional": []
   }
 }

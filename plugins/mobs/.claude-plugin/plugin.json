@@ -1,5 +1,4 @@
 {
-  "$schema": "../core/validation/schemas/plugin.schema.json",
   "name": "mobs",
   "description": "Multi-agent orchestration system - Spec-First development workflow with creative design and systematic refactoring",
   "version": "4.1.0",
@@ -38,25 +37,5 @@
         ]
       }
     ]
-  },
-  "dependencies": {
-    "required": ["core"],
-    "optional": ["toolkit", "basics"]
-  },
-  "mcp": {
-    "required": [],
-    "optional": [
-      "mcp__web-search-prime__webSearchPrime",
-      "mcp__4_5v_mcp__analyze_image",
-      "mcp__zai-mcp-server__ui_to_artifact",
-      "mcp__web-reader__webReader"
-    ]
-  },
-  "config": {
-    "schema": "../core/validation/schemas/plugin.schema.json",
-    "defaults": {
-      "vaultAutoDetect": true,
-      "fallbackToManual": true
-    }
   }
 }

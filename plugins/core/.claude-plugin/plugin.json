@@ -1,5 +1,4 @@
 {
-  "$schema": "./validation/schemas/plugin.schema.json",
   "name": "core",
   "description": "Shared utilities, templates, and schemas for all SMITE plugins",
   "version": "1.0.0",
@@ -10,9 +9,5 @@
   "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/core",
   "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "keywords": ["utilities", "templates", "validation", "schemas", "platform", "shared"],
-  "dependencies": {
-    "required": [],
-    "optional": []
-  }
+  "keywords": ["utilities", "templates", "validation", "schemas", "platform", "shared"]
 }
