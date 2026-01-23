@@ -61,10 +61,6 @@ export declare class SemanticCache {
      */
     private generateKey;
     /**
-     * Extract keywords from query for indexing
-     */
-    private extractKeywords;
-    /**
      * Calculate cosine similarity between two strings
      */
     private calculateSimilarity;

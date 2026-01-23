@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SemanticAnalysisAPI = void 0;
 exports.createSemanticAnalysis = createSemanticAnalysis;
 const transformers_1 = require("@xenova/transformers");
+const keywords_1 = require("../core/rag/keywords");
 /**
  * Semantic Analysis API class
  */
@@ -33,7 +34,7 @@ class SemanticAnalysisAPI {
     async analyzeSemantics(content, options) {
         const mergedOptions = { ...this.defaultOptions, ...options };
         // Extract keywords
-        const keywords = this.extractKeywords(content);
+        const keywords = (0, keywords_1.extractKeywords)(content, { minLength: 4 });
         // Calculate complexity
         const complexity = this.calculateComplexity(content);
         // Generate summary
@@ -207,41 +208,20 @@ class SemanticAnalysisAPI {
             normalize: true,
         });
         // Extract tensor data and convert to number array
-        const tensorData = output;
-        const embedding = Array.from(tensorData).map((v) => {
+        // The output structure varies by version, so we check multiple paths
+        const rawData = output.data ?? output.tensor ?? output.outputs ?? output;
+        const sourceData = Array.isArray(rawData)
+            ? rawData
+            : rawData.data
+                ? rawData.data
+                : rawData;
+        const embedding = Array.from(sourceData).map((v) => {
             if (typeof v === 'number')
                 return v;
             return 0; // Fallback for non-numeric values
         });
         this.cache.set(text, embedding);
         return embedding;
-    }
-    /**
-     * Extract keywords from text
-     */
-    extractKeywords(text) {
-        const stopWords = new Set([
-            'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-            'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-            'should', 'may', 'might', 'must', 'can', 'for', 'to', 'of', 'in', 'on',
-            'at', 'by', 'with', 'from', 'as', 'into', 'through', 'during', 'before',
-            'after', 'above', 'below', 'between', 'under',
-        ]);
-        const words = text
-            .toLowerCase()
-            .replace(/[^\w\s]/g, ' ')
-            .split(/\s+/)
-            .filter(word => word.length > 3 && !stopWords.has(word));
-        // Count frequency
-        const frequency = new Map();
-        for (const word of words) {
-            frequency.set(word, (frequency.get(word) || 0) + 1);
-        }
-        // Return top 10 keywords by frequency
-        return Array.from(frequency.entries())
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(e => e[0]);
     }
     /**
      * Calculate complexity of text
@@ -275,14 +255,7 @@ class SemanticAnalysisAPI {
      * Calculate keyword-based similarity
      */
     keywordSimilarity(text1, text2) {
-        const keywords1 = new Set(this.extractKeywords(text1));
-        const keywords2 = new Set(this.extractKeywords(text2));
-        if (keywords1.size === 0 || keywords2.size === 0)
-            return 0;
-        // Calculate Jaccard similarity
-        const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
-        const union = new Set([...keywords1, ...keywords2]);
-        return intersection.size / union.size;
+        return (0, keywords_1.jaccardSimilarity)(text1, text2, { minLength: 4 });
     }
     /**
      * Get confidence level from score

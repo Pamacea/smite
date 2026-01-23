@@ -10,7 +10,7 @@
  * @module core/rag
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_CACHE_CONFIG = exports.SemanticCache = exports.DEFAULT_SURGEON_CONFIG = exports.ExtractionMode = exports.SurgeonExtractor = exports.DEFAULT_CONFIG = exports.OptimizationMode = exports.BudgetThreshold = exports.CHARS_PER_TOKEN = exports.RAGOptimizer = void 0;
+exports.cosineKeywordSimilarity = exports.jaccardSimilarity = exports.extractKeywordSet = exports.extractKeywords = exports.DEFAULT_CACHE_CONFIG = exports.SemanticCache = exports.DEFAULT_SURGEON_CONFIG = exports.ExtractionMode = exports.SurgeonExtractor = exports.DEFAULT_CONFIG = exports.OptimizationMode = exports.BudgetThreshold = exports.CHARS_PER_TOKEN = exports.RAGOptimizer = void 0;
 exports.createOptimizer = createOptimizer;
 exports.createSurgeon = createSurgeon;
 exports.createCache = createCache;
@@ -30,6 +30,12 @@ Object.defineProperty(exports, "DEFAULT_SURGEON_CONFIG", { enumerable: true, get
 var cache_js_1 = require("./cache.js");
 Object.defineProperty(exports, "SemanticCache", { enumerable: true, get: function () { return cache_js_1.SemanticCache; } });
 Object.defineProperty(exports, "DEFAULT_CACHE_CONFIG", { enumerable: true, get: function () { return cache_js_1.DEFAULT_CACHE_CONFIG; } });
+// Keywords exports
+var keywords_js_1 = require("./keywords.js");
+Object.defineProperty(exports, "extractKeywords", { enumerable: true, get: function () { return keywords_js_1.extractKeywords; } });
+Object.defineProperty(exports, "extractKeywordSet", { enumerable: true, get: function () { return keywords_js_1.extractKeywordSet; } });
+Object.defineProperty(exports, "jaccardSimilarity", { enumerable: true, get: function () { return keywords_js_1.jaccardSimilarity; } });
+Object.defineProperty(exports, "cosineKeywordSimilarity", { enumerable: true, get: function () { return keywords_js_1.cosineKeywordSimilarity; } });
 /**
  * Quick access factory for creating optimizer with default config
  */

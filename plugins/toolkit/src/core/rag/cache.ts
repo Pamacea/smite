@@ -7,6 +7,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { extractKeywords, cosineKeywordSimilarity } from './keywords';
 
 /**
  * Cache entry
@@ -91,41 +92,10 @@ export class SemanticCache {
   }
 
   /**
-   * Extract keywords from query for indexing
-   */
-  private extractKeywords(query: string): string[] {
-    // Simple keyword extraction (split by spaces and filter common words)
-    const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once']);
-
-    return query
-      .toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !stopWords.has(word));
-  }
-
-  /**
    * Calculate cosine similarity between two strings
    */
   private calculateSimilarity(str1: string, str2: string): number {
-    const words1 = new Set(this.extractKeywords(str1));
-    const words2 = new Set(this.extractKeywords(str2));
-
-    if (words1.size === 0 || words2.size === 0) {
-      return 0;
-    }
-
-    // Calculate intersection
-    let intersection = 0;
-    words1.forEach(word => {
-      if (words2.has(word)) {
-        intersection++;
-      }
-    });
-
-    // Cosine similarity: intersection / (sqrt(|A|) * sqrt(|B|))
-    const denominator = Math.sqrt(words1.size) * Math.sqrt(words2.size);
-    return denominator > 0 ? intersection / denominator : 0;
+    return cosineKeywordSimilarity(str1, str2, { minLength: 3 });
   }
 
   /**
@@ -133,7 +103,7 @@ export class SemanticCache {
    */
   private updateIndexes(entry: CacheEntry): void {
     // Update query index
-    const keywords = this.extractKeywords(entry.query);
+    const keywords = extractKeywords(entry.query, { minLength: 3 });
     keywords.forEach(keyword => {
       if (!this.queryIndex.has(keyword)) {
         this.queryIndex.set(keyword, []);
@@ -152,7 +122,7 @@ export class SemanticCache {
    * Remove entry from indexes
    */
   private removeFromIndexes(entry: CacheEntry): void {
-    const keywords = this.extractKeywords(entry.query);
+    const keywords = extractKeywords(entry.query, { minLength: 3 });
     keywords.forEach(keyword => {
       const ids = this.queryIndex.get(keyword);
       if (ids) {
@@ -250,7 +220,7 @@ export class SemanticCache {
 
     // If no good match by file, try by query keywords
     if (!bestMatch || bestSimilarity < this.config.similarityThreshold) {
-      const keywords = this.extractKeywords(query);
+      const keywords = extractKeywords(query, { minLength: 3 });
       const candidateIds = new Set<string>();
 
       keywords.forEach(keyword => {
@@ -311,7 +281,7 @@ export class SemanticCache {
    */
   async findSimilar(query: string, limit: number = 5): Promise<SimilarityResult[]> {
     const results: SimilarityResult[] = [];
-    const keywords = this.extractKeywords(query);
+    const keywords = extractKeywords(query, { minLength: 3 });
     const candidateIds = new Set<string>();
 
     keywords.forEach(keyword => {

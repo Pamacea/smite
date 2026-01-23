@@ -7,7 +7,8 @@
  * @module api/refactor
  */
 
-import { Project, type SourceFile } from 'ts-morph';
+import { Project, type SourceFile, SyntaxKind } from 'ts-morph';
+import { refactorError, errorMessage } from '../core/utils/error-handler';
 
 /**
  * Refactoring type
@@ -161,14 +162,8 @@ export class RefactoringAPI {
         diff,
         backupPath,
       };
-    } catch (error) {
-      return {
-        type: RefactorType.SIMPLIFY,
-        modifiedFiles: [],
-        changeCount: 0,
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      };
+    } catch (err) {
+      return refactorError(RefactorType.SIMPLIFY, err);
     }
   }
 
@@ -232,14 +227,8 @@ export class RefactoringAPI {
         diff,
         backupPath,
       };
-    } catch (error) {
-      return {
-        type: RefactorType.REMOVE_DEAD_CODE,
-        modifiedFiles: [],
-        changeCount: 0,
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      };
+    } catch (err) {
+      return refactorError(RefactorType.REMOVE_DEAD_CODE, err);
     }
   }
 
@@ -303,14 +292,8 @@ export class RefactoringAPI {
         diff,
         backupPath,
       };
-    } catch (error) {
-      return {
-        type: RefactorType.OPTIMIZE_STRUCTURE,
-        modifiedFiles: [],
-        changeCount: 0,
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      };
+    } catch (err) {
+      return refactorError(RefactorType.OPTIMIZE_STRUCTURE, err);
     }
   }
 
@@ -423,38 +406,26 @@ export class RefactoringAPI {
 
   /**
    * Simplify expressions
+   * Note: Not yet implemented - would use ts-morph to simplify complex expressions
    */
   private simplifyExpressions(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement expression simplification
-    // This would use ts-morph to identify and simplify complex expressions
-
-    return count;
+    return 0;
   }
 
   /**
    * Remove unnecessary braces
+   * Note: Not yet implemented - would identify single-statement blocks
    */
   private removeUnnecessaryBraces(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement brace removal
-    // This would identify single-statement blocks that don't need braces
-
-    return count;
+    return 0;
   }
 
   /**
    * Simplify conditionals
+   * Note: Not yet implemented - would simplify complex boolean expressions
    */
   private simplifyConditionals(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement conditional simplification
-    // This would simplify complex boolean expressions
-
-    return count;
+    return 0;
   }
 
   /**
@@ -473,10 +444,8 @@ export class RefactoringAPI {
 
       if (!name) continue;
 
-      const usages = sourceFile.getDescendantsOfKind(
-        // @ts-ignore - ts-morph types
-        'Identifier'
-      ).filter(id => id.getText() === name);
+      const usages = sourceFile.getDescendantsOfKind(SyntaxKind.Identifier)
+        .filter(id => id.getText() === name);
 
       if (usages.length === 0) {
         imp.remove();
@@ -489,62 +458,42 @@ export class RefactoringAPI {
 
   /**
    * Remove unused variables
+   * Note: Not yet implemented - would identify variables declared but never used
    */
   private removeUnusedVariables(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement unused variable removal
-    // This would identify variables that are declared but never used
-
-    return count;
+    return 0;
   }
 
   /**
    * Remove unreachable code
+   * Note: Not yet implemented - would identify code after return statements
    */
   private removeUnreachableCode(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement unreachable code removal
-    // This would identify code after return statements
-
-    return count;
+    return 0;
   }
 
   /**
    * Organize imports
+   * Note: Not yet implemented - would group and sort imports
    */
   private organizeImports(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement import organization
-    // This would group and sort imports
-
-    return count;
+    return 0;
   }
 
   /**
    * Sort class members
+   * Note: Not yet implemented - would sort members by visibility and type
    */
   private sortClassMembers(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement class member sorting
-    // This would sort members by visibility and type
-
-    return count;
+    return 0;
   }
 
   /**
    * Extract magic numbers to constants
+   * Note: Not yet implemented - would identify and extract magic numbers
    */
   private extractConstants(sourceFile: SourceFile): number {
-    let count = 0;
-
-    // TODO: Implement constant extraction
-    // This would identify magic numbers and extract them
-
-    return count;
+    return 0;
   }
 }
 

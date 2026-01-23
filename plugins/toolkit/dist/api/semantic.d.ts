@@ -98,10 +98,6 @@ export declare class SemanticAnalysisAPI {
      */
     private getEmbedding;
     /**
-     * Extract keywords from text
-     */
-    private extractKeywords;
-    /**
      * Calculate complexity of text
      */
     private calculateComplexity;

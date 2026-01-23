@@ -249,7 +249,9 @@ class SurgeonExtractor {
             iface.getProperties().forEach((prop) => {
                 const propName = prop.getName();
                 const propType = prop.getType().getText();
-                const isOptional = prop.isOptional() ? '?' : '';
+                // Check if property has question mark (optional)
+                const hasQuestionToken = prop.hasQuestionToken?.() ?? false;
+                const isOptional = hasQuestionToken ? '?' : '';
                 signature += `\n  ${propName}${isOptional}: ${propType};`;
             });
             // Add method signatures

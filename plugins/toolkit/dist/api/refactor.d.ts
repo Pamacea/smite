@@ -106,14 +106,17 @@ export declare class RefactoringAPI {
     private calculateNestingDepth;
     /**
      * Simplify expressions
+     * Note: Not yet implemented - would use ts-morph to simplify complex expressions
      */
     private simplifyExpressions;
     /**
      * Remove unnecessary braces
+     * Note: Not yet implemented - would identify single-statement blocks
      */
     private removeUnnecessaryBraces;
     /**
      * Simplify conditionals
+     * Note: Not yet implemented - would simplify complex boolean expressions
      */
     private simplifyConditionals;
     /**
@@ -122,22 +125,27 @@ export declare class RefactoringAPI {
     private removeUnusedImports;
     /**
      * Remove unused variables
+     * Note: Not yet implemented - would identify variables declared but never used
      */
     private removeUnusedVariables;
     /**
      * Remove unreachable code
+     * Note: Not yet implemented - would identify code after return statements
      */
     private removeUnreachableCode;
     /**
      * Organize imports
+     * Note: Not yet implemented - would group and sort imports
      */
     private organizeImports;
     /**
      * Sort class members
+     * Note: Not yet implemented - would sort members by visibility and type
      */
     private sortClassMembers;
     /**
      * Extract magic numbers to constants
+     * Note: Not yet implemented - would identify and extract magic numbers
      */
     private extractConstants;
 }

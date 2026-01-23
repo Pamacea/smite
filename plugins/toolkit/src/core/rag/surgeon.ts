@@ -5,7 +5,18 @@
  * patterns, achieving 70-85% token savings vs full file reads.
  */
 
-import { Project, SourceFile, SyntaxKind } from 'ts-morph';
+import {
+  Project,
+  SourceFile,
+  SyntaxKind,
+  type FunctionDeclaration,
+  type ClassDeclaration,
+  type InterfaceDeclaration,
+  type TypeAliasDeclaration,
+  type EnumDeclaration,
+  type MethodDeclaration,
+  type ParameterDeclaration,
+} from 'ts-morph';
 
 /**
  * Extraction modes
@@ -224,10 +235,10 @@ export class SurgeonExtractor {
   /**
    * Build function signature
    */
-  private buildFunctionSignature(func: any): string | null {
+  private buildFunctionSignature(func: FunctionDeclaration): string | null {
     try {
       const name = func.getName();
-      const params = func.getParameters().map((p: any) => {
+      const params = func.getParameters().map((p: ParameterDeclaration) => {
         const type = p.getType().getText();
         return `${p.getName()}: ${type}`;
       }).join(', ');
@@ -245,7 +256,7 @@ export class SurgeonExtractor {
   /**
    * Build class signature
    */
-  private buildClassSignature(cls: any): string | null {
+  private buildClassSignature(cls: ClassDeclaration): string | null {
     try {
       const name = cls.getName();
       const isExported = cls.isExported() ? 'export ' : '';
@@ -258,7 +269,7 @@ export class SurgeonExtractor {
       // Get implements clauses
       const implementsClauses = cls.getImplements();
       const implementsText = implementsClauses.length > 0
-        ? ` implements ${implementsClauses.map((i: any) => i.getText()).join(', ')}`
+        ? ` implements ${implementsClauses.map((i) => i.getText()).join(', ')}`
         : '';
 
       return `${isExported}${isAbstract}class ${name}${extendsText}${implementsText} {`;
@@ -270,10 +281,10 @@ export class SurgeonExtractor {
   /**
    * Build method signature
    */
-  private buildMethodSignature(method: any, className?: string): string | null {
+  private buildMethodSignature(method: MethodDeclaration, className?: string): string | null {
     try {
       const name = method.getName();
-      const params = method.getParameters().map((p: any) => {
+      const params = method.getParameters().map((p: ParameterDeclaration) => {
         const type = p.getType().getText();
         return `${p.getName()}: ${type}`;
       }).join(', ');
@@ -292,7 +303,7 @@ export class SurgeonExtractor {
   /**
    * Build interface signature
    */
-  private buildInterfaceSignature(iface: any): string | null {
+  private buildInterfaceSignature(iface: InterfaceDeclaration): string | null {
     try {
       const name = iface.getName();
       const isExported = iface.isExported() ? 'export ' : '';
@@ -300,23 +311,25 @@ export class SurgeonExtractor {
       // Get extends clauses
       const extendsClauses = iface.getExtends();
       const extendsText = extendsClauses.length > 0
-        ? ` extends ${extendsClauses.map((e: any) => e.getText()).join(', ')}`
+        ? ` extends ${extendsClauses.map((e) => e.getText()).join(', ')}`
         : '';
 
       let signature = `${isExported}interface ${name}${extendsText} {`;
 
       // Add property signatures
-      iface.getProperties().forEach((prop: any) => {
+      iface.getProperties().forEach((prop) => {
         const propName = prop.getName();
         const propType = prop.getType().getText();
-        const isOptional = prop.isOptional() ? '?' : '';
+        // Check if property has question mark (optional)
+        const hasQuestionToken = (prop as any).hasQuestionToken?.() ?? false;
+        const isOptional = hasQuestionToken ? '?' : '';
         signature += `\n  ${propName}${isOptional}: ${propType};`;
       });
 
       // Add method signatures
-      iface.getMethods().forEach((method: any) => {
+      iface.getMethods().forEach((method) => {
         const methodName = method.getName();
-        const params = method.getParameters().map((p: any) => {
+        const params = method.getParameters().map((p: ParameterDeclaration) => {
           const type = p.getType().getText();
           return `${p.getName()}: ${type}`;
         }).join(', ');
@@ -334,7 +347,7 @@ export class SurgeonExtractor {
   /**
    * Build type alias signature
    */
-  private buildTypeAliasSignature(alias: any): string | null {
+  private buildTypeAliasSignature(alias: TypeAliasDeclaration): string | null {
     try {
       const name = alias.getName();
       const isExported = alias.isExported() ? 'export ' : '';
@@ -349,14 +362,14 @@ export class SurgeonExtractor {
   /**
    * Build enum signature
    */
-  private buildEnumSignature(enumDecl: any): string | null {
+  private buildEnumSignature(enumDecl: EnumDeclaration): string | null {
     try {
       const name = enumDecl.getName();
       const isExported = enumDecl.isExported() ? 'export ' : '';
 
       let signature = `${isExported}enum ${name} {`;
 
-      enumDecl.getMembers().forEach((member: any) => {
+      enumDecl.getMembers().forEach((member) => {
         const memberName = member.getName();
         const value = member.getValue();
         const valueText = value !== undefined ? ` = ${JSON.stringify(value)}` : '';

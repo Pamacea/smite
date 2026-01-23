@@ -40,6 +40,15 @@ export {
   DEFAULT_CACHE_CONFIG,
 } from './cache.js';
 
+// Keywords exports
+export {
+  extractKeywords,
+  extractKeywordSet,
+  jaccardSimilarity,
+  cosineKeywordSimilarity,
+  type KeywordExtractionOptions,
+} from './keywords.js';
+
 /**
  * Quick access factory for creating optimizer with default config
  */

@@ -9,6 +9,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SemanticCache = exports.DEFAULT_CACHE_CONFIG = void 0;
 const uuid_1 = require("uuid");
+const keywords_1 = require("./keywords");
 /**
  * Default configuration
  */
@@ -42,43 +43,17 @@ class SemanticCache {
         return (0, uuid_1.v4)();
     }
     /**
-     * Extract keywords from query for indexing
-     */
-    extractKeywords(query) {
-        // Simple keyword extraction (split by spaces and filter common words)
-        const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once']);
-        return query
-            .toLowerCase()
-            .replace(/[^\w\s]/g, ' ')
-            .split(/\s+/)
-            .filter(word => word.length > 2 && !stopWords.has(word));
-    }
-    /**
      * Calculate cosine similarity between two strings
      */
     calculateSimilarity(str1, str2) {
-        const words1 = new Set(this.extractKeywords(str1));
-        const words2 = new Set(this.extractKeywords(str2));
-        if (words1.size === 0 || words2.size === 0) {
-            return 0;
-        }
-        // Calculate intersection
-        let intersection = 0;
-        words1.forEach(word => {
-            if (words2.has(word)) {
-                intersection++;
-            }
-        });
-        // Cosine similarity: intersection / (sqrt(|A|) * sqrt(|B|))
-        const denominator = Math.sqrt(words1.size) * Math.sqrt(words2.size);
-        return denominator > 0 ? intersection / denominator : 0;
+        return (0, keywords_1.cosineKeywordSimilarity)(str1, str2, { minLength: 3 });
     }
     /**
      * Update indexes for a cache entry
      */
     updateIndexes(entry) {
         // Update query index
-        const keywords = this.extractKeywords(entry.query);
+        const keywords = (0, keywords_1.extractKeywords)(entry.query, { minLength: 3 });
         keywords.forEach(keyword => {
             if (!this.queryIndex.has(keyword)) {
                 this.queryIndex.set(keyword, []);
@@ -95,7 +70,7 @@ class SemanticCache {
      * Remove entry from indexes
      */
     removeFromIndexes(entry) {
-        const keywords = this.extractKeywords(entry.query);
+        const keywords = (0, keywords_1.extractKeywords)(entry.query, { minLength: 3 });
         keywords.forEach(keyword => {
             const ids = this.queryIndex.get(keyword);
             if (ids) {
@@ -182,7 +157,7 @@ class SemanticCache {
         }
         // If no good match by file, try by query keywords
         if (!bestMatch || bestSimilarity < this.config.similarityThreshold) {
-            const keywords = this.extractKeywords(query);
+            const keywords = (0, keywords_1.extractKeywords)(query, { minLength: 3 });
             const candidateIds = new Set();
             keywords.forEach(keyword => {
                 const ids = this.queryIndex.get(keyword) || [];
@@ -234,7 +209,7 @@ class SemanticCache {
      */
     async findSimilar(query, limit = 5) {
         const results = [];
-        const keywords = this.extractKeywords(query);
+        const keywords = (0, keywords_1.extractKeywords)(query, { minLength: 3 });
         const candidateIds = new Set();
         keywords.forEach(keyword => {
             const ids = this.queryIndex.get(keyword) || [];

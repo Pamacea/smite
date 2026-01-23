@@ -8,11 +8,33 @@
  */
 
 import { pipeline } from '@xenova/transformers';
+import { extractKeywords, jaccardSimilarity } from '../core/rag/keywords';
 
 /**
- * Simple pipeline type wrapper
+ * Pipeline callable type from @xenova/transformers
+ * The pipeline function returns a callable that processes inputs
  */
-type Pipeline = any;
+interface PipelineCallable {
+  (text: string | string[], options?: Record<string, unknown>): Promise<EmbeddingOutput>;
+}
+
+/**
+ * Embedding output structure
+ * The output from transformers is a tensor-like object with numeric data
+ */
+interface EmbeddingOutput {
+  /** Raw tensor data (Float32Array or number array) */
+  data: Float32Array | number[] | { [key: string]: unknown };
+  /** Dimensions of the output tensor */
+  dims?: number[];
+  /** The actual output values (may be nested) */
+  outputs?: number[][];
+  /** Alias for data in some versions */
+  tensor?: Float32Array | number[];
+}
+
+/** Type alias for the embedding model pipeline */
+type Pipeline = PipelineCallable;
 
 /**
  * Semantic similarity result
@@ -123,7 +145,7 @@ export class SemanticAnalysisAPI {
     const mergedOptions = { ...this.defaultOptions, ...options };
 
     // Extract keywords
-    const keywords = this.extractKeywords(content);
+    const keywords = extractKeywords(content, { minLength: 4 });
 
     // Calculate complexity
     const complexity = this.calculateComplexity(content);
@@ -341,8 +363,15 @@ export class SemanticAnalysisAPI {
     });
 
     // Extract tensor data and convert to number array
-    const tensorData = output;
-    const embedding = Array.from(tensorData as any).map((v: unknown) => {
+    // The output structure varies by version, so we check multiple paths
+    const rawData = output.data ?? output.tensor ?? output.outputs ?? output;
+    const sourceData = Array.isArray(rawData)
+      ? rawData
+      : (rawData as { [key: string]: unknown }).data
+        ? (rawData as { data: unknown }).data
+        : rawData;
+
+    const embedding = Array.from(sourceData as Float32Array | number[]).map((v: unknown) => {
       if (typeof v === 'number') return v;
       return 0; // Fallback for non-numeric values
     }) as number[];
@@ -350,37 +379,6 @@ export class SemanticAnalysisAPI {
     this.cache.set(text, embedding);
 
     return embedding;
-  }
-
-  /**
-   * Extract keywords from text
-   */
-  private extractKeywords(text: string): string[] {
-    const stopWords = new Set([
-      'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-      'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-      'should', 'may', 'might', 'must', 'can', 'for', 'to', 'of', 'in', 'on',
-      'at', 'by', 'with', 'from', 'as', 'into', 'through', 'during', 'before',
-      'after', 'above', 'below', 'between', 'under',
-    ]);
-
-    const words = text
-      .toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 3 && !stopWords.has(word));
-
-    // Count frequency
-    const frequency = new Map<string, number>();
-    for (const word of words) {
-      frequency.set(word, (frequency.get(word) || 0) + 1);
-    }
-
-    // Return top 10 keywords by frequency
-    return Array.from(frequency.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(e => e[0]);
   }
 
   /**
@@ -421,16 +419,7 @@ export class SemanticAnalysisAPI {
    * Calculate keyword-based similarity
    */
   private keywordSimilarity(text1: string, text2: string): number {
-    const keywords1 = new Set(this.extractKeywords(text1));
-    const keywords2 = new Set(this.extractKeywords(text2));
-
-    if (keywords1.size === 0 || keywords2.size === 0) return 0;
-
-    // Calculate Jaccard similarity
-    const intersection = new Set([...keywords1].filter(k => keywords2.has(k)));
-    const union = new Set([...keywords1, ...keywords2]);
-
-    return intersection.size / union.size;
+    return jaccardSimilarity(text1, text2, { minLength: 4 });
   }
 
   /**
