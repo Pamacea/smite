@@ -10,6 +10,7 @@ import { homedir } from "node:os";
 import { defaultConfig, mergeConfig, type StatuslineConfig } from "./lib/config.js";
 import { getContextData } from "./lib/context.js";
 import { TokenTracker } from "./lib/token-tracker.js";
+import { getContextFromCache } from "./lib/context-from-cache.js";
 import {
   colors,
   formatBranch,
@@ -71,122 +72,7 @@ const CONFIG_FILE_PATH = join(__dirname, "..", "statusline.config.json");
 const LAST_PAYLOAD_PATH = join(__dirname, "..", "data", "last_payload.txt");
 const CACHE_FILE_PATH = join(__dirname, "..", "data", "context_cache.json");
 const TOKEN_TRACKER_PATH = join(homedir(), ".claude", ".token-tracker.json");
-
-interface ContextCache {
-  timestamp: number;
-  sessionId: string;  // Track session ID to invalidate cache on /clear
-  data: ContextInfo;
-}
-
-let contextCache: ContextCache | null = null;
-
-/**
- * Time-to-live for context info cache.
- * 2 seconds prevents flickering when context calculation methods
- * switch (e.g., from payload to transcript-based).
- */
-const CACHE_TTL = 2000;
-
-/**
- * Check if payload tokens are trustworthy for the given transcript path.
- *
- * IMPORTANT: After /clear or /new, the payload contains tokens from the OLD session
- * but the transcriptPath points to the NEW (empty or small) file.
- * In this case, we should NOT trust the payload tokens.
- *
- * We trust the payload ONLY when:
- * 1. The payload transcript path matches the actual transcript path (same session)
- * 2. OR the payload tokens are consistent with the transcript file size
- */
-async function shouldTrustPayload(
-  actualTranscriptPath: string,
-  payloadTranscriptPath: string,
-  payloadTokens: number
-): Promise<{ trust: boolean; reason: string }> {
-  // Normalize paths for comparison
-  const { normalize } = await import("node:path");
-  const normalizedActual = normalize(actualTranscriptPath);
-  const normalizedPayload = normalize(payloadTranscriptPath);
-
-  // If paths match, payload tokens are for this session - trust them
-  if (normalizedActual === normalizedPayload) {
-    return { trust: payloadTokens >= 0, reason: "same session" };
-  }
-
-  // Paths don't match - this is after /clear or /new
-  // The payload tokens are from the OLD session, don't trust them for the new file
-  console.error(`[DEBUG] Session mismatch: payload=${payloadTranscriptPath}, actual=${actualTranscriptPath}`);
-  return { trust: false, reason: "session mismatch" };
-}
-
-/**
- * Find the actual transcript path, handling /clear command
- * After /clear, the payload contains the old transcript path, but a new one was created
- * This function finds the most recent transcript file
- */
-async function findActualTranscriptPath(payloadPath: string): Promise<string> {
-  try {
-    const { existsSync, readdirSync, statSync } = await import("node:fs");
-    const { join, normalize } = await import("node:path");
-
-    // Get the directory containing transcripts
-    const transcriptDir = join(payloadPath, "..");
-
-    if (!existsSync(transcriptDir)) {
-      return payloadPath;
-    }
-
-    // Normalize payload path for consistent comparison (handles \ vs /)
-    const normalizedPayloadPath = normalize(payloadPath);
-
-    // Find all .jsonl files and get the most recent one
-    const files = readdirSync(transcriptDir);
-    const jsonlFiles = files.filter(f => f.endsWith('.jsonl'));
-
-    let newestFile = null;
-    let newestMtime = 0;
-
-    for (const file of jsonlFiles) {
-      const filePath = join(transcriptDir, file);
-      try {
-        const stats = statSync(filePath);
-        if (stats.mtimeMs > newestMtime) {
-          newestMtime = stats.mtimeMs;
-          newestFile = filePath;
-        }
-      } catch {
-        continue;
-      }
-    }
-
-    // If the newest file is different from payload, we detected a /clear or /new
-    // Use normalized paths for comparison to handle Windows path inconsistencies
-    if (newestFile) {
-      const normalizedNewestFile = normalize(newestFile);
-      if (normalizedNewestFile !== normalizedPayloadPath) {
-        // Get stats for comparison (may fail if file was deleted)
-        try {
-          const payloadStats = statSync(payloadPath);
-          // If newest file is more than 1 second newer, it's a new session
-          // Reduced from 5s to 1s for faster detection
-          if (newestMtime - payloadStats.mtimeMs > 1000) {
-            console.error(`[DEBUG] Detected new session: payload has ${payloadPath} but newest is ${newestFile}`);
-            return newestFile;
-          }
-        } catch {
-          // Payload file doesn't exist (was deleted), use newest
-          console.error(`[DEBUG] Payload file missing, using newest: ${newestFile}`);
-          return newestFile;
-        }
-      }
-    }
-
-    return payloadPath;
-  } catch (e) {
-    console.error(`[DEBUG] Error finding actual transcript: ${e}`);
-    return payloadPath;
-  }
-}
+const SESSION_TOKENS_PATH = join(__dirname, "..", "data", "session_tokens.json");
 
 // Dynamic working directory tracking
 let currentWorkingDir: string | null = null;
@@ -363,137 +249,22 @@ interface ContextInfo {
 async function getContextInfo(
   input: HookInput,
   config: StatuslineConfig,
-  actualTranscriptPath: string  // ✅ Pass actual transcript path for cache key
+  transcriptPath: string
 ): Promise<ContextInfo> {
-  const now = Date.now();
-
-  let result: ContextInfo;
-
-  // DEBUG: Log what we're receiving
-  console.error(`[DEBUG] usePayloadContextWindow: ${config.context.usePayloadContextWindow}`);
-  console.error(`[DEBUG] input.transcript_path: ${input.transcript_path}`);
-  console.error(`[DEBUG] actualTranscriptPath: ${actualTranscriptPath}`);
-  console.error(`[DEBUG] detectedClearSession: ${actualTranscriptPath !== input.transcript_path}`);
-  console.error(`[DEBUG] input.context_window: ${!!input.context_window}`);
-  if (input.context_window) {
-    console.error(`[DEBUG] total_input_tokens: ${input.context_window.total_input_tokens}`);
-    console.error(`[DEBUG] current_usage:`, input.context_window.current_usage);
-  }
-
-  // Absolute priority to payload if available (more accurate)
-  // The payload contains total_input_tokens which is the exact session total
-  // BUT: after /clear or /new, the payload has tokens from the OLD session
-  // So we must verify that the payload corresponds to the current transcript
-  let usePayloadContext = config.context.usePayloadContextWindow && !!input.context_window;
-
-  // Check if we should trust the payload data for THIS session
-  if (usePayloadContext && input.context_window) {
-    const payloadTokens = input.context_window.total_input_tokens || 0;
-    const { trust: trustPayload, reason } = await shouldTrustPayload(
-      actualTranscriptPath,
-      input.transcript_path,
-      payloadTokens
-    );
-    console.error(`[DEBUG] Trust payload: ${trustPayload} (reason: ${reason})`);
-    if (!trustPayload) {
-      usePayloadContext = false;  // Force fallback to transcript calculation
-    }
-  }
-
-  if (usePayloadContext && input.context_window) {
-    // Try current_usage first (real-time tracking)
-    const current = input.context_window.current_usage;
-    let tokens = 0;
-    let maxTokens = input.context_window.context_window_size || config.context.maxContextTokens;
-
-    if (current) {
-      tokens =
-        (current.input_tokens || 0) +
-        (current.cache_creation_input_tokens || 0) +
-        (current.cache_read_input_tokens || 0);
-    }
-
-    // IMPORTANT: Only use payload if current_usage has REAL data (> 0)
-    // NEVER use total_input_tokens as fallback - it's cumulative across all sessions!
-    // If current_usage is 0, we MUST fall back to transcript-based calculation
-    // which counts only the CURRENT discussion (resets on /clear or /new)
-    if (tokens > 0) {
-      const percentage = Math.min(
-        100,
-        Math.round((tokens / maxTokens) * 100)
-      );
-      console.error(`[DEBUG] Using current_usage: ${tokens} tokens (${percentage}%)`);
-
-      // Calculate base context for display breakdown
-      // NOTE: We only count global ~/.claude/ files, NOT workspace .claude/
-      let baseContextTokens = 0;
-      if (config.context.includeBaseContext && config.context.baseContextPath) {
-        try {
-          const { getBaseContextTokens } = await import("./lib/context.js");
-          baseContextTokens = await getBaseContextTokens(
-            config.context.baseContextPath
-          );
-          if (!isFinite(baseContextTokens) || baseContextTokens < 0) {
-            baseContextTokens = 0;
-          }
-        } catch {
-          baseContextTokens = 0;
-        }
-      }
-
-      // Estimate transcript: total - base context
-      // (payload includes everything, so we reverse-calculate transcript)
-      const transcriptTokens = Math.max(0, tokens - baseContextTokens);
-
-      result = {
-        tokens,
-        percentage,
-        lastOutputTokens: null,
-        baseContext: baseContextTokens,
-        transcriptContext: transcriptTokens,
-        userTokens: transcriptTokens // User tokens exclude system/base context
-      };
-
-      // Cache only if we have valid data
-      // Use actualTranscriptPath as sessionId - it changes with /new and /clear
-      contextCache = { timestamp: now, sessionId: actualTranscriptPath, data: result };
-      return result;
-    }
-    console.error(`[DEBUG] current_usage is 0, falling back to transcript calculation`);
-  }
-
-  // Fallback to transcript ONLY if payload is not available
-  // and we don't have recent cache (to avoid jumps 36% → 0%)
-  // Extended cache (3x CACHE_TTL = 6 seconds) prevents flickering when:
-  // - Payload context is temporarily unavailable
-  // - Context is being recalculated
-  // - Cache is being invalidated
-  // IMPORTANT: Don't use cache if session changed OR tokens are null/0
-  // Session is tracked by actualTranscriptPath (changes with /new and /clear)
-  if (
-    contextCache &&
-    contextCache.sessionId === actualTranscriptPath &&  // ✅ Check by transcript path
-    (now - contextCache.timestamp) < (CACHE_TTL * 3) &&
-    contextCache.data.tokens !== null &&
-    contextCache.data.tokens > 0
-  ) {
-    // Keep the cached value for 6 more seconds to avoid jumps
-    // This smooths transitions between different context calculation methods
-    return contextCache.data;
-  }
-
+  // ALWAYS calculate from transcript file
+  // The payload total_input_tokens can be cumulative/wrong across sessions
+  // The transcript contains the actual messages for THIS session
   const contextData = await getContextData({
-    transcriptPath: actualTranscriptPath,
+    transcriptPath,
     maxContextTokens: config.context.maxContextTokens,
     autocompactBufferTokens: config.context.autocompactBufferTokens,
     useUsableContextOnly: config.context.useUsableContextOnly,
     overheadTokens: config.context.overheadTokens,
     includeBaseContext: config.context.includeBaseContext,
     baseContextPath: config.context.baseContextPath,
-    // NOTE: workspaceDir removed - we don't count project .claude/ in base context
   });
 
-  result = {
+  return {
     tokens: contextData.tokens,
     percentage: contextData.percentage,
     lastOutputTokens: contextData.lastOutputTokens,
@@ -501,13 +272,6 @@ async function getContextInfo(
     transcriptContext: contextData.transcriptContext,
     userTokens: contextData.userTokens,
   };
-
-  // Cache the result (use actualTranscriptPath as sessionId)
-  if (contextData.tokens !== null && contextData.percentage !== null) {
-    contextCache = { timestamp: now, sessionId: actualTranscriptPath, data: result };
-  }
-
-  return result;
 }
 
 async function getSpendInfo(
@@ -522,6 +286,62 @@ async function getSpendInfo(
   const todayCost = await getTodayCostV2();
 
   return { periodCost, todayCost };
+}
+
+/**
+ * Session token tracking using payload's total_input_tokens.
+ * This is MORE accurate than transcript parsing because:
+ * - total_input_tokens is the actual token count from the API
+ * - Transcript parsing is an estimate and includes tool outputs
+ *
+ * We track the delta of total_input_tokens per session (transcript path).
+ */
+interface SessionTokensData {
+  // Map of transcript_path -> baseline total_input_tokens when session started
+  sessions: Record<string, number>;
+  // Last update timestamp (for cleanup)
+  lastUpdate: number;
+}
+
+async function getSessionTokens(
+  transcriptPath: string,
+  totalInputTokens: number
+): Promise<{ sessionTokens: number; isNewSession: boolean }> {
+  try {
+    if (existsSync(SESSION_TOKENS_PATH)) {
+      const content = await readFile(SESSION_TOKENS_PATH, "utf-8");
+      const data = JSON.parse(content) as SessionTokensData;
+
+      // Clean up old sessions (> 24 hours)
+      const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+      for (const [path, _] of Object.entries(data.sessions)) {
+        // Can't easily check age without timestamps, skip for now
+      }
+
+      if (data.sessions[transcriptPath] !== undefined) {
+        // Existing session
+        const baseline = data.sessions[transcriptPath];
+        const sessionTokens = Math.max(0, totalInputTokens - baseline);
+        return { sessionTokens, isNewSession: false };
+      } else {
+        // New session - set baseline
+        data.sessions[transcriptPath] = totalInputTokens;
+        data.lastUpdate = Date.now();
+        await writeFile(SESSION_TOKENS_PATH, JSON.stringify(data, null, 2));
+        return { sessionTokens: 0, isNewSession: true };
+      }
+    }
+  } catch {
+    // File doesn't exist or error - create new
+  }
+
+  // Create new tracking file
+  const data: SessionTokensData = {
+    sessions: { [transcriptPath]: totalInputTokens },
+    lastUpdate: Date.now(),
+  };
+  await writeFile(SESSION_TOKENS_PATH, JSON.stringify(data, null, 2));
+  return { sessionTokens: 0, isNewSession: true };
 }
 
 async function main() {
@@ -545,8 +365,10 @@ async function main() {
     // Save last payload for debugging
     await writeFile(LAST_PAYLOAD_PATH, JSON.stringify(input, null, 2));
 
-    // Find the actual transcript path (handles /clear command)
-    const actualTranscriptPath = await findActualTranscriptPath(input.transcript_path);
+    // Use the transcript path from the hook input directly
+    // The hook provides the correct transcript path for THIS session
+    // Don't try to find "newest" file - that causes session sharing!
+    const actualTranscriptPath = input.transcript_path;
 
     const config = await loadConfig();
 
@@ -563,23 +385,31 @@ async function main() {
     }
 
     const git = await getGitStatus();
-    const contextInfo = await getContextInfo(input, config, actualTranscriptPath);
+
+    // ========== PLAN C: TOKEN TRACKING FROM /CONTEXT CACHE ==========
+    // 1. Try to read from cache (created by /context command) - MOST ACCURATE
+    // 2. Fallback to simple transcript estimation (counts only text, no tool results)
+    const contextData = await getContextFromCache(
+      actualTranscriptPath,
+      config.context.maxContextTokens
+    );
+
+    const totalTokens = contextData.tokens;
+    const percentage = contextData.percentage;
+    const sourceIndicator = contextData.source === "cache" ? "" : "*"; // * = estimated
+
     const spendInfo = await getSpendInfo(currentResetsAt);
 
-    // Token tracking
-    const currentUsage = contextInfo.tokens || 0;
-    // Use actual transcript path as unique session ID (changes with /clear command)
+    // Token diff tracking
+    const currentUsage = totalTokens;
     const sessionId = actualTranscriptPath;
     const tracker = await TokenTracker.load(TOKEN_TRACKER_PATH, currentUsage, sessionId);
     const { diff: tokenDiff, shouldShow: showTokenDiff } = tracker.getCurrentDiff(currentUsage);
 
-    // Detect spurious diffs from base context calculation changes or session resets
     if (tracker.isSpuriousDiff(tokenDiff)) {
-      // This is likely a spurious diff - don't show it and reset baseline
       tracker.resetBaseline(currentUsage);
       await tracker.save(TOKEN_TRACKER_PATH);
     } else {
-      // Normal path: update tracker with actual changes
       tracker.update(currentUsage);
       await tracker.save(TOKEN_TRACKER_PATH);
     }
@@ -631,13 +461,13 @@ async function main() {
         config.session.cost.format
       ),
       sessionDuration: formatDuration(input.cost.total_duration_ms),
-      contextTokens: contextInfo.tokens,
-      contextPercentage: contextInfo.percentage,
-      lastOutputTokens: contextInfo.lastOutputTokens,
+      contextTokens: totalTokens,
+      contextPercentage: percentage,
+      lastOutputTokens: null,
       tokenDiff: showTokenDiff ? tokenDiff : undefined,
-      baseContext: contextInfo.baseContext,
-      transcriptContext: contextInfo.transcriptContext,
-      userTokens: contextInfo.userTokens,
+      baseContext: contextData.source === "cache" ? 0 : 23000, // Only for estimate
+      transcriptContext: contextData.source === "cache" ? totalTokens : totalTokens - 23000,
+      userTokens: contextData.source === "cache" ? totalTokens : totalTokens - 23000,
       ...(getUsageLimits && {
         usageLimits: {
           five_hour: usageLimits.five_hour
@@ -663,12 +493,10 @@ async function main() {
     // DEBUG: Write debug info to file
     try {
       await writeFile(LAST_PAYLOAD_PATH.replace('.txt', '_debug.txt'), JSON.stringify({
-        input_transcript: input.transcript_path,
-        actual_transcript: actualTranscriptPath,
-        detected_clear: actualTranscriptPath !== input.transcript_path,
-        context_tokens: contextInfo.tokens,
-        user_tokens: contextInfo.userTokens,
-        total_input_tokens: input.context_window?.total_input_tokens,
+        transcript: actualTranscriptPath,
+        tokens: totalTokens,
+        percentage: percentage,
+        source: contextData.source, // "cache" = /context, "estimate" = fallback
       }, null, 2));
     } catch {}
 

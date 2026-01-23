@@ -26,7 +26,7 @@ export declare function readFirstLines(filePath: string, maxLines: number): Prom
 /**
  * Read and tokenize all base context files
  * Caches results for performance
- * NOTE: Only counts global ~/.claude/ files, NOT workspace .claude/
+ * Counts: CLAUDE.md, rules, plugins config/README (not full source code)
  */
 export declare function getBaseContextTokens(baseContextPath: string): Promise<number>;
 /**

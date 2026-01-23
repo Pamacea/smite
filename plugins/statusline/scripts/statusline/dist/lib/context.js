@@ -120,7 +120,7 @@ export async function readFirstLines(filePath, maxLines) {
 /**
  * Read and tokenize all base context files
  * Caches results for performance
- * NOTE: Only counts global ~/.claude/ files, NOT workspace .claude/
+ * Counts: CLAUDE.md, rules, plugins config/README (not full source code)
  */
 export async function getBaseContextTokens(baseContextPath) {
     const now = Date.now();
@@ -135,6 +135,7 @@ export async function getBaseContextTokens(baseContextPath) {
         const claudeMdPath = join(normalizedBasePath, "CLAUDE.md");
         const clauderulesPath = join(normalizedBasePath, ".clauderules");
         const rulesDir = join(normalizedBasePath, "rules");
+        const pluginsDir = join(normalizedBasePath, "plugins");
         // Read main CLAUDE.md
         if (existsSync(claudeMdPath)) {
             const content = await safeReadFile(claudeMdPath, MAX_FILE_SIZE_MB);
@@ -153,7 +154,6 @@ export async function getBaseContextTokens(baseContextPath) {
         if (existsSync(rulesDir)) {
             try {
                 const readDirRecursive = async (dir) => {
-                    // Use withFileTypes to get file type info without extra stat() calls
                     const entries = await readdir(dir, { withFileTypes: true });
                     for (const entry of entries) {
                         const fullPath = join(dir, entry.name);
@@ -179,14 +179,59 @@ export async function getBaseContextTokens(baseContextPath) {
                 // Skip directory if read fails
             }
         }
-        // NOTE: We do NOT include workspace-specific .claude/ files
-        // Only global ~/.claude/ files are counted as base context
-        // This matches the behavior shown in /context command
+        // Count plugins config files (README.md, package.json, etc.)
+        // NOT counting full source code to avoid massive token counts
+        if (existsSync(pluginsDir)) {
+            try {
+                const readPluginsRecursive = async (dir, depth) => {
+                    // Limit depth to avoid scanning too deep
+                    if (depth > 4)
+                        return;
+                    const entries = await readdir(dir, { withFileTypes: true });
+                    for (const entry of entries) {
+                        const fullPath = join(dir, entry.name);
+                        try {
+                            if (entry.isDirectory()) {
+                                // Skip node_modules, dist, cache directories
+                                if (!["node_modules", "dist", "cache", ".git", "build"].includes(entry.name)) {
+                                    await readPluginsRecursive(fullPath, depth + 1);
+                                }
+                            }
+                            else if (entry.isFile()) {
+                                // Only count config/documentation files, not source code
+                                const name = entry.name.toLowerCase();
+                                if (name.endsWith(".md") && name.includes("readme")) {
+                                    const content = await safeReadFile(fullPath, MAX_FILE_SIZE_MB);
+                                    if (content)
+                                        totalTokens += estimateTokens(content);
+                                }
+                                else if (name === "package.json" || name === "manifest.json" || name === "config.json") {
+                                    const content = await safeReadFile(fullPath, 0.1); // 100KB limit for config files
+                                    if (content)
+                                        totalTokens += estimateTokens(content);
+                                }
+                            }
+                        }
+                        catch {
+                            // Skip file if read fails
+                        }
+                    }
+                };
+                await readPluginsRecursive(pluginsDir, 0);
+            }
+            catch {
+                // Skip directory if read fails
+            }
+        }
+        // Fixed overhead for system prompt, tools, agents (estimated)
+        // These are always loaded but not in files
+        const systemOverhead = 15000; // ~15K for system prompt, tools definitions
+        totalTokens += systemOverhead;
         baseContextCache = { timestamp: now, tokens: totalTokens };
     }
     catch {
-        // If scanning fails, return 0
-        totalTokens = 0;
+        // If scanning fails, return estimated overhead
+        totalTokens = 15000;
     }
     return totalTokens;
 }
@@ -202,34 +247,80 @@ export async function getContextData(options) {
         let transcriptChars = 0;
         let systemChars = 0;
         let messageCount = 0;
+        // Types to skip (internal, not counted toward context)
+        const skipTypes = new Set([
+            "progress",
+            "file-history-snapshot",
+            "agent_progress",
+            "bash_progress",
+            "hook_progress",
+            "thinking",
+            "js", // Code execution artifacts
+            "ts", // TypeScript execution artifacts
+        ]);
         for (const line of lines) {
             try {
                 const entry = JSON.parse(line);
-                // Skip entries that should NOT be counted as user tokens
-                // - "progress" entries contain hook prompts/outputs (not user content)
-                // - "file-history-snapshot" entries are internal file tracking (not user content)
-                if (entry.type === "progress" || entry.type === "file-history-snapshot") {
+                // Skip internal entries that don't consume context
+                if (skipTypes.has(entry.type)) {
                     continue;
                 }
+                // Helper to get content from entry (handles nested structures)
+                const getContent = () => {
+                    // user/assistant entries with nested message.content
+                    if ((entry.type === "user" || entry.type === "assistant") && entry.message?.content) {
+                        const content = entry.message.content;
+                        if (Array.isArray(content)) {
+                            // Filter out thinking blocks
+                            const nonThinking = content.filter((c) => c.type !== "thinking");
+                            return JSON.stringify(nonThinking);
+                        }
+                        return String(content);
+                    }
+                    // Generic message entries with nested message.content
+                    if (entry.type === "message" && entry.message?.content) {
+                        const content = entry.message.content;
+                        if (Array.isArray(content)) {
+                            // Filter out thinking blocks
+                            const nonThinking = content.filter((c) => c.type !== "thinking");
+                            return JSON.stringify(nonThinking);
+                        }
+                        return String(content);
+                    }
+                    // Legacy format: direct content
+                    if (entry.content) {
+                        const content = entry.content;
+                        if (Array.isArray(content)) {
+                            const nonThinking = content.filter((c) => c.type !== "thinking");
+                            return JSON.stringify(nonThinking);
+                        }
+                        return String(content);
+                    }
+                    // text entries
+                    if (entry.type === "text" && entry.text) {
+                        return String(entry.text);
+                    }
+                    // system entries
+                    if (entry.type === "system" && entry.content) {
+                        return String(entry.content);
+                    }
+                    return "";
+                };
                 // Count different message types that consume context tokens
-                if (entry.type === "user" || entry.type === "assistant") {
-                    // Count message content, but exclude "thinking" blocks (internal reasoning)
-                    const content = entry.content || "";
-                    if (Array.isArray(content)) {
-                        // Filter out "thinking" blocks from content array
-                        const nonThinkingContent = content.filter((c) => c.type !== "thinking");
-                        transcriptChars += JSON.stringify(nonThinkingContent).length;
-                    }
-                    else {
-                        transcriptChars += content.length;
-                    }
+                if (entry.type === "user" || entry.type === "assistant" || entry.type === "message") {
+                    transcriptChars += getContent().length;
                     messageCount++;
                 }
                 else if (entry.type === "tool_result" || entry.type === "tool_use") {
-                    // Count tool outputs (bash, grep, etc.) - these consume tokens too!
+                    // Tool outputs/inputs - these consume tokens
                     const content = entry.content || entry.output || "";
                     const input = entry.input || "";
                     transcriptChars += content.length + input.length;
+                    messageCount++;
+                }
+                else if (entry.type === "text" || entry.type === "system") {
+                    // Text and system entries also consume context
+                    transcriptChars += getContent().length;
                     messageCount++;
                 }
             }

@@ -73,7 +73,7 @@ function renderPathAndModel(data: StatuslineData, config: StatuslineConfig): str
 }
 
 /**
- * Render session information
+ * Render session information (unused - kept for compatibility)
  */
 function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): string | null {
   const sessionParts: string[] = [];
@@ -109,13 +109,8 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
     const userTokens = data.userTokens ?? data.contextTokens;
     const totalTokens = data.contextTokens;
 
-    // Display format:
-    // - If userTokens is very small (<1K) compared to total, show just total (new session)
-    // - If userTokens is significantly different from total, show userTokens(totalTokens)
-    // - Otherwise show just userTokens
     let tokensStr: string;
     if (userTokens < 1000 && totalTokens >= 1000) {
-      // New session with just base context - show total only
       tokensStr = formatTokens(totalTokens, config.session.tokens.showDecimals);
     } else if (userTokens !== totalTokens) {
       tokensStr = `${formatTokens(userTokens, config.session.tokens.showDecimals)}${colors.dim}(${formatTokens(totalTokens, false)})${colors.reset}`;
@@ -123,7 +118,6 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
       tokensStr = formatTokens(userTokens, config.session.tokens.showDecimals);
     }
 
-    // Add token diff if available and recent (shows tokens added since last update)
     if (data.tokenDiff && data.tokenDiff > 0) {
       const diffK = (data.tokenDiff / 1000).toFixed(1);
       const diffColor = data.tokenDiff > 50000 ? colors.red :
@@ -131,7 +125,6 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
       tokensStr += `${diffColor} +${diffK}K${colors.reset}`;
     }
 
-    // Add last output tokens if available
     if (data.lastOutputTokens !== null && data.lastOutputTokens > 0) {
       tokensStr += ` + ${data.lastOutputTokens}`;
     }
@@ -141,39 +134,6 @@ function renderSessionInfo(data: StatuslineData, config: StatuslineConfig): stri
     }
 
     sessionParts.push(tokensStr);
-  }
-
-  if (config.session.percentage.enabled) {
-    const { progressBar, showValue } = config.session.percentage;
-
-    // Calculate percentage based on context tokens (includes base context for new sessions)
-    const maxTokens = config.context.maxContextTokens || 200000; // Default to 200K if not set
-    const contextTokens = data.contextTokens ?? 0;
-
-    // Protect against division by zero
-    const percentage = maxTokens > 0 && contextTokens > 0
-      ? Math.min(100, Math.round((contextTokens / maxTokens) * 100))
-      : 0;
-
-    // Show progress bar if we have any tokens (including base context)
-    // This ensures the bar shows up even for new sessions with just base context
-    if (contextTokens > 0 && maxTokens > 0) {
-      if (progressBar.enabled) {
-        const bar = formatProgressBar(
-          percentage,
-          progressBar.length,
-          progressBar.style,
-          progressBar.color,
-          progressBar.background
-        );
-        sessionParts.push(bar);
-      }
-
-      if (showValue) {
-        const percentColor = getPercentageColor(percentage, progressBar.color);
-        sessionParts.push(`${percentColor}${percentage}%${colors.reset}`);
-      }
-    }
   }
 
   if (sessionParts.length === 0) {
@@ -309,14 +269,15 @@ export function renderStatusline(
     // 7. Progressbar + Percentage
     if (config.session.percentage.enabled) {
       const { progressBar, showValue } = config.session.percentage;
-      // Use pre-calculated percentage from context, or calculate as fallback
+      // Use pre-calculated percentage from context (single source of truth)
       const percentage = data.contextPercentage ?? (
-        maxTokensVal > 0 && totalTokens > 0
-          ? Math.min(100, Math.round((totalTokens / maxTokensVal) * 100))
+        maxTokens > 0 && totalTokens > 0
+          ? Math.min(100, Math.round((totalTokens / maxTokens) * 100))
           : 0
       );
 
-      if (totalTokens > 0 && percentage > 0) {
+      // Show progressbar if we have any tokens (even 0% for new sessions)
+      if (totalTokens > 0) {
         if (progressBar.enabled) {
           const bar = formatProgressBar(
             percentage,

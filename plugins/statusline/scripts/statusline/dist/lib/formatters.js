@@ -185,9 +185,10 @@ export function formatProgressBar(percentage, length, style, color, background) 
     const empty = length - filled;
     const barColor = getProgressBarColor(percentage, color);
     if (style === "braille") {
+        // Braille style: show full blocks (same as blocks for now)
         const emptyChar = getEmptyChar(background);
-        const filledPart = barColor + "█".repeat(Math.ceil(filled / 2)) + colors.reset;
-        const emptyPart = colors.dim + emptyChar.repeat(length - Math.ceil(filled / 2)) + colors.reset;
+        const filledPart = barColor + "█".repeat(filled) + colors.reset;
+        const emptyPart = colors.dim + emptyChar.repeat(empty) + colors.reset;
         return filledPart + emptyPart;
     }
     // style === "blocks"
