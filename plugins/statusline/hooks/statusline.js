@@ -96,17 +96,23 @@ class StatusLine {
       }
 
       try {
-        const diffStat = execSync('git diff --shortstat', { encoding: 'utf-8' }).trim();
-        const match = diffStat.match(/(\d+) insertion[^,]*(?:, (\d+) deletion)?/);
-        if (match) {
-          const insertions = parseInt(match[1]);
-          const deletions = match[2] ? parseInt(match[2]) : 0;
-          if (insertions > 0 || deletions > 0) {
-            // Green for additions, red for deletions
-            const plus = insertions > 0 ? `${COLORS.green}+${insertions}${COLORS.reset}` : '';
-            const minus = deletions > 0 ? `${COLORS.red}/-${deletions}${COLORS.reset}` : '';
-            info.insertions = plus + minus;
+        const numstat = execSync('git diff --numstat', { encoding: 'utf-8' }).trim();
+        const lines = numstat.split('\n').filter(l => l.trim());
+        let totalInsertions = 0;
+        let totalDeletions = 0;
+
+        for (const line of lines) {
+          const [additions, deletions] = line.split('\t');
+          if (additions && deletions) {
+            totalInsertions += parseInt(additions, 10) || 0;
+            totalDeletions += parseInt(deletions, 10) || 0;
           }
+        }
+
+        if (totalInsertions > 0 || totalDeletions > 0) {
+          const plus = totalInsertions > 0 ? `${COLORS.green}+${totalInsertions}${COLORS.reset}` : '';
+          const minus = totalDeletions > 0 ? `${COLORS.red}/-${totalDeletions}${COLORS.reset}` : '';
+          info.insertions = plus + minus;
         }
       } catch {
         // No changes
