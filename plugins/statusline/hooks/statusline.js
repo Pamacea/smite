@@ -23,7 +23,10 @@ const TOKENS_PER_CHAR = 0.15;
 const JSON_OVERHEAD = 4.0;
 
 // Cache for base context token count (per project)
+// Cache invalidation: 5 minutes TTL
 const baseContextCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const cacheTimestamps = new Map();
 
 class StatusLine {
   constructor() {
@@ -369,10 +372,18 @@ class StatusLine {
   estimateBaseContextTokens() {
     const cwd = process.cwd();
     const cacheKey = cwd;
+    const now = Date.now();
 
-    // Return cached value if available
+    // Return cached value if available and not expired
     if (baseContextCache.has(cacheKey)) {
-      return baseContextCache.get(cacheKey);
+      const cacheTime = cacheTimestamps.get(cacheKey) || 0;
+      if (now - cacheTime < CACHE_TTL) {
+        this.log('Using cached base context:', baseContextCache.get(cacheKey));
+        return baseContextCache.get(cacheKey);
+      }
+      // Cache expired, remove it
+      baseContextCache.delete(cacheKey);
+      cacheTimestamps.delete(cacheKey);
     }
 
     let totalChars = 0;
@@ -466,6 +477,7 @@ class StatusLine {
     // Cache the result (with a reasonable minimum base)
     const result = Math.max(estimatedTokens, 5000); // At least 5K base context
     baseContextCache.set(cacheKey, result);
+    cacheTimestamps.set(cacheKey, Date.now());
 
     return result;
   }
@@ -653,10 +665,11 @@ class StatusLine {
       }
     }
 
-    if (!start || !end) return '';
+    if (!start) return '';
 
     const startTime = new Date(start).getTime();
-    const endTime = new Date(end).getTime();
+    // Use current time for live sessions (more accurate during active work)
+    const endTime = Date.now();
     const diffMs = endTime - startTime;
 
     if (diffMs < 0) return '';
