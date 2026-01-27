@@ -22,6 +22,14 @@ const COLORS = {
 const TOKENS_PER_CHAR = 0.15;
 const JSON_OVERHEAD = 4.0;
 
+// Scoring weights for session selection
+// Env recency is primary indicator, API calls confirm activity, file mtime is minor tiebreaker
+const SCORE_WEIGHTS = {
+  BASE_RECENCY: 10_000_000,  // Maximum env recency score (newer = higher)
+  HAS_API_CALLS: 5_000_000,  // Bonus for confirmed active session
+  FILE_ACTIVITY: 100_000     // Minor bonus for recent file modification
+};
+
 // Cache for base context token count (per project)
 // Cache invalidation: 5 minutes TTL
 const baseContextCache = new Map();
@@ -222,7 +230,11 @@ class StatusLine {
         if (fs.existsSync(indexPath)) {
           try {
             const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
-            if (index.originalPath && cwd.startsWith(index.originalPath)) {
+            // Robust path matching: exact match or starts with path separator
+            // Prevents /project from matching /project-2
+            if (index.originalPath &&
+                (cwd === index.originalPath ||
+                 cwd.startsWith(path.join(index.originalPath, path.sep)))) {
               matchingProject = projectDir;
               break;
             }
@@ -241,7 +253,8 @@ class StatusLine {
       // PRIMARY METHOD: Use session-env to find recently active sessions
       // The session-env directory is created when a session starts, so recent entries
       // indicate sessions that were started recently (even if empty)
-      const recentThreshold = 2 * 60 * 1000; // 2 minutes
+      // Use 1 hour threshold since sessions can be long-lived and env dirs aren't updated
+      const recentThreshold = 60 * 60 * 1000; // 1 hour
       const now = Date.now();
 
       if (fs.existsSync(sessionEnvDir)) {
@@ -252,9 +265,9 @@ class StatusLine {
             envPath: path.join(sessionEnvDir, d.name),
             envMtime: fs.statSync(path.join(sessionEnvDir, d.name)).mtimeMs
           }))
-          .filter(d => now - d.envMtime < recentThreshold); // Only very recent sessions
+          .filter(d => now - d.envMtime < recentThreshold);
 
-        this.log('Recent session dirs (within 2min):', sessionDirs.length);
+        this.log('Recent session dirs (within 1hr):', sessionDirs.length);
 
         // Find matching .jsonl files and get their modification times
         for (const sessionDir of sessionDirs) {
@@ -275,25 +288,26 @@ class StatusLine {
 
       // Choose the best candidate:
       // 1. Prefer sessions with API calls (content)
-      // 2. Among those, prefer the most recently modified file
-      // 3. If no content, prefer the most recent env (newest session)
+      // 2. Among those with content, prefer newer env (more recently started = more likely active)
+      // 3. As final tiebreaker, prefer more recently modified file
       let bestSession = null;
       let bestScore = -1;
 
       for (const [uuid, candidate] of sessionCandidates) {
         let score = 0;
-        // Base score from file recency (more recent = higher)
-        const fileAge = now - candidate.fileMtime;
-        score += Math.max(0, 1000000 - fileAge);
+        // Base score from env recency (newer env = more likely active session)
+        // Use inverse of envAge: lower envAge = higher score
+        const envAge = now - candidate.envMtime;
+        score += Math.max(0, SCORE_WEIGHTS.BASE_RECENCY - envAge);
 
-        // Big bonus for having API calls (this is likely the active session)
+        // Bonus for having API calls (this is likely the active session)
         if (candidate.hasApiCalls) {
-          score += 10000000;
+          score += SCORE_WEIGHTS.HAS_API_CALLS;
         }
 
-        // Small bonus for recent env creation (newer sessions)
-        const envAge = now - candidate.envMtime;
-        score += Math.max(0, 500000 - envAge);
+        // Bonus for recent file modification (activity)
+        const fileAge = now - candidate.fileMtime;
+        score += Math.max(0, SCORE_WEIGHTS.FILE_ACTIVITY - fileAge);
 
         this.log('Candidate score:', {
           uuid: uuid.substring(0, 8),
@@ -515,12 +529,7 @@ class StatusLine {
       this.log('Using actual tokens from API:', { inputTokens, outputTokens });
     } else if (sessionData.length > 0) {
       // No actual tokens found, estimate from actual message content
-      // Extract just the text content from messages, not JSON metadata
-
-      // The NEXT API call will send:
-      // 1. Base context (system prompt, tools, rules) - ONCE
-      // 2. Entire conversation history - ONCE
-      // NOT cumulative across all API calls!
+      // Estimate CURRENT context usage (what the next API call will send)
 
       let userTextChars = 0;
       let assistantTextChars = 0;
@@ -537,23 +546,20 @@ class StatusLine {
         }
       }
 
-      // Estimate tokens from actual text content
-      const estimatedInput = Math.round(userTextChars * TOKENS_PER_CHAR);
-      const estimatedOutput = Math.round(assistantTextChars * TOKENS_PER_CHAR);
-
-      // Add base context ONCE (sent with the next API call)
       const baseContext = this.estimateBaseContextTokens();
 
-      // Input = all user messages (history) + base context
-      inputTokens = estimatedInput + baseContext;
-      // Output = all assistant messages (generated so far)
-      outputTokens = estimatedOutput;
+      // Input = base context + all conversation history (sent once with next API call)
+      // Both user and assistant messages are in the history
+      const historyChars = userTextChars + assistantTextChars;
+      inputTokens = Math.round((baseContext + historyChars) * TOKENS_PER_CHAR);
+
+      // Output = only assistant messages (what was generated)
+      outputTokens = Math.round(assistantTextChars * TOKENS_PER_CHAR);
 
       this.log('Estimated tokens (current context):', {
         userChars: userTextChars,
         assistantChars: assistantTextChars,
-        estimatedInput,
-        estimatedOutput,
+        historyChars,
         baseContext,
         totalInput: inputTokens,
         totalOutput: outputTokens
