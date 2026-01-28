@@ -87,8 +87,47 @@ interface SessionLine {
 	timestamp?: string;
 }
 
-async function findCurrentSession(): Promise<string | null> {
-	const cwd = process.cwd();
+interface SessionResult {
+	sessionPath: string | null;
+	projectDir: string | null;
+}
+
+// Detect project root by walking up from current directory
+async function detectProjectRoot(): Promise<string | null> {
+	const { resolve } = await import("node:path");
+	const { existsSync } = await import("node:fs");
+
+	let current = resolve(process.cwd());
+	const seen = new Set<string>();
+
+	while (current && !seen.has(current)) {
+		seen.add(current);
+
+		// Check if this has .claude directory (project root)
+		if (existsSync(join(current, ".claude"))) {
+			return current;
+		}
+
+		// Check if we're in a plugin directory (plugins/statusline)
+		// If so, the project root is two levels up
+		const basename = current.split(/[/\\]/).pop();
+		if (basename === "statusline") {
+			const parent = resolve(current, "..");
+			const grandparent = resolve(parent, "..");
+			if (existsSync(join(grandparent, ".claude"))) {
+				return grandparent;
+			}
+		}
+
+		const parent = resolve(current, "..");
+		if (parent === current) break; // Reached filesystem root
+		current = parent;
+	}
+
+	return null;
+}
+
+async function findCurrentSession(): Promise<SessionResult> {
 	const homeDir = process.env.HOME || process.env.USERPROFILE || "";
 	const claudeDir = join(homeDir, ".claude");
 	const projectsDir = join(claudeDir, "projects");
@@ -96,12 +135,14 @@ async function findCurrentSession(): Promise<string | null> {
 
 	try {
 		const { readdirSync, readFileSync, existsSync, statSync } = await import("node:fs");
+		if (!existsSync(projectsDir)) return { sessionPath: null, projectDir: null };
 
-		// List project directories
-		if (!existsSync(projectsDir)) return null;
-
-		// Normalize path for comparison (handle Windows backslashes)
+		// Detect the current project root
+		const detectedProjectRoot = await detectProjectRoot();
 		const normalizePath = (p: string) => p.replace(/\\/g, "/");
+
+		type SessionCandidate = { sessionPath: string; projectDir: string; mtime: number; isCurrentProject: boolean };
+		const candidates: SessionCandidate[] = [];
 
 		const projects = readdirSync(projectsDir, { withFileTypes: true })
 			.filter(d => d.isDirectory())
@@ -113,52 +154,66 @@ async function findCurrentSession(): Promise<string | null> {
 			try {
 				const index = JSON.parse(readFileSync(indexPath, "utf-8"));
 				const originalPath = index.originalPath || index.projectPath;
-				if (originalPath) {
-					const normalizedOriginal = normalizePath(originalPath);
-					const normalizedCwd = normalizePath(cwd);
-					if (normalizedCwd === normalizedOriginal || normalizedCwd.startsWith(normalizedOriginal + "/")) {
-						const projectDir = join(projectsDir, project);
+				if (!originalPath) continue;
 
-						// Find recent session from session-env
-						if (existsSync(sessionEnvDir)) {
-							const sessions = readdirSync(sessionEnvDir, { withFileTypes: true })
-								.filter(d => d.isDirectory())
-								.map(d => d.name);
-							const now = Date.now();
-							for (const sessionId of sessions) {
-								const envPath = join(sessionEnvDir, sessionId);
-								const envStat = statSync(envPath);
-								const age = now - envStat.mtimeMs;
-								if (age < 60 * 60 * 1000) { // Within 1 hour
-									const sessionPath = join(projectDir, sessionId + ".jsonl");
-									if (existsSync(sessionPath)) return sessionPath;
-								}
+				const projectDataDir = join(projectsDir, project);
+				const normalizedOriginal = normalizePath(originalPath);
+				const normalizedDetected = detectedProjectRoot ? normalizePath(detectedProjectRoot) : "";
+
+				// Check if this matches our detected project
+				const isCurrentProject = detectedProjectRoot && (
+					normalizedOriginal === normalizedDetected ||
+					normalizedDetected.startsWith(normalizedOriginal + "/")
+				);
+
+				// Check session-env for active sessions (within 1 hour)
+				if (existsSync(sessionEnvDir)) {
+					const sessions = readdirSync(sessionEnvDir, { withFileTypes: true })
+						.filter(d => d.isDirectory())
+						.map(d => d.name);
+					const now = Date.now();
+					for (const sessionId of sessions) {
+						const envPath = join(sessionEnvDir, sessionId);
+						const envStat = statSync(envPath);
+						if (now - envStat.mtimeMs < 60 * 60 * 1000) {
+							const sessionPath = join(projectDataDir, sessionId + ".jsonl");
+							if (existsSync(sessionPath)) {
+								candidates.push({
+									sessionPath,
+									projectDir: originalPath,
+									mtime: statSync(sessionPath).mtimeMs,
+									isCurrentProject
+								});
 							}
-						}
-
-						// Fallback to most recent jsonl
-						const jsonlFiles = readdirSync(projectDir)
-							.filter(f => f.endsWith(".jsonl"))
-							.map(f => ({
-								name: f,
-								path: join(projectDir, f),
-								mtime: statSync(join(projectDir, f)).mtimeMs
-							}));
-
-						if (jsonlFiles.length > 0) {
-							jsonlFiles.sort((a, b) => b.mtime - a.mtime);
-							return jsonlFiles[0].path;
 						}
 					}
 				}
-			} catch (e) {
-				// Continue
-			}
+
+				// Also check all jsonl files
+				const jsonlFiles = readdirSync(projectDataDir).filter(f => f.endsWith(".jsonl"));
+				for (const file of jsonlFiles) {
+					const filePath = join(projectDataDir, file);
+					candidates.push({
+						sessionPath: filePath,
+						projectDir: originalPath,
+						mtime: statSync(filePath).mtimeMs,
+						isCurrentProject
+					});
+				}
+			} catch (e) { /* continue */ }
 		}
-	} catch (e) {
-		// Ignore
-	}
-	return null;
+
+		if (candidates.length > 0) {
+			// Sort: current project first, then by mtime
+			candidates.sort((a, b) => {
+				if (a.isCurrentProject && !b.isCurrentProject) return -1;
+				if (!a.isCurrentProject && b.isCurrentProject) return 1;
+				return b.mtime - a.mtime;
+			});
+			return { sessionPath: candidates[0].sessionPath, projectDir: candidates[0].projectDir };
+		}
+	} catch (e) { /* ignore */ }
+	return { sessionPath: null, projectDir: null };
 }
 
 async function readSession(path: string): Promise<SessionLine[]> {
@@ -181,7 +236,6 @@ function extractModelName(entry: SessionLine): string {
 		if (modelLower.includes("4.7") || modelLower.includes("4-7")) return "Glm 4.7";
 		return "Glm";
 	}
-	// Handle model names like "claude-opus-4.5" or "glm-4.7"
 	const parts = model.split(/[-_]/);
 	if (parts.length > 0) {
 		return parts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -217,16 +271,21 @@ function calculateCost(tokens: { input: number; output: number }, model: string)
 }
 
 function calculateDuration(sessionData: SessionLine[]): number {
-	let start: string | null = null;
+	// Calculate duration from first to last timestamp
+	let firstTimestamp: string | null = null;
+	let lastTimestamp: string | null = null;
 	for (const e of sessionData) {
-		if (e.timestamp && !start) start = e.timestamp;
+		if (e.timestamp) {
+			if (!firstTimestamp) firstTimestamp = e.timestamp;
+			lastTimestamp = e.timestamp;
+		}
 	}
-	if (!start) return 0;
-	return Date.now() - new Date(start).getTime();
+	if (!firstTimestamp || !lastTimestamp) return 0;
+	return new Date(lastTimestamp).getTime() - new Date(firstTimestamp).getTime();
 }
 
-async function buildHookInputFromSession(): Promise<HookInput> {
-	const sessionPath = await findCurrentSession();
+async function buildHookInputFromSession(): Promise<{ input: HookInput; projectDir: string | null }> {
+	const { sessionPath, projectDir } = await findCurrentSession();
 	const sessionData = sessionPath ? await readSession(sessionPath) : [];
 	const latestEntry = sessionData.slice().reverse().find(e => e.type === "assistant" || e.type === "api_call_start");
 	const model = extractModelName(latestEntry || {});
@@ -234,12 +293,15 @@ async function buildHookInputFromSession(): Promise<HookInput> {
 	const cost = calculateCost(tokens, model);
 	const durationMs = calculateDuration(sessionData);
 
-	return {
+	// Use the actual project directory from session index
+	const workingDir = projectDir || process.cwd();
+
+	const input: HookInput = {
 		session_id: "current",
 		transcript_path: sessionPath || "",
-		cwd: process.cwd(),
+		cwd: workingDir,
 		model: { id: model.toLowerCase().replace(/\s+/g, "-"), display_name: model },
-		workspace: { current_dir: process.cwd(), project_dir: process.cwd() },
+		workspace: { current_dir: workingDir, project_dir: workingDir },
 		version: "1.0.0",
 		output_style: { name: "Explanatory" },
 		cost: { total_cost_usd: cost, total_duration_ms: durationMs, total_api_duration_ms: 0, total_lines_added: 0, total_lines_removed: 0 },
@@ -253,6 +315,7 @@ async function buildHookInputFromSession(): Promise<HookInput> {
 			}
 		}
 	};
+	return { input, projectDir };
 }
 
 async function main() {
@@ -277,13 +340,16 @@ async function main() {
 				if (stdinText.trim()) {
 					input = JSON.parse(stdinText);
 				} else {
-					input = await buildHookInputFromSession();
+					const result = await buildHookInputFromSession();
+					input = result.input;
 				}
 			} catch {
-				input = await buildHookInputFromSession();
+				const result = await buildHookInputFromSession();
+				input = result.input;
 			}
 		} else {
-			input = await buildHookInputFromSession();
+			const result = await buildHookInputFromSession();
+			input = result.input;
 		}
 
 		// Save last payload for debugging
@@ -302,7 +368,8 @@ async function main() {
 			await saveSessionV2(input, currentResetsAt);
 		}
 
-		const git = await getGitStatus();
+		// Get git status from the actual project directory
+		const git = await getGitStatus(input.workspace.current_dir);
 
 		let contextTokens: number | null;
 		let contextPercentage: number | null;
