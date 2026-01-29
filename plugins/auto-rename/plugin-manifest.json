@@ -1,0 +1,17 @@
+{
+  "name": "auto-rename",
+  "version": "3.1.2",
+  "description": "Automatically rename Claude Code sessions based on content using LLM analysis",
+  "smite": "3.0.0",
+  "core": "1.0.0",
+  "depends": ["core"],
+  "provides": [
+    "session-rename",
+    "auto-naming",
+    "session-management"
+  ],
+  "loadAfter": ["core"],
+  "tags": ["session", "naming", "automation", "productivity"],
+  "author": "Pamacea",
+  "license": "MIT"
+}

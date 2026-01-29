@@ -1,0 +1,20 @@
+{
+  "name": "basics",
+  "version": "3.2.0",
+  "description": "Essential Claude commands for rapid development",
+  "smite": "3.0.0",
+  "core": "1.0.0",
+  "depends": ["core"],
+  "provides": [
+    "oneshot",
+    "explore",
+    "debug",
+    "commit",
+    "epct",
+    "smite-install"
+  ],
+  "loadAfter": ["core"],
+  "tags": ["development", "commands", "workflow", "git"],
+  "author": "Pamacea",
+  "license": "MIT"
+}

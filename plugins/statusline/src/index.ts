@@ -64,6 +64,7 @@ const LAST_PAYLOAD_PATH = join(
 	"data",
 	"last_payload.txt",
 );
+const DEBUG_PATH = join(import.meta.dir, "..", "data", "debug.txt");
 
 async function loadConfig(): Promise<StatuslineConfig> {
 	try {
@@ -87,135 +88,6 @@ interface SessionLine {
 		};
 	};
 	timestamp?: string;
-}
-
-interface SessionResult {
-	sessionPath: string | null;
-	projectDir: string | null;
-}
-
-// Detect project root by walking up from current directory
-async function detectProjectRoot(): Promise<string | null> {
-	const { resolve } = await import("node:path");
-	const { existsSync } = await import("node:fs");
-
-	let current = resolve(process.cwd());
-	const seen = new Set<string>();
-
-	while (current && !seen.has(current)) {
-		seen.add(current);
-
-		// Check if this has .claude directory (project root)
-		if (existsSync(join(current, ".claude"))) {
-			return current;
-		}
-
-		// Check if we're in a plugin directory (plugins/statusline)
-		// If so, the project root is two levels up
-		const basename = current.split(/[/\\]/).pop();
-		if (basename === "statusline") {
-			const parent = resolve(current, "..");
-			const grandparent = resolve(parent, "..");
-			if (existsSync(join(grandparent, ".claude"))) {
-				return grandparent;
-			}
-		}
-
-		const parent = resolve(current, "..");
-		if (parent === current) break; // Reached filesystem root
-		current = parent;
-	}
-
-	return null;
-}
-
-async function findCurrentSession(): Promise<SessionResult> {
-	const homeDir = process.env.HOME || process.env.USERPROFILE || "";
-	const claudeDir = join(homeDir, ".claude");
-	const projectsDir = join(claudeDir, "projects");
-	const sessionEnvDir = join(claudeDir, "session-env");
-
-	try {
-		const { readdirSync, readFileSync, existsSync, statSync } = await import("node:fs");
-		if (!existsSync(projectsDir)) return { sessionPath: null, projectDir: null };
-
-		// Detect the current project root
-		const detectedProjectRoot = await detectProjectRoot();
-		const normalizePath = (p: string) => p.replace(/\\/g, "/");
-
-		type SessionCandidate = { sessionPath: string; projectDir: string; mtime: number; isCurrentProject: boolean };
-		const candidates: SessionCandidate[] = [];
-
-		const projects = readdirSync(projectsDir, { withFileTypes: true })
-			.filter(d => d.isDirectory())
-			.map(d => d.name);
-
-		for (const project of projects) {
-			const indexPath = join(projectsDir, project, "sessions-index.json");
-			if (!existsSync(indexPath)) continue;
-			try {
-				const index = JSON.parse(readFileSync(indexPath, "utf-8"));
-				const originalPath = index.originalPath || index.projectPath;
-				if (!originalPath) continue;
-
-				const projectDataDir = join(projectsDir, project);
-				const normalizedOriginal = normalizePath(originalPath);
-				const normalizedDetected = detectedProjectRoot ? normalizePath(detectedProjectRoot) : "";
-
-				// Check if this matches our detected project
-				const isCurrentProject = detectedProjectRoot && (
-					normalizedOriginal === normalizedDetected ||
-					normalizedDetected.startsWith(normalizedOriginal + "/")
-				);
-
-				// Check session-env for active sessions (within 1 hour)
-				if (existsSync(sessionEnvDir)) {
-					const sessions = readdirSync(sessionEnvDir, { withFileTypes: true })
-						.filter(d => d.isDirectory())
-						.map(d => d.name);
-					const now = Date.now();
-					for (const sessionId of sessions) {
-						const envPath = join(sessionEnvDir, sessionId);
-						const envStat = statSync(envPath);
-						if (now - envStat.mtimeMs < 60 * 60 * 1000) {
-							const sessionPath = join(projectDataDir, sessionId + ".jsonl");
-							if (existsSync(sessionPath)) {
-								candidates.push({
-									sessionPath,
-									projectDir: originalPath,
-									mtime: statSync(sessionPath).mtimeMs,
-									isCurrentProject
-								});
-							}
-						}
-					}
-				}
-
-				// Also check all jsonl files
-				const jsonlFiles = readdirSync(projectDataDir).filter(f => f.endsWith(".jsonl"));
-				for (const file of jsonlFiles) {
-					const filePath = join(projectDataDir, file);
-					candidates.push({
-						sessionPath: filePath,
-						projectDir: originalPath,
-						mtime: statSync(filePath).mtimeMs,
-						isCurrentProject
-					});
-				}
-			} catch (e) { /* continue */ }
-		}
-
-		if (candidates.length > 0) {
-			// Sort: current project first, then by mtime
-			candidates.sort((a, b) => {
-				if (a.isCurrentProject && !b.isCurrentProject) return -1;
-				if (!a.isCurrentProject && b.isCurrentProject) return 1;
-				return b.mtime - a.mtime;
-			});
-			return { sessionPath: candidates[0].sessionPath, projectDir: candidates[0].projectDir };
-		}
-	} catch (e) { /* ignore */ }
-	return { sessionPath: null, projectDir: null };
 }
 
 async function readSession(path: string): Promise<SessionLine[]> {
@@ -302,9 +174,39 @@ function calculateDuration(sessionData: SessionLine[]): number {
 
 // Complete partial HookInput with data from transcript
 async function completeHookInput(partial: Partial<HookInput>): Promise<HookInput> {
-	// Use provided paths or find current session
-	const transcriptPath = partial.transcript_path || (await findCurrentSession()).sessionPath || "";
-	const workingDir = partial.cwd || (await findCurrentSession()).projectDir || process.cwd();
+	// CRITICAL: Always use payload paths if provided - NEVER search for sessions!
+	// The payload from Claude Code has the CORRECT transcript_path and cwd
+	const transcriptPath = partial.transcript_path || "";
+	const workingDir = partial.cwd || "";
+
+	// Debug: log what we received
+	const debugInfo = {
+		partial_session_id: partial.session_id,
+		partial_transcript: partial.transcript_path,
+		partial_cwd: partial.cwd,
+		using_transcript: !!transcriptPath,
+		using_cwd: !!workingDir,
+		process_cwd: process.cwd(),
+	};
+
+	// If no paths provided, we can't do anything useful
+	if (!transcriptPath && !workingDir) {
+		return {
+			session_id: partial.session_id || "unknown",
+			transcript_path: "",
+			cwd: process.cwd(),
+			model: { id: "unknown", display_name: "N/A" },
+			workspace: { current_dir: process.cwd(), project_dir: process.cwd() },
+			version: "1.0.0",
+			output_style: { name: "Explanatory" },
+			cost: { total_cost_usd: 0, total_duration_ms: 0, total_api_duration_ms: 0, total_lines_added: 0, total_lines_removed: 0 },
+			context_window: {
+				total_input_tokens: 0,
+				total_output_tokens: 0,
+				context_window_size: 200000
+			}
+		};
+	}
 
 	// Read session data
 	const sessionData = transcriptPath ? await readSession(transcriptPath) : [];

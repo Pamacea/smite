@@ -1,0 +1,18 @@
+{
+  "name": "predator",
+  "version": "1.0.0",
+  "description": "Advanced skill workflow system with modular step-based commands",
+  "smite": "3.0.0",
+  "core": "1.0.0",
+  "depends": ["core"],
+  "provides": [
+    "predator-workflow",
+    "debug-workflow",
+    "brainstorm-workflow",
+    "step-automation"
+  ],
+  "loadAfter": ["core"],
+  "tags": ["workflow", "automation", "skills", "development"],
+  "author": "Pamacea",
+  "license": "MIT"
+}
