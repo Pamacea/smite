@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://smite.dev/schemas/plugin-manifest.schema.json",
+  "title": "SMITE Plugin Manifest",
+  "description": "Defines plugin dependencies, capabilities, and compatibility",
+  "type": "object",
+  "required": ["name", "version", "smite", "provides"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique plugin identifier (kebab-case)",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Plugin version (semver)",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-z0-9.]+)?$"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of plugin purpose"
+    },
+    "smite": {
+      "type": "string",
+      "description": "Minimum SMITE version required",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "core": {
+      "type": "string",
+      "description": "Minimum core version required",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "1.0.0"
+    },
+    "depends": {
+      "type": "array",
+      "description": "Required plugin dependencies",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true
+    },
+    "optional": {
+      "type": "array",
+      "description": "Optional plugin dependencies",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true
+    },
+    "provides": {
+      "type": "array",
+      "description": "Capabilities this plugin provides",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "Plugins that conflict with this one",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true
+    },
+    "loadAfter": {
+      "type": "array",
+      "description": "Plugins that must load before this one",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true
+    },
+    "loadBefore": {
+      "type": "array",
+      "description": "Plugins that must load after this one",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "description": "Category tags for discovery",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "author": {
+      "type": "string",
+      "description": "Plugin author"
+    },
+    "license": {
+      "type": "string",
+      "description": "License identifier",
+      "default": "MIT"
+    },
+    "repository": {
+      "type": "string",
+      "description": "Repository URL"
+    }
+  }
+}

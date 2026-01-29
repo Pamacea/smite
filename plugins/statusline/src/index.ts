@@ -82,6 +82,8 @@ interface SessionLine {
 		usage?: {
 			input_tokens?: number;
 			output_tokens?: number;
+			cache_creation_input_tokens?: number;
+			cache_read_input_tokens?: number;
 		};
 	};
 	timestamp?: string;
@@ -243,7 +245,7 @@ function extractModelName(entry: SessionLine): string {
 	return "N/A";
 }
 
-function extractTokens(sessionData: SessionLine[]): { input: number; output: number; total: number } {
+function extractTokens(sessionData: SessionLine[]): { input: number; output: number; total: number; cacheRead: number; cacheCreation: number } {
 	// Find the most recent assistant message with actual token usage
 	// This gives us CURRENT context window usage, not cumulative session total
 	for (let i = sessionData.length - 1; i >= 0; i--) {
@@ -251,18 +253,22 @@ function extractTokens(sessionData: SessionLine[]): { input: number; output: num
 		if (e.type === "assistant" && e.message?.usage) {
 			const input = e.message.usage.input_tokens || 0;
 			const output = e.message.usage.output_tokens || 0;
-			return { input, output, total: input + output };
+			const cacheRead = e.message.usage.cache_read_input_tokens || 0;
+			const cacheCreation = e.message.usage.cache_creation_input_tokens || 0;
+			return { input, output, total: input + output, cacheRead, cacheCreation };
 		}
 	}
 	// Fallback: cumulative (only for sessions without assistant messages yet)
-	let input = 0, output = 0;
+	let input = 0, output = 0, cacheRead = 0, cacheCreation = 0;
 	for (const e of sessionData) {
 		if (e.message?.usage) {
 			input += e.message.usage.input_tokens || 0;
 			output += e.message.usage.output_tokens || 0;
+			cacheRead += e.message.usage.cache_read_input_tokens || 0;
+			cacheCreation += e.message.usage.cache_creation_input_tokens || 0;
 		}
 	}
-	return { input, output, total: input + output };
+	return { input, output, total: input + output, cacheRead, cacheCreation };
 }
 
 function calculateCost(tokens: { input: number; output: number }, model: string): number {
@@ -282,39 +288,42 @@ function calculateCost(tokens: { input: number; output: number }, model: string)
 }
 
 function calculateDuration(sessionData: SessionLine[]): number {
-	// Calculate duration from first to last timestamp
+	// Calculate duration from first timestamp to NOW (for live sessions)
 	let firstTimestamp: string | null = null;
-	let lastTimestamp: string | null = null;
 	for (const e of sessionData) {
 		if (e.timestamp) {
 			if (!firstTimestamp) firstTimestamp = e.timestamp;
-			lastTimestamp = e.timestamp;
 		}
 	}
-	if (!firstTimestamp || !lastTimestamp) return 0;
-	return new Date(lastTimestamp).getTime() - new Date(firstTimestamp).getTime();
+	if (!firstTimestamp) return 0;
+	// Use current time for live sessions
+	return Date.now() - new Date(firstTimestamp).getTime();
 }
 
-async function buildHookInputFromSession(): Promise<{ input: HookInput; projectDir: string | null }> {
-	const { sessionPath, projectDir } = await findCurrentSession();
-	const sessionData = sessionPath ? await readSession(sessionPath) : [];
+// Complete partial HookInput with data from transcript
+async function completeHookInput(partial: Partial<HookInput>): Promise<HookInput> {
+	// Use provided paths or find current session
+	const transcriptPath = partial.transcript_path || (await findCurrentSession()).sessionPath || "";
+	const workingDir = partial.cwd || (await findCurrentSession()).projectDir || process.cwd();
+
+	// Read session data
+	const sessionData = transcriptPath ? await readSession(transcriptPath) : [];
+
+	// Extract data from session
 	const latestEntry = sessionData.slice().reverse().find(e => e.type === "assistant" || e.type === "api_call_start");
 	const model = extractModelName(latestEntry || {});
 	const tokens = extractTokens(sessionData);
 	const cost = calculateCost(tokens, model);
 	const durationMs = calculateDuration(sessionData);
 
-	// Use the actual project directory from session index
-	const workingDir = projectDir || process.cwd();
-
-	const input: HookInput = {
-		session_id: "current",
-		transcript_path: sessionPath || "",
+	return {
+		session_id: partial.session_id || "current",
+		transcript_path: transcriptPath,
 		cwd: workingDir,
 		model: { id: model.toLowerCase().replace(/\s+/g, "-"), display_name: model },
 		workspace: { current_dir: workingDir, project_dir: workingDir },
-		version: "1.0.0",
-		output_style: { name: "Explanatory" },
+		version: partial.version || "1.0.0",
+		output_style: partial.output_style || { name: "Explanatory" },
 		cost: { total_cost_usd: cost, total_duration_ms: durationMs, total_api_duration_ms: 0, total_lines_added: 0, total_lines_removed: 0 },
 		context_window: {
 			total_input_tokens: tokens.input,
@@ -322,11 +331,12 @@ async function buildHookInputFromSession(): Promise<{ input: HookInput; projectD
 			context_window_size: 200000,
 			current_usage: {
 				input_tokens: tokens.input,
-				output_tokens: tokens.output
+				output_tokens: tokens.output,
+				cache_read_input_tokens: tokens.cacheRead,
+				cache_creation_input_tokens: tokens.cacheCreation
 			}
 		}
 	};
-	return { input, projectDir };
 }
 
 async function main() {
@@ -349,18 +359,17 @@ async function main() {
 			try {
 				const stdinText = Buffer.concat(stdinData).toString();
 				if (stdinText.trim()) {
-					input = JSON.parse(stdinText);
+					const partialInput = JSON.parse(stdinText) as Partial<HookInput>;
+					// Complete partial input with data from transcript
+					input = await completeHookInput(partialInput);
 				} else {
-					const result = await buildHookInputFromSession();
-					input = result.input;
+					input = await completeHookInput({});
 				}
 			} catch {
-				const result = await buildHookInputFromSession();
-				input = result.input;
+				input = await completeHookInput({});
 			}
 		} else {
-			const result = await buildHookInputFromSession();
-			input = result.input;
+			input = await completeHookInput({});
 		}
 
 		// Save last payload for debugging
@@ -385,39 +394,16 @@ async function main() {
 		let contextTokens: number | null;
 		let contextPercentage: number | null;
 
-		const usePayloadContext =
-			config.context.usePayloadContextWindow && input.context_window;
-
-		if (usePayloadContext) {
-			const current = input.context_window?.current_usage;
-			if (current) {
-				contextTokens =
-					(current.input_tokens || 0) +
-					(current.cache_creation_input_tokens || 0) +
-					(current.cache_read_input_tokens || 0);
-				const maxTokens =
-					input.context_window?.context_window_size ||
-					config.context.maxContextTokens;
-				contextPercentage = Math.min(
-					100,
-					Math.round((contextTokens / maxTokens) * 100),
-				);
-			} else {
-				// No context data yet - session not started
-				contextTokens = null;
-				contextPercentage = null;
-			}
-		} else {
-			const contextData = await getContextData({
-				transcriptPath: input.transcript_path,
-				maxContextTokens: config.context.maxContextTokens,
-				autocompactBufferTokens: config.context.autocompactBufferTokens,
-				useUsableContextOnly: config.context.useUsableContextOnly,
-				overheadTokens: config.context.overheadTokens,
-			});
-			contextTokens = contextData.tokens;
-			contextPercentage = contextData.percentage;
-		}
+		// Always use getContextData from transcript (payload doesn't have reliable context data)
+		const contextData = await getContextData({
+			transcriptPath: input.transcript_path,
+			maxContextTokens: config.context.maxContextTokens,
+			autocompactBufferTokens: config.context.autocompactBufferTokens,
+			useUsableContextOnly: config.context.useUsableContextOnly,
+			overheadTokens: config.context.overheadTokens,
+		});
+		contextTokens = contextData.tokens;
+		contextPercentage = contextData.percentage;
 
 		// Get period cost from SQLite (if feature exists)
 		let periodCost: number | undefined;
