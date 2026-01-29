@@ -4,7 +4,7 @@
 
 ## 🚀 Features
 
-- **Semantic Search**: 2x precision improvement with mgrep integration
+- **Semantic Search**: 2x precision improvement with grepai integration
 - **Hybrid Search**: Combines semantic and literal search strategies
 - **Bug Detection**: 40% more bugs found with semantic pattern matching
 - **Dependency Analysis**: Impact analysis and risk assessment
@@ -95,12 +95,12 @@ Environment variables:
 # Token budget (default: 100k)
 TOOLKIT_MAX_TOKENS=100000
 
-# mgrep API key
+# grepai CLI
 MXBAI_API_KEY=your_key_here
 
 # Search preferences
-MGREP_MAX_COUNT=20
-MGREP_RERANK=true
+GREPAI_MAX_COUNT=20
+GREPAI_RERANK=true
 ```
 
 ## 🔒 Security
@@ -112,7 +112,7 @@ The toolkit includes several security enhancements:
 - **Timeout Protection**: All external commands have configurable timeouts to prevent hangs
 - **No Shell Dependencies**: Core functionality does not rely on shell features
 
-**Important**: The toolkit has been audited for command injection vulnerabilities. Version 1.1.0 fixed a critical security issue in the MgrepClient.
+**Important**: The toolkit has been audited for command injection vulnerabilities. Version 1.1.0 fixed a critical security issue in the GrepaiClient.
 
 ## 🤝 Contributing
 
@@ -127,7 +127,7 @@ MIT
 ### [1.1.0] - 2025-01-22
 
 #### Security
-- **CRITICAL**: Fixed command injection vulnerability in MgrepClient (removed `shell: true` from spawn calls)
+- **CRITICAL**: Fixed command injection vulnerability in GrepaiClient (removed `shell: true` from spawn calls)
 - Added security tests for command injection prevention
 - All external commands now use direct process spawning
 
@@ -147,7 +147,7 @@ MIT
 - Better test coverage (added security and unit tests)
 
 ### [1.0.0] - Initial Release
-- Semantic search with mgrep integration
+- Semantic search with grepai integration
 - Hybrid search combining semantic and literal strategies
 - Bug detection capabilities
 - Dependency analysis tools

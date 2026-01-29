@@ -33,7 +33,7 @@
       "author": { "name": "Pamacea" },
       "category": "analysis",
       "tags": ["optimization", "search", "rag", "bugs", "dependencies"],
-      "keywords": ["token", "optimization", "semantic-search", "rag", "mgrep"],
+      "keywords": ["token", "optimization", "semantic-search", "rag", "grepai"],
       "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/toolkit",
       "repository": "https://github.com/Pamacea/smite",
       "license": "MIT"

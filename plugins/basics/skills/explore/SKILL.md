@@ -13,11 +13,11 @@ version: 1.0.0
    grep | egrep | find | ack | ag | ls | dir | glob
 
 ✅ MANDATORY REPLACEMENT:
-   mgrep "pattern" | /toolkit search "query"
+   grepai search "pattern" | /toolkit search "query"
 
 🎯 DECISION TREE:
-   Need to search? → mgrep or /toolkit search
-   Need to explore? → mgrep "" (empty pattern)
+   Need to search? → grepai or /toolkit search
+   Need to explore? → grepai search "" (empty pattern)
    Need to read?    → Read tool (NOT cat/head)
 ═══════════════════════════════════════════════════════
 
@@ -32,7 +32,7 @@ Quickly explore and understand codebase patterns, find relevant files, and map t
 1. **Input**: Exploration query or target
 2. **Process**:
    - Use `/toolkit search` for semantic queries
-   - Use `mgrep ""` for directory mapping
+   - Use `grepai search ""` for directory mapping
    - Identify relevant files and patterns
    - Summarize findings
 3. **Output**: Structured overview with file references
@@ -98,7 +98,7 @@ Token Savings: 2,345 tokens (vs 12,456 traditional - 81%)
 
 - **Works with**: All development workflows
 - **Used by**: `/epct`, `/oneshot`, `/debug` for context
-- **Requires**: `/toolkit search` or mgrep
+- **Requires**: `/toolkit search` or grepai
 - **Best used before**: Implementation or debugging
 
 ## Success Criteria

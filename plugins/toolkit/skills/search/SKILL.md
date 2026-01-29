@@ -1,6 +1,6 @@
 ---
 name: search
-description: Semantic code search with hybrid RAG + mgrep for 2x precision improvement
+description: Semantic code search with hybrid RAG + grepai for 2x precision improvement
 version: 1.1.0
 ---
 
@@ -13,11 +13,11 @@ version: 1.1.0
    grep | egrep | find | ack | ag | ls | dir | glob
 
 ✅ MANDATORY REPLACEMENT:
-   mgrep "pattern" | /toolkit search "query"
+   grepai search "pattern" | /toolkit search "query"
 
 🎯 DECISION TREE:
-   Need to search? → mgrep or /toolkit search
-   Need to explore? → mgrep "" (empty pattern)
+   Need to search? → grepai or /toolkit search
+   Need to explore? → grepai search "" (empty pattern)
    Need to read?    → Read tool (NOT cat/head)
 ═══════════════════════════════════════════════════════
 
@@ -25,14 +25,14 @@ version: 1.1.0
 
 ## Mission
 
-Search your codebase using natural language queries with semantic understanding. Uses hybrid search combining RAG (Retrieval Augmented Generation) and mgrep for maximum precision and token efficiency.
+Search your codebase using natural language queries with semantic understanding. Uses hybrid search combining RAG (Retrieval Augmented Generation) and grepai for maximum precision and token efficiency.
 
 ## Core Workflow
 
 1. **Input**: Natural language query (e.g., "authentication flow", "error handling")
 2. **Process**:
    - Parse query and select search mode
-   - Execute hybrid search (RAG + mgrep fusion)
+   - Execute hybrid search (RAG + grepai fusion)
    - Rank and deduplicate results
    - Return formatted results with metrics
 3. **Output**: Ranked file list with snippets and token savings
@@ -49,9 +49,9 @@ Search your codebase using natural language queries with semantic understanding.
 
 | Mode | Description | Precision | Recall | Token Savings |
 |------|-------------|-----------|--------|---------------|
-| **hybrid** | RAG + mgrep fusion (default) | 95% | 88% | 70-80% |
-| **rag-only** | Traditional RAG without mgrep | 75% | 90% | 60-70% |
-| **mgrep-only** | Pure semantic search | 92% | 75% | 50-60% |
+| **hybrid** | RAG + grepai fusion (default) | 95% | 88% | 70-80% |
+| **rag-only** | Traditional RAG without grepai | 75% | 90% | 60-70% |
+| **grepai-only** | Pure semantic search | 92% | 75% | 50-60% |
 | **lazy** | File references only | 85% | 80% | 80-90% |
 
 ## Usage
@@ -75,7 +75,7 @@ Search your codebase using natural language queries with semantic understanding.
 
 ## Options
 
-- `--mode <mode>` - Search mode: hybrid, rag-only, mgrep-only, lazy
+- `--mode <mode>` - Search mode: hybrid, rag-only, grepai-only, lazy
 - `--max-results <n>` - Maximum results (default: 10)
 - `--max-tokens <n>` - Maximum tokens to use (default: 5000)
 - `--scope <path>` - Limit search to specific directory
@@ -85,7 +85,7 @@ Search your codebase using natural language queries with semantic understanding.
 
 - **Works with**: All SMITE agents and workflows
 - **Required by**: architect, builder for codebase understanding
-- **Requires**: mgrep CLI (optional, falls back gracefully)
+- **Requires**: grepai CLI (optional, falls back gracefully)
 - **Best used before**: Any code exploration or implementation
 
 ## Performance
@@ -98,7 +98,7 @@ Search your codebase using natural language queries with semantic understanding.
 
 ## Error Handling
 
-- **mgrep unavailable**: Falls back to RAG-only mode with notification
+- **grepai unavailable**: Falls back to RAG-only mode with notification
 - **No results**: Suggests alternative query terms
 - **Scope invalid**: Reports error and lists valid directories
 - **Timeout**: Returns partial results with warning

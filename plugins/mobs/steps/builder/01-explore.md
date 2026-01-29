@@ -24,7 +24,7 @@ Based on the feature or component being built:
 /toolkit search "[feature description]"
 
 # Alternative
-mgrep "[pattern to find]"
+grepai search "[pattern to find]"
 
 # ONLY if toolkit fails:
 # Then use Grep/Glob/Read
@@ -160,7 +160,7 @@ src/
 ## MCP Tools Used
 
 - ✅ **Toolkit Search** - Semantic code search
-- ✅ **mgrep** - Alternative semantic search
+- ✅ **grepai** - Alternative semantic search
 - ✅ **Dependency Graph** - Impact analysis (if needed)
 - ⚠️ **Grep/Glob/Read** - ONLY if toolkit fails
 

@@ -13,11 +13,11 @@ version: 1.1.0
    grep | egrep | find | ack | ag | ls | dir | glob
 
 ✅ MANDATORY REPLACEMENT:
-   mgrep "pattern" | /toolkit search "query"
+   grepai search "pattern" | /toolkit search "query"
 
 🎯 DECISION TREE:
-   Need to search? → mgrep or /toolkit search
-   Need to explore? → mgrep "" (empty pattern)
+   Need to search? → grepai or /toolkit search
+   Need to explore? → grepai search "" (empty pattern)
    Need to read?    → Read tool (NOT cat/head)
 ═══════════════════════════════════════════════════════
 
@@ -41,7 +41,7 @@ Provide a unified token optimization layer that reduces context usage by 75% whi
 
 - **Semantic First**: Always use semantic search before traditional grep/glob
 - **Token Optimization**: Prioritize surgeon mode for AST-only extraction
-- **Hybrid Search**: Combine RAG and mgrep for 95% precision
+- **Hybrid Search**: Combine RAG and grepai for 95% precision
 - **Security**: All operations protected against command injection
 - **Transparent**: Report token savings on every operation
 
@@ -59,7 +59,7 @@ Provide a unified token optimization layer that reduces context usage by 75% whi
 
 - **Works with**: All SMITE agents (architect, builder, refactor, ralph, predator)
 - **Required by**: mobs for codebase analysis
-- **Requires**: mgrep CLI (optional but recommended), Node.js
+- **Requires**: grepai CLI (optional but recommended), Node.js
 - **Best used before**: Any code exploration or implementation task
 
 ## Performance Metrics
@@ -78,20 +78,20 @@ Environment variables:
 # Token budget (default: 100k)
 TOOLKIT_MAX_TOKENS=100000
 
-# mgrep API key
+# grepai
 MXBAI_API_KEY=your_key_here
 
 # Search preferences
-MGREP_MAX_COUNT=20
-MGREP_RERANK=true
+GREPAI_MAX_COUNT=20
+GREPAI_RERANK=true
 ```
 
 ## Modes
 
 ### Search Modes
-- `hybrid` - RAG + mgrep fusion (default, 95% precision)
+- `hybrid` - RAG + grepai fusion (default, 95% precision)
 - `rag-only` - Traditional RAG (75% precision, 90% recall)
-- `mgrep-only` - Pure semantic (92% precision, 75% recall)
+- `grepai-only` - Pure semantic (92% precision, 75% recall)
 - `lazy` - File references only (80-90% token savings)
 
 ### Explore Tasks
@@ -102,7 +102,7 @@ MGREP_RERANK=true
 
 ## Error Handling
 
-- **mgrep unavailable**: Falls back to RAG-only mode
+- **grepai unavailable**: Falls back to RAG-only mode
 - **API key missing**: Uses reduced functionality mode
 - **Timeout**: Returns partial results with warning
 - **Invalid scope**: Reports error and suggests valid directories

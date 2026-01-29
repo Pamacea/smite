@@ -14,11 +14,11 @@ model: haiku
    grep | egrep | find | ack | ag | ls | dir | glob
 
 ✅ MANDATORY REPLACEMENT:
-   mgrep "pattern" | /toolkit search "query"
+   grepai search "pattern" | /toolkit search "query"
 
 🎯 DECISION TREE:
-   Need to search? → mgrep or /toolkit search
-   Need to explore? → mgrep "" (empty pattern)
+   Need to search? → grepai or /toolkit search
+   Need to explore? → grepai search "" (empty pattern)
    Need to read?    → Read tool (NOT cat/head)
 ═══════════════════════════════════════════════════════
 

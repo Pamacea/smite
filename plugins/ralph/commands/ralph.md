@@ -14,12 +14,12 @@ Autonomous multi-agent workflow with parallel execution for 2-3x speedup and ste
 **BEFORE any exploration/code analysis, agents MUST:**
 
 1. **Try `/toolkit search`** - 75% token savings, 2x precision
-2. **Try `mgrep "query"`** - Alternative semantic search
+2. **Try `grepai search "query"`** - Alternative semantic search
 3. **ONLY then**: Manual Bash/Glob/Grep
 
 **NEVER start with manual tools - Always use semantic search!**
 
-**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md` | [mgrep.dev](https://www.mgrep.dev/)
+**Reference:** `plugins/toolkit/README.md` | `docs/DECISION_TREE.md` | [github.com/yoanbernabeu/grepai](https://github.com/yoanbernabeu/grepai)
 
 ---
 

@@ -25,7 +25,7 @@
 **🚨 CRITICAL: Always use semantic search before exploring code** (75% token savings)
 ```bash
 /toolkit search "authentication flow"    # 1st choice (75% savings)
-mgrep "authentication"                   # 2nd choice (semantic search)
+grepai search "authentication"           # 2nd choice (semantic search)
 ```
 
 **Why?** Traditional: 180k tokens → Toolkit: 45k tokens. **See:** [DECISION_TREE.md](docs/DECISION_TREE.md)

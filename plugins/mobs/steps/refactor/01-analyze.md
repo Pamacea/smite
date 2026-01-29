@@ -69,7 +69,7 @@ When available:
 - `/toolkit graph --impact` - Understand complexity hotspots
 
 **Semantic Search:**
-- Find similar patterns: `mgrep "pattern"`
+- Find similar patterns: `grepai search "pattern"`
 - Locate duplications
 
 ### 4. Generate Analysis Report

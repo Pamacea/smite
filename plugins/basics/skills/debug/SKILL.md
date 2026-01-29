@@ -13,11 +13,11 @@ version: 1.0.0
    grep | egrep | find | ack | ag | ls | dir | glob
 
 ✅ MANDATORY REPLACEMENT:
-   mgrep "pattern" | /toolkit search "query"
+   grepai search "pattern" | /toolkit search "query"
 
 🎯 DECISION TREE:
-   Need to search? → mgrep or /toolkit search
-   Need to explore? → mgrep "" (empty pattern)
+   Need to search? → grepai or /toolkit search
+   Need to explore? → grepai search "" (empty pattern)
    Need to read?    → Read tool (NOT cat/head)
 ═══════════════════════════════════════════════════════
 
@@ -36,7 +36,7 @@ You are a systematic debugging specialist. Follow this ultra-deep analysis workf
    - **CRITICAL**: Document exact error context and reproduction steps
 
 2. **EXPLORE**: Targeted codebase investigation
-   - Use `/toolkit search` and `mgrep` for semantic code search
+   - Use `/toolkit search` and `grepai` for semantic code search
    - Find all files related to the failing component/module
    - Examine recent changes that might have introduced the bug
    - **ULTRA THINK**: Connect error symptoms to potential root causes

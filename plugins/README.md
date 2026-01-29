@@ -50,7 +50,7 @@ The Smite Plugin Marketplace is a centralized registry of plugins that extend Sm
   - **/toolkit graph** - Dependency analysis
   - **/toolkit detect** - Bug detection (40% more bugs found)
   - **/toolkit surgeon** - Token-optimized context (70-85% savings)
-  - mgrep integration for semantic search
+  - grepai integration for semantic search
   - RAG (Retrieval Augmented Generation)
 
 ### Productivity

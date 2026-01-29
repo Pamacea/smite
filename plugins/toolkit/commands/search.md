@@ -1,10 +1,10 @@
 # toolkit search
 
-Semantic code search with hybrid RAG + mgrep integration for 2x precision improvement.
+Semantic code search with hybrid RAG + grepai integration for 2x precision improvement.
 
 ## Description
 
-Search your codebase using natural language queries with semantic understanding. Uses hybrid search combining RAG (Retrieval Augmented Generation) and mgrep for maximum precision.
+Search your codebase using natural language queries with semantic understanding. Uses hybrid search combining RAG (Retrieval Augmented Generation) and grepai for maximum precision.
 
 ## Usage
 
@@ -18,7 +18,7 @@ Search your codebase using natural language queries with semantic understanding.
 
 ## Options
 
-- `--mode <mode>` - Search mode: `hybrid` (default), `rag-only`, `mgrep-only`, `lazy`
+- `--mode <mode>` - Search mode: `hybrid` (default), `rag-only`, `grepai-only`, `lazy`
 - `--max-results <n>` - Maximum results to return (default: 10)
 - `--max-tokens <n>` - Maximum tokens to use (default: 5000)
 - `--scope <path>` - Limit search to specific directory
@@ -33,7 +33,7 @@ Search your codebase using natural language queries with semantic understanding.
 
 # RAG-only search
 /toolkit search "password hashing" --mode=rag-only
-# → Uses traditional RAG without mgrep
+# → Uses traditional RAG without grepai
 
 # Lazy search (file references only)
 /toolkit search "API routes" --mode=lazy
@@ -99,21 +99,21 @@ Tokens: 2,456 (vs 18,234 traditional - 87% saved)
 ## Modes
 
 ### Hybrid (default)
-Combines RAG and mgrep with result fusion. Best overall performance.
+Combines RAG and grepai with result fusion. Best overall performance.
 
 - **Precision:** 95%
 - **Recall:** 88%
 - **Token Savings:** 70-80%
 
 ### RAG-only
-Traditional RAG search without mgrep. Good for pattern matching.
+Traditional RAG search without grepai. Good for pattern matching.
 
 - **Precision:** 75%
 - **Recall:** 90%
 - **Token Savings:** 60-70%
 
-### Mgrep-only
-Pure semantic search with mgrep. Best for natural language queries.
+### Grepai-only
+Pure semantic search with grepai. Best for natural language queries.
 
 - **Precision:** 92%
 - **Recall:** 75%
@@ -132,14 +132,14 @@ Returns file references only without snippets. Maximum token savings.
 |------|--------|-----------|--------|-------|
 | Hybrid | 2,456 | 95% | 88% | 2.3s |
 | RAG-only | 3,892 | 75% | 90% | 1.8s |
-| Mgrep-only | 4,125 | 92% | 75% | 2.1s |
+| Grepai-only | 4,125 | 92% | 75% | 2.1s |
 | Lazy | 1,234 | 85% | 80% | 1.2s |
 | Traditional grep | 18,234 | 40% | 95% | 3.5s |
 
 ## Notes
 
-- Requires mgrep to be installed for hybrid and mgrep-only modes
-- Falls back to RAG-only if mgrep unavailable
+- Requires grepai to be installed for hybrid and grepai-only modes
+- Falls back to RAG-only if grepai unavailable
 - Token savings compared to traditional grep/glob + Read
 - Best for: understanding codebase, finding implementations, discovering patterns
 
