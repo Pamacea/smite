@@ -1,0 +1,9 @@
+Phase 1: Creation du plugin /refactor unifie
+
+- Fusionne les workflows de refactorisation (mobs/refactor + ralph/refactor + predator/debug)
+- 4 modes: quick, full, analyze, review, resolve, verify
+- 3 sous-agents: classifier, validator, resolver
+- Documentation complete avec guide de migration
+- Hook d'installation automatique
+
+Ref: Phase 1 du plan de refactorisation SMITE

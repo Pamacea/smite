@@ -1,0 +1,10 @@
+Phase 3: Creation du plugin /implement unifie
+
+- Unifie toutes les approches d'implémentation (conservant leur utilité unique)
+- 5 modes explictes: quick, epct, builder, predor, ralph
+- Réutilisation des sous-agents techniques (impl-nextjs, impl-rust, impl-python, impl-go)
+- Mapping complet avec anciens agents
+- Documentation complète avec guide de migration
+- Hook d'installation automatique
+
+Ref: Phase 3 du plan de refactorisation SMITE

@@ -1,18 +1,18 @@
 # @smite/implement - Unified Implementation Agent
 
-> **UNIFIED** implementation agent - consollates all implementation approaches
+> **UNIFIED** implementation agent - consollates ALL implementation approaches (internal workflows included)
 
 ## 🎯 Purpose
 
-Provides a unified entry point for all implementation tasks while **CONSERVING THE UNIQUE UTILITY OF EACH APPROACH**:
+Provides THE unified entry point for ALL implementation tasks with **BUILT-IN WORKFLOWS** (no external plugins needed):
 
 - **Quick Mode** (`--quick`) - Like `/oneshot` - Ultra-fast implementation
 - **EPCT Mode** (`--epct`) - 4 phases structurées
 - **Builder Mode** (`--builder`) - 5 steps with technical subagents
-- **Predator Mode** (`--predator`) - 8 modular steps
-- **Ralph Mode** (`--ralph`) - Parallel orchestration
+- **Predator Mode** (`--predator`) - 8 modular steps (internal workflow)
+- **Ralph Mode** (`--ralph`) - Parallel orchestration (internal workflow)
 
-**Goal:** One command (`/implement`) with explicit modes to choose the right approach.
+**Goal:** ONE command (`/implement`) with ALL workflows built-in - no external dependencies.
 
 ## 🚀 Quick Start
 
@@ -45,8 +45,8 @@ Provides a unified entry point for all implementation tasks while **CONSERVING T
 | `--quick` | Ultra-fast, no planning | `/oneshot` | Quick features, bug fixes | ⚡⚡⚡ |
 | `--epct` | 4 phases: Explore → Plan → Code → Test | `/epct` | Complex features, thorough | ⚡⚡ |
 | `--builder` | 5 steps: Explore → Design → Implement → Test → Verify | `/builder` | Tech-specific implementation | ⚡ |
-| `--predator` | 8 modular steps | `/predator` | Systematic workflow, quality gates | ⚡⚡ |
-| `--ralph` | Parallel orchestration | `/ralph/feature` | Large projects, multiple stories | ⚡⚡⚡ |
+| `--predator` | 8 modular steps (internal workflow) | `/predator` | Systematic workflow, quality gates | ⚡ |
+| `--ralph` | Parallel orchestration (internal workflow) | `/ralph/feature` | Large projects, multiple stories | ⚡⚡ |
 
 ### --quick (Quick Mode)
 
@@ -56,24 +56,26 @@ Provides a unified entry point for all implementation tasks while **CONSERVING T
 ```
 EXPLORE (5-10 min max)
   - 1-2 parallel subagents max
-  - Use /explore --mode=quick
-  - Be surgical
-  - NO PLANNING
+  - Be surgical - know exactly what to search for
+  - NO PLANNING PHASE
 
 CODE (implement immediately)
-  - Follow existing patterns
-  - Clear variable names
-  - Stay STRICTLY in scope
+  - Start coding as soon as basic context available
+  - Follow existing codebase patterns
+  - STRICTLY in scope
   - NO comments unless necessary
   - NO refactoring beyond requirements
+  - Run autoformatting
 
 TEST (validate quality)
   - Run: lint + typecheck (or equivalent)
   - Fix errors immediately
-  - Stay in scope (no full test suite unless requested)
+  - Stay in scope
 ```
 
 **Best for:** Well-defined, small features, bug fixes, UI tweaks
+
+**Time:** 5-10 minutes max
 
 ### --epct (4-Phase Structured Mode)
 
@@ -81,34 +83,35 @@ TEST (validate quality)
 
 **Workflow:**
 ```
-1. EXPLORE (5-10 min)
+1. EXPLORE (15-20 min)
    - Deep codebase exploration
    - Multi-source research
    - Parallel subagents
    - Output: exploration.md
 
-2. PLAN (5-15 min)
+2. PLAN (20-30 min)
    - Detailed implementation plan
    - File structure
    - Types and interfaces
    - Testing strategy
    - Output: plan.md
 
-3. CODE (20-40 min)
-   - Launch tech-specific subagent
-   - Follow design document
+3. CODE (30-60 min)
+   - Implement following plan
+   - Best practices
    - Barrel exports
    - Output: implementation
 
-4. TEST (5-15 min)
-   - Run tests (unit, integration, coverage)
-   - Fix failures
-   - Lint + typecheck
-   - Smoke tests
+4. TEST (15-30 min)
+   - Full test suite
+   - Unit, integration, E2E
+   - Coverage measurement
    - Output: test-results.md
 ```
 
-**Best for:** Complex features, multi-file changes, thorough implementation
+**Best for:** Complex features (3-5 files), thorough implementation
+
+**Time:** 60-90 minutes
 
 ### --builder (Technical 5-Step Mode)
 
@@ -116,13 +119,12 @@ TEST (validate quality)
 
 **Workflow:**
 ```
-1. EXPLORE (--explore)
-   - /explore --mode=quick
+1. EXPLORE (5-10 min)
+   - Use /explore --mode=quick
    - Document patterns
-   - Identify conventions
    - Output: builder-exploration.md
 
-2. DESIGN (--design)
+2. DESIGN (15-20 min)
    - File structure
    - Type definitions
    - Zod validation schemas
@@ -130,8 +132,8 @@ TEST (validate quality)
    - Architecture
    - Output: builder-design.md
 
-3. IMPLEMENT (--implement)
-   - Launch tech-specific subagent:
+3. IMPLEMENT (30-45 min)
+   - Follow tech-specific subagent:
      - impl-nextjs - React 19, RSC, Prisma
      - impl-rust - Ownership, async/await
      - impl-python - Type hints, FastAPI
@@ -139,27 +141,33 @@ TEST (validate quality)
    - Barrel exports
    - Output: implementation
 
-4. TEST (--test)
+4. TEST (15-30 min)
    - Unit tests
    - Integration tests
-   - Component tests
-   - Target: 80%+ coverage
-   - Output: test-suite
+   - Coverage 80%+
+   - Output: test suite
 
-5. VERIFY (--verify)
+5. VERIFY (10-15 min)
    - Linting
    - Type checking
-   - All tests
    - Build verification
    - Smoke tests
    - Output: builder-verification.md
 ```
 
-**Best for:** Tech-specific implementation with best practices
+**Tech Stacks:**
+- `--tech=nextjs` - React 19, RSC, Prisma, Server Actions
+- `--tech=rust` - Ownership, async/await, zero-copy
+- `--tech=python` - Type hints, FastAPI, SQLAlchemy 2.0
+- `--tech=go` - Goroutines, interfaces, standard library
+
+**Best for:** Tech-specific implementation, framework best practices
+
+**Time:** 60-90 minutes
 
 ### --predator (Modular 8-Step Mode)
 
-**Like:** `/predator` - Modular workflow with 8 steps
+**Internal workflow - 8 modular steps loaded on-demand**
 
 **Workflow:**
 ```
@@ -170,9 +178,11 @@ Steps loaded on-demand for token optimization
 
 **Best for:** Systematic workflow, quality gates, comprehensive validation
 
+**Time:** 60-120 minutes
+
 ### --ralph (Parallel Orchestration Mode)
 
-**Like:** `/ralph/feature` - Parallel execution of independent stories
+**Internal workflow - Parallel execution of independent stories**
 
 **Workflow:**
 ```
@@ -185,9 +195,9 @@ Steps loaded on-demand for token optimization
 
 **Best for:** Large projects, multiple independent components, SaaS platforms
 
-## 🔧 Subagents
+**Time:** Variable (2-3x faster than sequential)
 
-### Technical Subagents (Reused from MOBS)
+## 🔧 Technical Subagents
 
 | Subagent | Tech Stack | Purpose |
 |----------|-----------|---------|
@@ -230,13 +240,15 @@ After implementation, use `/refactor` for quality:
 
 ## 📊 Comparison Table
 
-| Mode | Speed | Quality | Scope | Complexity | Best For |
-|------|-------|---------|-------|------------|----------|
-| `--quick` | ⚡⚡⚡ | ⚡⚡ | Small | Low | Quick features, bug fixes |
-| `--epct` | ⚡⚡ | ⚡⚡⚡ | Medium | Medium | Complex features |
-| `--builder` | ⚡ | ⚡⚡⚡ | Large | High | Tech-specific |
-| `--predator` | ⚡⚡ | ⚡⚡⚡⚡ | Large | High | Systematic workflow |
-| `--ralph` | ⚡⚡⚡ | ⚡⚡ | Very Large | Very High | Large projects |
+| Aspect | Quick | EPCT | Builder | Predator | Ralph |
+|--------|-------|------|---------|----------|-------|
+| Planning | None | Detailed | Detailed | Steps 1-2 | Auto-PRD |
+| Exploration | Surgical | Deep | Pattern | Steps 1-2 | Per story |
+| Implementation | Immediate | Structured | Tech-specific | Step 3 | Parallel |
+| Testing | Lint+Typecheck | Full suite | 80%+ | Step 4 | Per story |
+| Speed | ⚡⚡⚡ | ⚡⚡ | ⚡ | ⚡ | ⚡ |
+| Quality | Good | Excellent | High | High | High |
+| Scope | Small | Medium | Large | Large | Very Large |
 
 ## 📝 Examples
 
@@ -245,6 +257,9 @@ After implementation, use `/refactor` for quality:
 ```bash
 # Like /oneshot
 /implement --quick "Add dark mode toggle to settings"
+
+# Bug fix
+/implement --quick "Fix login button alignment"
 ```
 
 ### Structured 4-Phase
@@ -258,10 +273,10 @@ After implementation, use `/refactor` for quality:
 
 ```bash
 # Like /builder with Next.js
-/implement --builder --tech=nextjs "Add JWT authentication"
+/implement --builder --tech=nextjs "Add authentication"
 
 # Like /builder with Rust
-/implement --builder --tech=rust "Build high-performance data processor"
+/implement --builder --tech=rust "Build high-performance processor"
 ```
 
 ### Modular 8-Step
@@ -269,13 +284,16 @@ After implementation, use `/refactor` for quality:
 ```bash
 # Like /predator
 /implement --predator "Implement shopping cart with persistence"
+
+# With adversarial review
+/implement --predator --examine "Critical payment system"
 ```
 
 ### Parallel Orchestration
 
 ```bash
 # Like /ralph
-/implement --ralph "Build a full SaaS platform"
+/implement --ralph "Build full SaaS platform"
 ```
 
 ## 🔧 Configuration
@@ -286,7 +304,9 @@ Config file: `.claude/.smite/implement.json`
 {
   "defaults": {
     "mode": "builder",
-    "tech": "detect"
+    "techStack": "detect",
+    "timeLimit": "60m",
+    "autoCommit": true
   },
   "modes": {
     "quick": {
@@ -295,26 +315,55 @@ Config file: `.claude/.smite/implement.json`
     },
     "epct": {
       "phases": ["explore", "plan", "code", "test"],
-      "timePerPhase": "15m"
+      "timePerPhase": "20m"
     },
     "builder": {
       "steps": ["explore", "design", "implement", "test", "verify"],
       "techStacks": ["nextjs", "rust", "python", "go"]
     },
     "predator": {
-      "steps": ["init", "analyze", "plan", "execute", "validate", "examine", "resolve", "finish"]
+      "steps": ["init", "analyze", "plan", "execute", "validate", "examine", "resolve", "finish"],
+      "loadOnDemand": true
     },
     "ralph": {
       "parallel": true,
-      "maxParallel": 3
+      "maxParallel": 3,
+      "autoGeneratePRD": true
+    }
+  },
+  "techStacks": {
+    "nextjs": {
+      "description": "React 19, RSC, Prisma, Server Actions",
+      "patterns": ["app/", "components/ui/", "lib/", "validation/"]
+    },
+    "rust": {
+      "description": "Ownership, async/await, zero-copy",
+      "patterns": ["src/models/", "src/services/", "src/handlers/", "src/repositories/", "src/error.rs"]
+    },
+    "python": {
+      "description": "Type hints, FastAPI, SQLAlchemy 2.0",
+      "patterns": ["src/models/", "src/services/", "src/api/", "src/repositories/", "src/main.py"]
+    },
+    "go": {
+      "description": "Goroutines, interfaces, standard library",
+      "patterns": ["src/models/", "src/services/", "src/handlers/", "src/repository/", "src/main.go"]
+    },
+    "detect": {
+      "description": "Auto-detect from package.json and file patterns",
+      "patterns": {
+        "nextjs": ["package.json", "next.config.js", "src/app/", "components/"],
+        "rust": ["Cargo.toml", "src/main.rs", "src/lib.rs"],
+        "python": ["requirements.txt", "setup.py", "src/main.py", "src/api/"],
+        "go": ["go.mod", "src/main.go", "src/lib/"]
+      }
     }
   }
 }
 ```
 
-## 🚨 Migration Guide
+## 📝 Migration Guide
 
-### From oneshot
+### From /oneshot
 
 **Old:**
 ```bash
@@ -326,7 +375,7 @@ Config file: `.claude/.smite/implement.json`
 /implement --quick "Add user profile page"
 ```
 
-### From epct
+### From /epct
 
 **Old:**
 ```bash
@@ -338,11 +387,11 @@ Config file: `.claude/.smite/implement.json`
 /implement --epct "Build a complete dashboard"
 ```
 
-### From builder
+### From /builder
 
 **Old:**
 ```bash
-/builder -e -d -i -t -v "Add authentication"
+/builder --tech=nextjs --feature="authentication"
 ```
 
 **New:**
@@ -350,7 +399,7 @@ Config file: `.claude/.smite/implement.json`
 /implement --builder --tech=nextjs "Add authentication"
 ```
 
-### From predator
+### From /predator
 
 **Old:**
 ```bash
@@ -362,7 +411,7 @@ Config file: `.claude/.smite/implement.json`
 /implement --predator "Implement shopping cart"
 ```
 
-### From ralf/feature
+### From /ralph/feature
 
 **Old:**
 ```bash
@@ -374,12 +423,37 @@ Config file: `.claude/.smite/implement.json`
 /implement --ralph "Build full SaaS platform"
 ```
 
+## 🚨 Removed Plugins
+
+The following plugins have been **DELETED** as they are now fully integrated into `/implement`:
+
+| Plugin | Reason | Replacement |
+|--------|--------|------------|
+| `/oneshot` | Simple quick implementation | `/implement --quick` |
+| `/epct` | 4-phase structured implementation | `/implement --epct` |
+| `/builder` | Technical 5-step implementation | `/implement --builder` |
+| `/predator` | Modular 8-step workflow | `/implement --predator` |
+| `/ralph` | Parallel orchestration | `/implement --ralph` |
+
+## 🎯 Decision Guide
+
+### Quick Decision Tree
+
+```
+Need to implement?
+├─ Quick fix/small feature? → /implement --quick
+├─ Complex feature (3-5 files)? → /implement --epct
+├─ Tech-specific implementation? → /implement --builder --tech=nextjs|rust|python|go
+├─ Quality-critical feature? → /implement --predator
+└─ Large project (multiple stories)? → /implement --ralph
+```
+
 ## 📚 Documentation
 
 - **[Complete Guide](../../docs/IMPLEMENT_GUIDE.md)** - Complete implementation guide
 - **[Mode Documentation](MODES.md)** - Detailed mode documentation
 - **[Examples](examples/)** - Sample implementations
-- **[Migration Guide](MIGRATION.md)** - Migrating from old agents
+- **[Migration Guide](MIGRATION.md)** - Migrating from all old agents
 
 ## 🤝 Contributing
 
@@ -394,5 +468,5 @@ MIT License - see LICENSE file for details.
 
 **Version:** 1.0.0
 **Last Updated:** 2025-02-01
-**SMITE Version:** 3.1.0
+**SMITE Version:** 3.2.0
 **Author:** Pamacea

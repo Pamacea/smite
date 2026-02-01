@@ -1,0 +1,12 @@
+Phase 2: Creation du plugin /explore unifie
+
+- Suppression des plugins Toolkit et Statusline
+- Creation du plugin /explore unifie
+- Intégration native de grepai (recherche sémantique)
+- 5 modes: deep, quick, pattern, impact, semantic
+- Flags: type, depth, output, format
+- Sous-agents: searcher, analyzer
+- Documentation complète avec guide de migration
+- Hook d'installation automatique
+
+Ref: Phase 2 du plan de refactorisation SMITE

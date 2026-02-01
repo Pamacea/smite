@@ -1,0 +1,8 @@
+Phase 4: Suppression de RALPH et PREDATOR + MAJ documentation /implement
+
+- Suppression des plugins RALPH et PREDATOR (fonctionnalités intégrées dans /implement)
+- Mise à jour complète de README.md /implement
+- Documentation de la nouvelle architecture (plugins unifiés suffisent)
+- Suppression des références aux plugins obsolètes
+
+Ref: Phase 4 du plan de refactorisation SMITE
