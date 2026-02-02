@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "smite",
-  "version": "3.5.0",
-  "description": "Zero-debt engineering with unified agents (refactor, explore, implement) and multi-agent orchestration (mobs). Features token optimization (75% savings), parallel execution (2-3x speedup), and auto-learning.",
+  "version": "3.6.0",
+  "description": "Zero-debt engineering with unified agents (refactor, explore, implement) and multi-agent orchestration (agents). Features token optimization (75% savings), parallel execution (2-3x speedup), and auto-learning.",
   "owner": {
     "name": "Pamacea",
-    "email": "[email protected]"
+    "email": "[email protected]"
   },
   "metadata": {
-    "description": "SMITE v3.5.0 - Unified agent architecture with 3 core agents (refactor, explore, implement), Boris Cherny edition (auto-parallel, plan-mode-first, adversarial, data-query, teaching).",
+    "description": "SMITE v3.6.0 - Unified agent architecture with core agents (refactor, explore, implement) and specialized agents (architect, builder, note). Reorganized mobs→agents with cleaner structure.",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -65,27 +65,27 @@
       "license": "MIT"
     },
     {
-      "name": "mobs",
-      "source": "./plugins/mobs",
-      "description": "Multi-agent orchestration system with spec-first workflow - Architect, Builder, Refactor, Note agents. Reuses core subagents for technical implementation.",
-      "version": "4.1.0",
+      "name": "agents",
+      "source": "./plugins/agents",
+      "description": "Multi-agent orchestration system with spec-first workflow - Architect, Builder, Refactor agents. Tech-specific subagents for Next.js, Rust, Python, Go.",
+      "version": "4.2.0",
       "author": { "name": "Pamacea" },
       "category": "agents",
       "tags": ["agents", "workflow", "spec-first", "orchestration", "architecture", "implementation", "qa"],
-      "keywords": ["agents", "architect", "builder", "refactor", "note"],
-      "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/mobs",
+      "keywords": ["agents", "architect", "builder", "refactor"],
+      "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/agents",
       "repository": "https://github.com/Pamacea/smite",
       "license": "MIT"
     },
     {
       "name": "basics",
       "source": "./plugins/basics",
-      "description": "Essential commands: commit, cleanup, explore, learn, data, teach, smite. Includes new skills for auto-learning, data query, and teaching mode.",
-      "version": "3.5.0",
+      "description": "Essential commands: commit, cleanup, explore, learn, data, teach, smite, note. Includes AI-powered Obsidian note management with templates.",
+      "version": "4.0.0",
       "author": { "name": "Pamacea" },
       "category": "development",
-      "tags": ["commands", "workflow", "development", "productivity", "learning"],
-      "keywords": ["smite", "commands", "commit", "cleanup", "learn", "data", "teach"],
+      "tags": ["commands", "workflow", "development", "productivity", "learning", "notes"],
+      "keywords": ["smite", "commands", "commit", "cleanup", "learn", "data", "teach", "note"],
       "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/basics",
       "repository": "https://github.com/Pamacea/smite",
       "license": "MIT"

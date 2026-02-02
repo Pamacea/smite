@@ -5,7 +5,7 @@
 ## 🎯 Purpose
 
 Provides a unified refactoring experience by consolidating:
-- `mobs/refactor` - Systematic 5-step workflow
+- `agents/refactor` - Systematic 5-step workflow
 - `ralph/refactor` - 6-step orchestration workflow
 - `basics/debug` - Bug resolution workflow
 - `predator/debug` - Modular 8-step debug workflow
@@ -246,7 +246,7 @@ REFACTOR_AUTO_COMMIT=true
 
 ## 📝 Migration Guide
 
-### From mobs/refactor
+### From agents/refactor
 
 **Old:**
 ```bash

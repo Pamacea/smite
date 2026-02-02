@@ -217,6 +217,6 @@ The parallel module provides Git worktree-based parallel execution for all SMITE
 - `@smite/refactor`
 - `@smite/explore`
 - `@smite/implement`
-- `@smite/mobs`
+- `@smite/agents`
 - `@smite/basics`
 - All future SMITE plugins

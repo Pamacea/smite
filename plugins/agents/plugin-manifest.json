@@ -1,21 +1,18 @@
 {
-  "name": "mobs",
-  "version": "4.1.0",
+  "name": "agents",
+  "version": "4.2.0",
   "description": "Multi-agent orchestration system with spec-first development workflow",
-  "smite": "3.0.0",
+  "smite": "3.5.0",
   "core": "1.0.0",
   "depends": ["core"],
   "provides": [
     "architect",
     "builder",
-    "finalize",
-    "refactor",
-    "note",
     "spec-first",
     "design-workflow"
   ],
   "loadAfter": ["core"],
-  "tags": ["agents", "workflow", "architecture", "implementation", "refactoring"],
+  "tags": ["agents", "workflow", "architecture", "implementation"],
   "author": "Pamacea",
   "license": "MIT"
 }

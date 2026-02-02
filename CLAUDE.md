@@ -2,10 +2,12 @@
 
 ## 🎯 I'm here to...
 
-- **Build features**: `/build` or `/ralph`
-- **Fix bugs**: `/debug`
-- **Explore code**: `/explore` or `/toolkit search`
-- **Quality check**: `/finalize`
+- **Build features**: `/implement --epct` or `/implement --ralph`
+- **Fix bugs**: `/refactor --scope=bug`
+- **Explore code**: `/explore --mode=semantic` or `/toolkit search`
+- **Design architecture**: `/architect`
+- **Systematic implementation**: `/builder`
+- **Note taking**: `/note write`
 
 ## 🔍 Mandatory Workflow
 
@@ -13,7 +15,7 @@
 
 1. **ALWAYS** use `/toolkit search "query"` first (75% token savings, 2x precision)
 2. **NEVER** use Grep/Glob first (wastes tokens)
-3. **Spec-first**: Architect → Builder → Finalize
+3. **Spec-first**: Architect → Builder → Verify
 
 **Why?** Traditional search: 180k tokens. Toolkit: 45k tokens. **75% savings.**
 
@@ -21,34 +23,21 @@
 
 | Command | Purpose | When to use |
 |---------|---------|-------------|
-| `/ralph "prompt"` | Multi-agent orchestration | Complex features (2-3x speedup) |
-| `/build --feature=name` | Implement feature | Spec-driven development |
-| `/debug` | Fix bugs systematically | Any bug/issue |
-| `/finalize` | QA + documentation | Before committing |
-| `/toolkit search "query"` | Semantic code search | ALWAYS before exploring |
+| `/architect "prompt"` | Architecture design | Design new systems/features |
+| `/builder --tech=nextjs` | Tech-specific implementation | Systematic implementation |
+| `/implement --epct` | 4-phase implementation | Complex features |
+| `/implement --ralph` | Multi-agent orchestration | Large projects (2-3x speedup) |
+| `/implement --quick` | Ultra-fast implementation | Small tasks |
+| `/refactor --quick` | Quick refactoring | Code improvements |
+| `/refactor --scope=bug` | Bug fixing | Any bug/issue |
+| `/explore --mode=semantic` | Semantic code search | ALWAYS before exploring |
+| `/note write inbox` | Quick note | Capture ideas/tasks |
 
 ## 📚 Documentation
 
 - **All docs**: [docs/INDEX.md](docs/INDEX.md)
 - **Plugins**: [plugins/README.md](plugins/README.md)
-- **Ralph guide**: [docs/RALPH_GUIDE.md](docs/RALPH_GUIDE.md) (coming soon)
-- **Spec-first**: [docs/SPEC_FIRST.md](docs/SPEC_FIRST.md) (coming soon)
-
-## 🛡️ Quality Gate
-
-**ALL code changes are automatically validated.**
-
-- **Complexity**: Max 10 cyclomatic, 15 cognitive
-- **Security**: SQL injection, XSS, weak crypto, secrets
-- **Semantics**: Type consistency, naming conventions
-
-**Config**: `.claude/.smite/quality.json`
-
-**Usage**:
-```bash
-/quality-check --staged    # Only staged files
-/quality-check --changed   # Only modified files
-```
+- **Agents**: [plugins/agents/README.md](plugins/agents/README.md)
 
 ## 🎯 Key Principles
 
@@ -68,4 +57,4 @@ src/
 ```
 
 ---
-**Version**: 3.1.0 | **Docs**: [docs/INDEX.md](docs/INDEX.md) | **Last updated**: 2025-01-22
+**Version**: 3.6.0 | **Last updated**: 2026-02-02

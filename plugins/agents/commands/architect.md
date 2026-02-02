@@ -395,7 +395,7 @@ Complete design process for a SaaS dashboard:
 
 ## Design Styles Reference
 
-See `plugins/mobs/config/design-styles.json` for complete specifications of all 5 styles.
+See `plugins/agents/config/design-styles.json` for complete specifications of all 5 styles.
 
 Quick reference:
 - **minimalist**: Low complexity, clean, professional

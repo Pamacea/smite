@@ -6,8 +6,15 @@ class RenameScript {
     this.lastRename = null;
     this.lastRenameTime = 0;
     this.renameCount = 0;
-    this.maxRenamesPerSession = 15; // Increased for more dynamic updates
-    this.minRenameInterval = 15000; // Reduced to 15 seconds for more frequent updates
+    // Configuration constants
+    this.config = {
+      maxRenamesPerSession: 15,
+      minRenameInterval: 15000,
+      llmTimeout: 15000,
+      initialDelay: 3000,
+      additionalDelay: 5000,
+      minEntriesForRename: 3
+    };
   }
 
   async run() {
@@ -29,7 +36,7 @@ class RenameScript {
 
     } catch (error) {
       console.error(`[AutoRename] Error: ${error.message}`);
-      process.exit(0);
+      process.exit(1);  // Exit with error code on failure
     }
   }
 
@@ -86,15 +93,14 @@ class RenameScript {
     console.error('[AutoRename] SessionStart: Waiting for initial context...');
 
     // Wait to gather initial context - adaptive delay
-    const initialDelay = 3000; // Reduced from 5000
-    await this.delay(initialDelay);
+    await this.delay(this.config.initialDelay);
 
     let entries = this.manager.readSession(sessionPath);
     console.error(`[AutoRename] SessionStart: Found ${entries.length} entries after initial delay`);
 
     // If we still don't have much context, wait a bit more and retry
     if (entries.length < 2) {
-      const additionalDelay = 5000; // Reduced from 7000
+      const additionalDelay = this.config.additionalDelay;
       console.error(`[AutoRename] SessionStart: Only ${entries.length} entries, waiting ${additionalDelay}ms more...`);
       await this.delay(additionalDelay);
 
@@ -130,7 +136,7 @@ class RenameScript {
     console.error(`[AutoRename] PostToolUse: session has ${entries.length} entries`);
 
     // Rename periodically - every 3-5 significant tool uses
-    if (entries.length < 3) {
+    if (entries.length < this.config.minEntriesForRename) {
       console.error('[AutoRename] PostToolUse: not enough entries yet');
       return;
     }
@@ -153,7 +159,7 @@ class RenameScript {
     console.error(`[AutoRename] UserPromptSubmit: session has ${entries.length} entries`);
 
     // Rename after every few user prompts to capture conversation evolution
-    if (entries.length < 3) {
+    if (entries.length < this.config.minEntriesForRename) {
       console.error('[AutoRename] UserPromptSubmit: not enough entries yet');
       return;
     }
@@ -228,8 +234,8 @@ class RenameScript {
   async attemptRename(sessionPath, entries, trigger) {
     console.error(`[AutoRename] attemptRename called (trigger: ${trigger})`);
 
-    if (this.renameCount >= this.maxRenamesPerSession) {
-      console.error(`[AutoRename] Max renames reached (${this.renameCount}/${this.maxRenamesPerSession})`);
+    if (this.renameCount >= this.config.maxRenamesPerSession) {
+      console.error(`[AutoRename] Max renames reached (${this.renameCount}/${this.config.maxRenamesPerSession})`);
       return;
     }
 
@@ -237,8 +243,8 @@ class RenameScript {
     const now = Date.now();
     const timeSinceLastRename = now - this.lastRenameTime;
 
-    if (timeSinceLastRename < this.minRenameInterval) {
-      console.error(`[AutoRename] Too soon since last rename (${timeSinceLastRename}ms < ${this.minRenameInterval}ms)`);
+    if (timeSinceLastRename < this.config.minRenameInterval) {
+      console.error(`[AutoRename] Too soon since last rename (${timeSinceLastRename}ms < ${this.config.minRenameInterval}ms)`);
       return;
     }
 
@@ -272,9 +278,9 @@ class RenameScript {
       this.lastRename = newName;
       this.lastRenameTime = now;
       this.renameCount++;
-      console.error(`[AutoRename] ✅ Session renamed to: "${newName}" (trigger: ${trigger}, count: ${this.renameCount})`);
+      console.log(`[AutoRename] Session renamed to: "${newName}" (trigger: ${trigger}, count: ${this.renameCount})`);
     } else {
-      console.error('[AutoRename] ❌ Failed to write rename');
+      console.error('[AutoRename] Failed to write rename');
     }
   }
 
@@ -283,11 +289,27 @@ class RenameScript {
       const { spawn } = require('child_process');
 
       return new Promise((resolve) => {
-        // Use -p flag for non-interactive mode (not --non-interactive)
-        // Pipe prompt via stdin for proper input handling
-        const claude = spawn('claude', ['-p', '--output-format', 'text'], {
-          env: process.env,
-          shell: true // Use shell to properly resolve claude command on Windows
+        let completed = false;
+        let timeoutHandle = null;
+
+        // Sanitize environment: remove potentially dangerous variables
+        const safeEnv = {
+          ...process.env,
+          PATH: process.env.PATH || '',
+          PATHEXT: process.env.PATHEXT || '',
+          HOME: process.env.HOME || process.env.USERPROFILE || '',
+          USERPROFILE: process.env.USERPROFILE || ''
+        };
+
+        // Use -p flag for non-interactive mode
+        // Avoid shell: true to prevent injection, resolve command manually
+        const isWindows = process.platform === 'win32';
+        const command = isWindows ? 'claude.cmd' : 'claude';
+        const args = ['-p', '--output-format', 'text'];
+
+        const claude = spawn(command, args, {
+          env: safeEnv,
+          shell: false  // Disabled: prevents shell injection
         });
 
         let output = '';
@@ -305,6 +327,21 @@ class RenameScript {
         claude.stdin.write(prompt);
         claude.stdin.end();
 
+        const cleanup = (result) => {
+          if (completed) return;  // Prevent double resolution
+          completed = true;
+          if (timeoutHandle) clearTimeout(timeoutHandle);
+
+          // Kill process if still running
+          try {
+            if (!claude.killed) claude.kill();
+          } catch (e) {
+            // Ignore cleanup errors
+          }
+
+          resolve(result);
+        };
+
         claude.on('close', (code) => {
           console.error('[AutoRename] LLM generation completed with code:', code);
 
@@ -318,27 +355,25 @@ class RenameScript {
 
             if (name.length > 5 && !name.toLowerCase().startsWith('usage:')) {
               console.error('[AutoRename] Generated name:', name);
-              resolve(name);
+              cleanup(name);
               return;
             }
           }
 
           console.error('[AutoRename] LLM output invalid, using fallback');
-          const fallback = this.generateFallbackName();
-          resolve(fallback);
+          cleanup(this.generateFallbackName());
         });
 
         claude.on('error', (error) => {
           console.error('[AutoRename] LLM spawn error:', error.message);
-          resolve(this.generateFallbackName());
+          cleanup(this.generateFallbackName());
         });
 
-        // Increased timeout for LLM generation
-        setTimeout(() => {
+        // Timeout for LLM generation
+        timeoutHandle = setTimeout(() => {
           console.error('[AutoRename] LLM timeout, using fallback');
-          claude.kill();
-          resolve(this.generateFallbackName());
-        }, 15000);
+          cleanup(this.generateFallbackName());
+        }, this.config.llmTimeout);
       });
     } catch (error) {
       console.error('[AutoRename] LLM generation error:', error.message);
@@ -363,7 +398,7 @@ if (require.main === module) {
   const script = new RenameScript();
   script.run().catch(error => {
     console.error('[AutoRename] Fatal error:', error);
-    process.exit(0);
+    process.exit(1);  // Exit with error code on failure
   });
 }
 

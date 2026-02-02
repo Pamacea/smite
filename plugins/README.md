@@ -16,11 +16,10 @@ The Smite Plugin Marketplace is a centralized registry of plugins that extend Sm
   - Auto-iterating loop for complex tasks
   - Progress tracking and state persistence
 
-- **[@smite/mobs](./mobs/README.md)** - Multi-agent system with Spec-First development workflow
+- **[@smite/agents](./agents/README.md)** - Multi-agent system with Spec-First development workflow
   - **Architect** - Design, strategy, and creative workflow with 5 UI style variations
   - **Builder** - Tech-specialized implementation (Next.js, Rust, Python, Go)
   - **Refactor** - Systematic 5-step refactoring with validation and subagents
-  - **Note** - AI-powered Obsidian note creation and formatting
   - Spec-Lock Policy enforcement
   - Multi-tech stack support
   - Design-to-code capabilities

@@ -198,7 +198,7 @@ Config file: `.claude/.smite/refactor.json`
 
 ## Migration Guide
 
-### From mobs/refactor
+### From agents/refactor
 
 **Old:**
 ```bash

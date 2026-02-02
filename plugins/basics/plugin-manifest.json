@@ -1,8 +1,8 @@
 {
   "name": "basics",
-  "version": "3.2.0",
-  "description": "Essential Claude commands for rapid development",
-  "smite": "3.0.0",
+  "version": "4.0.0",
+  "description": "Essential Claude commands including commit, explore, debug, epct, and note",
+  "smite": "3.5.0",
   "core": "1.0.0",
   "depends": ["core"],
   "provides": [
@@ -11,10 +11,11 @@
     "debug",
     "commit",
     "epct",
+    "note",
     "smite-install"
   ],
   "loadAfter": ["core"],
-  "tags": ["development", "commands", "workflow", "git"],
+  "tags": ["development", "commands", "workflow", "git", "notes"],
   "author": "Pamacea",
   "license": "MIT"
 }

@@ -32,48 +32,82 @@ export interface DependencyGraph {
 
 /**
  * Parse semver string into comparable parts
+ * Supports basic semver: major.minor.patch
+ * Throws on invalid format or out-of-range values
  */
 function parseSemver(version: string): { major: number; minor: number; patch: number } {
   const match = version.match(/^(\d+)\.(\d+)\.(\d+)/);
   if (!match) throw new Error(`Invalid semver: ${version}`);
-  return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10),
-  };
+
+  const major = parseInt(match[1], 10);
+  const minor = parseInt(match[2], 10);
+  const patch = parseInt(match[3], 10);
+
+  // Validate ranges (semver spec: 0-255 for each component)
+  const MAX_SAFE_VERSION = 255;
+  if (
+    major > MAX_SAFE_VERSION ||
+    minor > MAX_SAFE_VERSION ||
+    patch > MAX_SAFE_VERSION ||
+    isNaN(major) || isNaN(minor) || isNaN(patch)
+  ) {
+    throw new Error(`Semver value out of range: ${version}`);
+  }
+
+  return { major, minor, patch };
 }
 
 /**
- * Check if version satisfies constraint
+ * Check if version satisfies minimum constraint
+ * Returns true if version >= constraint
  */
 function satisfiesVersion(version: string, constraint: string): boolean {
   const v = parseSemver(version);
   const c = parseSemver(constraint);
-  return v.major >= c.major && v.minor >= c.minor && v.patch >= c.patch;
+
+  // Proper semver comparison: major first, then minor, then patch
+  if (v.major !== c.major) return v.major > c.major;
+  if (v.minor !== c.minor) return v.minor > c.minor;
+  return v.patch >= c.patch;
 }
 
 /**
- * Detect circular dependencies using depth-first search
+ * Detect circular dependencies using DFS with proper coloring
+ * Uses three-color marking: white=unvisited, gray=in-progress, black=visited
  */
 function detectCircular(
-  graph: Map<string, Set<string>>,
-  path: string[] = [],
-  visited = new Set<string>()
+  graph: Map<string, Set<string>>
 ): string[][] {
   const cycles: string[][] = [];
-  const current = path[path.length - 1];
+  const gray = new Set<string>();  // Nodes currently in recursion stack
 
-  if (path.includes(current)) {
-    cycles.push([...path.slice(path.indexOf(current)), current]);
-    return cycles;
+  function dfs(node: string, path: string[]): void {
+    // If we've encountered this node in the current path, we found a cycle
+    if (gray.has(node)) {
+      const cycleStart = path.indexOf(node);
+      if (cycleStart !== -1) {
+        cycles.push([...path.slice(cycleStart), node]);
+      }
+      return;
+    }
+
+    // Mark as in-progress
+    gray.add(node);
+
+    const deps = graph.get(node);
+    if (deps) {
+      for (const dep of deps) {
+        dfs(dep, [...path, dep]);
+      }
+    }
+
+    // Mark as complete (black)
+    gray.delete(node);
   }
 
-  if (visited.has(current)) return cycles;
-  visited.add(current);
-
-  const deps = graph.get(current) || new Set();
-  for (const dep of deps) {
-    cycles.push(...detectCircular(graph, [...path, dep], visited));
+  // Run DFS from each node
+  for (const [node] of graph) {
+    dfs(node, [node]);
   }
 
   return cycles;
@@ -113,22 +147,37 @@ function topologicalSort(
   const cycles = detectCircular(graph);
 
   // Topological sort (Kahn's algorithm)
-  const order: string[] = const queue: string[] = [];
+  const order: string[] = [];
+  const queue: string[] = [];
 
+  // Build reverse adjacency list for efficient decrement of in-degrees
+  const reverseGraph = new Map<string, Set<string>>();
+  for (const [name] of manifests) {
+    reverseGraph.set(name, new Set());
+  }
+  for (const [name, deps] of graph) {
+    for (const dep of deps) {
+      reverseGraph.get(dep)?.add(name);
+    }
+  }
+
+  // Initialize queue with nodes having zero in-degree
   for (const [name, degree] of inDegree) {
     if (degree === 0) queue.push(name);
   }
 
+  // Process nodes
   while (queue.length > 0) {
-    const name = queue.shift()!;
+    const name = queue.shift();
+    if (!name) break;  // Safety check
     order.push(name);
 
-    for (const [depName, deps] of graph) {
-      if (deps.has(name)) {
-        deps.delete(name);
-        inDegree.set(depName, inDegree.get(depName)! - 1);
-        if (inDegree.get(depName) === 0) queue.push(depName);
-      }
+    // For each node that depends on 'name', decrement its in-degree
+    const dependents = reverseGraph.get(name) || new Set();
+    for (const dependent of dependents) {
+      const newDegree = (inDegree.get(dependent) || 0) - 1;
+      inDegree.set(dependent, newDegree);
+      if (newDegree === 0) queue.push(dependent);
     }
   }
 

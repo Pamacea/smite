@@ -1,12 +1,12 @@
 {
-  "name": "mobs",
+  "name": "agents",
   "description": "Multi-agent orchestration system - Spec-First development workflow with creative design and systematic refactoring",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
   },
-  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/mobs",
+  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/agents",
   "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
   "keywords": [

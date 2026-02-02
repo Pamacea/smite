@@ -15,8 +15,8 @@
 /plugin install implement@smite
 
 # Step 2: Install Supporting Plugins (Optional)
-/plugin install mobs@smite        # Architect, Builder, Refactor, Note agents
-/plugin install basics@smite      # Commit, Cleanup, etc.
+/plugin install agents@smite      # Architect, Builder, Refactor agents
+/plugin install basics@smite      # Commit, Note, Cleanup, etc.
 /plugin install shell@smite         # Shell aliases
 /plugin install auto-rename@smite   # Session renaming
 
@@ -75,10 +75,10 @@ SMITE v3.5.0 (REFACTORISÉ)
 │ PLUGINS CONSERVÉS (spécialités)          │
 ├───────────────────────────────────────────────┤
 │                                             │
-│  1. /mobs                                     │
+│  1. /agents                                   │
 │     - Agents spécialisés: architect, builder,    │
-│                          refactor, note        │
-│     - Réutilisation des sous-agents           │
+│                          refactor               │
+│     - Sous-agents techniques: impl-*            │
 │                                             │
 │  2. /basics                                   │
 │     - Commandes essentielles              │
@@ -110,7 +110,7 @@ SMITE v3.5.0 (REFACTORISÉ)
 
 | Plugin | Status | Description |
 |--------|--------|-------------|
-| **mobs** | **RECOMMENDED** | Specialized agents (architect, builder, refactor, note) |
+| **agents** | **RECOMMENDED** | Specialized agents (architect, builder, refactor) |
 | **basics** | **RECOMMENDED** | Essential commands (commit, cleanup, etc.) |
 | **shell** | **OPTIONAL** | Shell shortcuts |
 | **auto-rename** | **OPTIONAL** | Session renaming |
@@ -133,8 +133,8 @@ SMITE v3.5.0 (REFACTORISÉ)
          └─────────┬───────┴─────────┬───────┘
                     │                 │
               ┌────▼────┐      ┌────▼────┐
-              │  mobs   │      │ basics  │
-              │(v4.1.0) │      │(v3.5.0) │
+              │ agents │      │ basics  │
+              │(v4.2.0)│      │(v4.0.0) │
               └────┬────┘      └────┬────┘
                     │                 │
          ┌───────────┬───────┴─────────┬───────┘
@@ -365,7 +365,7 @@ Multi-level explanations with ASCII diagrams.
 
 ### Supporting Plugins (Optional)
 
-#### 1. /mobs
+#### 1. /agents
 
 **Specialized agents:**
 
@@ -373,10 +373,27 @@ Multi-level explanations with ASCII diagrams.
 /architect "Design authentication system"    # Architecture design
 /builder "Implement user dashboard"          # Code implementation
 /refactor "Systematic refactoring"           # Code improvement
-/note write inbox "Quick note"               # Note taking
 ```
 
 **Best for:** Specialized tasks with agent-specific expertise
+
+---
+
+#### 2. /basics
+
+**Essential commands:**
+
+```bash
+/commit                          # Git commit and push
+/cleanup                         # Code cleanup
+/note write inbox "Quick note"   # Note taking (Obsidian)
+```
+
+**Best for:** Quick, repetitive tasks and notes
+
+---
+
+#### 3. /shell
 
 ---
 
@@ -488,7 +505,7 @@ Need to refactor/debug?
 /plugin install implement@smite
 
 # Install supporting plugins (optional)
-/plugin install mobs@smite         # Specialized agents
+/plugin install agents@smite        # Specialized agents
 /plugin install basics@smite       # Essential commands
 /plugin install shell@smite        # Shell aliases
 /plugin install auto-rename@smite   # Session renaming
@@ -509,7 +526,7 @@ smite/
 │   ├── refactor/            # Unified refactoring agent
 │   ├── explore/             # Unified exploration agent
 │   ├── implement/           # Unified implementation agent
-│   ├── mobs/                # Specialized agents (architect, builder, refactor, note)
+│   ├── agents/              # Specialized agents (architect, builder, refactor)
 │   ├── basics/              # Essential commands (commit, cleanup, etc.)
 │   ├── shell/               # Shell aliases
 │   └── auto-rename/         # Session renaming

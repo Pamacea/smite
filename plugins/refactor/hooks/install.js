@@ -103,7 +103,7 @@ function displayWelcome() {
 
 🔄 Migration:
 
-  From mobs/refactor → /refactor --full
+  From agents/refactor → /refactor --full
   From ralph/refactor → /refactor --full
   From basics/debug → /refactor --scope=bug
   From predator/debug → /refactor --scope=bug
