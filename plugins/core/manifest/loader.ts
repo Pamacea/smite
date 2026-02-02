@@ -4,6 +4,9 @@
  * Centralized manifest loading, validation, and dependency resolution.
  */
 
+import * as fs from 'fs/promises';
+import * as path from 'path';
+
 export interface PluginManifest {
   name: string;
   version: string;
@@ -359,14 +362,23 @@ export async function loadFromPluginRoot(
   rootPaths: string[]
 ): Promise<ManifestLoader> {
   const loader = new ManifestLoader();
+  const errors: Array<{ path: string; error: string }> = [];
 
   for (const root of rootPaths) {
     try {
-      // In a real implementation, this would read plugin-manifest.json
-      // For now, we'll skip actual file I/O
-    } catch {
-      // Skip missing manifests
+      const manifestPath = path.join(root, 'plugin-manifest.json');
+      const content = await fs.readFile(manifestPath, 'utf-8');
+      const manifest = JSON.parse(content) as PluginManifest;
+      loader.load(manifest);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      errors.push({ path: root, error: errorMsg });
     }
+  }
+
+  // Log errors if any occurred (don't silently fail)
+  if (errors.length > 0) {
+    console.warn('[ManifestLoader] Failed to load some manifests:', errors);
   }
 
   return loader;

@@ -7,17 +7,34 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Validate and sanitize path to prevent directory traversal
+ */
+function validatePath(inputPath) {
+  const normalized = path.normalize(inputPath);
+  const resolved = path.resolve(normalized);
+
+  // Ensure path doesn't escape current working directory
+  const cwd = process.cwd();
+  if (!resolved.startsWith(cwd)) {
+    throw new Error(`Path traversal detected: ${inputPath}`);
+  }
+
+  return resolved;
+}
+
 function getConfigPath() {
-  return path.join(process.cwd(), '.claude/.smite/explore.json');
+  const configPath = path.join(process.cwd(), '.claude/.smite/explore.json');
+  return validatePath(configPath);
 }
 
 function createConfig() {
   const configPath = getConfigPath();
-  const configDir = path.dirname(configPath);
+  const configDir = validatePath(path.dirname(configPath));
 
   // Create .claude/.smite/ directory if it doesn't exist
   if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir, { recursive: true });
+    fs.mkdirSync(configDir, { recursive: true, mode: 0o755 });
   }
 
   // Create default config if it doesn't exist

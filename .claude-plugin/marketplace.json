@@ -16,7 +16,7 @@
       "name": "core",
       "source": "./plugins/core",
       "description": "Shared utilities, templates, and validation schemas for all SMITE plugins. Includes parallel execution, plan-mode-first, and auto-learning infrastructure.",
-      "version": "3.5.0",
+      "version": "3.6.0",
       "author": { "name": "Pamacea" },
       "category": "utilities",
       "tags": ["utilities", "templates", "validation", "schemas", "platform", "parallel", "learning"],

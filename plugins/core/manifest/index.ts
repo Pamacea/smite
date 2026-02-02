@@ -9,9 +9,9 @@ export type { PluginManifest, DependencyGraph } from './loader';
 
 /**
  * Current SMITE version
- * TODO: Auto-sync from package.json
+ * Matches marketplace.json version 3.6.0
  */
-export const SMITE_VERSION = '3.5.0';
+export const SMITE_VERSION = '3.6.0';
 
 /**
  * Current core version

@@ -1,8 +1,10 @@
 {
+  "id": "basics",
   "name": "basics",
   "version": "4.0.0",
   "description": "Essential Claude commands including commit, explore, debug, epct, and note",
-  "smite": "3.5.0",
+  "smite": "3.6.0",
+  "repository": "https://github.com/Pamacea/smite",
   "core": "1.0.0",
   "depends": ["core"],
   "provides": [

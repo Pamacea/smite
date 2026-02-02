@@ -13,11 +13,11 @@ function getConfigPath() {
 
 function createConfig() {
   const configPath = getConfigPath();
-  const configDir = path.dirname(configPath);
+  const configDir = validatePath(path.dirname(configPath));
 
   // Create .claude/.smite/ directory if it doesn't exist
   if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir, { recursive: true });
+    fs.mkdirSync(configDir, { recursive: true, mode: 0o755 });
   }
 
   // Create default config if it doesn't exist

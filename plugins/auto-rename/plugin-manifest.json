@@ -1,6 +1,8 @@
 {
+  "id": "auto-rename",
   "name": "auto-rename",
-  "version": "3.1.2",
+  "version": "3.1.0",
+  "repository": "https://github.com/Pamacea/smite",
   "description": "Automatically rename Claude Code sessions based on content using LLM analysis",
   "smite": "3.0.0",
   "core": "1.0.0",

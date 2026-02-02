@@ -1,8 +1,10 @@
 {
+  "id": "agents",
   "name": "agents",
   "version": "4.2.0",
   "description": "Multi-agent orchestration system with spec-first development workflow",
-  "smite": "3.5.0",
+  "smite": "3.6.0",
+  "repository": "https://github.com/Pamacea/smite",
   "core": "1.0.0",
   "depends": ["core"],
   "provides": [
