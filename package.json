@@ -1,7 +1,7 @@
 {
   "name": "smite",
-  "version": "3.1.0",
-  "description": "SMITE - Multi-agent orchestration and code quality toolkit for Claude Code",
+  "version": "3.5.0",
+  "description": "SMITE - Multi-agent orchestration and code quality toolkit with unified agents",
   "private": true,
   "workspaces": [
     "plugins/*"
@@ -29,7 +29,8 @@
     "claude-code",
     "multi-agent",
     "refactoring",
-    "code-quality"
+    "code-quality",
+    "unified-agents"
   ],
   "author": "Pamacea",
   "license": "MIT"
