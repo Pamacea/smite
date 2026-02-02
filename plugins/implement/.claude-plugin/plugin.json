@@ -1,95 +1,13 @@
 {
-  "id": "implement",
   "name": "Implement",
-  "version": "3.5.0",
   "description": "Unified implementation agent - consolidates all implementation approaches",
-  "author": "Pamacea",
+  "version": "3.5.0",
+  "author": {
+    "name": "Pamacea",
+    "email": "[email protected]"
+  },
+  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/implement",
+  "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "homepage": "https://github.com/pamacea/smite/tree/main/plugins/implement",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pamacea/smite.git",
-    "directory": "plugins/implement"
-  },
-  "bugs": {
-    "url": "https://github.com/pamacea/smite/issues"
-  },
-  "keywords": [
-    "smite",
-    "smite-plugin",
-    "implement",
-    "code-implementation",
-    "development"
-  ],
-  "smite": {
-    "type": "agent",
-    "minVersion": "3.1.0",
-    "configFile": ".claude/.smite/implement.json",
-    "skills": [
-      "skills/implement/SKILL.md"
-    ]
-  },
-  "commands": [
-    {
-      "name": "implement",
-      "file": "commands/implement.md",
-      "description": "Unified implementation command"
-    }
-  ],
-  "hooks": {
-    "install": "hooks/install.js"
-  },
-  "dependencies": {
-    "@smite/explore": {
-      "required": true,
-      "purpose": "Context gathering before implementation"
-    }
-  },
-  "integrations": {
-    "explore": {
-      "supported": true,
-      "description": "Context gathering before implementation"
-    },
-    "refactor": {
-      "supported": true,
-      "description": "Quality assurance after implementation"
-    },
-    "ralph": {
-      "supported": true,
-      "workflows": ["feature"],
-      "description": "Used by Ralph for parallel execution"
-    },
-    "subagents": {
-      "supported": true,
-      "subagents": ["impl-nextjs", "impl-rust", "impl-python", "impl-go"],
-      "description": "Technical subagents from MOBS plugin"
-    }
-  },
-  "deprecations": {
-    "/oneshot": {
-      "replacedBy": "/implement --quick",
-      "migration": "Use /implement --quick instead of /oneshot",
-      "version": "3.2.0"
-    },
-    "/epct": {
-      "replacedBy": "/implement --epct",
-      "migration": "Use /implement --epct instead of /epct",
-      "version": "3.2.0"
-    },
-    "/builder": {
-      "replacedBy": "/implement --builder --tech=nextjs|rust|python|go",
-      "migration": "Use /implement --builder --tech=nextjs|rust|python|go instead of /builder",
-      "version": "3.2.0"
-    },
-    "/predator": {
-      "replacedBy": "/implement --predator",
-      "migration": "Use /implement --predator instead of /predator",
-      "version": "3.2.0"
-    },
-    "/ralph/feature": {
-      "replacedBy": "/implement --ralph",
-      "migration": "Use /implement --ralph instead of /ralph/feature",
-      "version": "3.2.0"
-    }
-  }
+  "keywords": ["smite", "implement", "code-implementation", "development"]
 }

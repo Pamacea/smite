@@ -1,96 +1,13 @@
 {
-  "id": "refactor",
   "name": "Refactor",
-  "version": "1.0.0",
   "description": "Unified code refactoring agent - consolidates all refactor workflows",
-  "author": "Pamacea",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pamacea",
+    "email": "[email protected]"
+  },
+  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/refactor",
+  "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "homepage": "https://github.com/pamacea/smite/tree/main/plugins/refactor",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pamacea/smite.git",
-    "directory": "plugins/refactor"
-  },
-  "bugs": {
-    "url": "https://github.com/pamacea/smite/issues"
-  },
-  "keywords": [
-    "smite",
-    "smite-plugin",
-    "refactor",
-    "code-quality",
-    "refactoring"
-  ],
-  "smite": {
-    "type": "agent",
-    "minVersion": "3.1.0",
-    "configFile": ".claude/.smite/refactor.json",
-    "skills": [
-      "skills/refactor/SKILL.md"
-    ],
-    "subagents": {
-      "classifier": {
-        "skill": "skills/classifier/SKILL.md",
-        "purpose": "Issue classification and prioritization"
-      },
-      "validator": {
-        "skill": "skills/validator/SKILL.md",
-        "purpose": "Safety and validation"
-      },
-      "resolver": {
-        "skill": "skills/resolver/SKILL.md",
-        "purpose": "Refactoring implementation"
-      }
-    }
-  },
-  "commands": [
-    {
-      "name": "refactor",
-      "file": "commands/refactor.md",
-      "description": "Unified refactoring command"
-    }
-  ],
-  "hooks": {
-    "install": "hooks/install.js"
-  },
-  "dependencies": {
-    "toolkit": {
-      "optional": true,
-      "purpose": "Semantic search, bug detection, dependency analysis"
-    }
-  },
-  "integrations": {
-    "ralph": {
-      "supported": true,
-      "workflows": ["refactor", "debug", "feature"],
-      "description": "Used by Ralph workflows for quality assurance"
-    },
-    "toolkit": {
-      "supported": true,
-      "features": ["semantic-search", "bug-detection", "dependency-graph"],
-      "description": "Enhanced refactoring with semantic search"
-    }
-  },
-  "deprecations": {
-    "agents/refactor": {
-      "replacedBy": "/refactor",
-      "migration": "Use /refactor --full instead of /refactor -a -r -v -x -t",
-      "version": "3.2.0"
-    },
-    "ralph/refactor": {
-      "replacedBy": "/refactor",
-      "migration": "Use /refactor --full instead of Ralph refactor workflow",
-      "version": "3.2.0"
-    },
-    "basics/debug": {
-      "replacedBy": "/refactor",
-      "migration": "Use /refactor --scope=bug instead of /debug",
-      "version": "3.2.0"
-    },
-    "predator/debug": {
-      "replacedBy": "/refactor",
-      "migration": "Use /refactor --scope=bug --examine instead of /debug -examine",
-      "version": "3.2.0"
-    }
-  }
+  "keywords": ["smite", "refactor", "code-quality", "refactoring"]
 }

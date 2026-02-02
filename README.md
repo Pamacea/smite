@@ -80,7 +80,7 @@ SMITE v3.5.0 (REFACTORISÉ)
 │                          refactor               │
 │     - Sous-agents techniques: impl-*            │
 │                                             │
-│  2. /basics                                   │
+│  2. basics                                   │
 │     - Commandes essentielles              │
 │     - commit, cleanup, etc.                  │
 │                                             │
@@ -379,7 +379,7 @@ Multi-level explanations with ASCII diagrams.
 
 ---
 
-#### 2. /basics
+#### 2. basics
 
 **Essential commands:**
 
@@ -397,7 +397,7 @@ Multi-level explanations with ASCII diagrams.
 
 ---
 
-#### 2. /basics
+#### 2. basics
 
 **Essential commands:**
 

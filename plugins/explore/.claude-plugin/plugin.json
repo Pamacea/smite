@@ -1,107 +1,13 @@
 {
-  "id": "explore",
   "name": "Explore",
-  "version": "1.0.0",
   "description": "Unified code exploration agent with native semantic search",
-  "author": "Pamacea",
+  "version": "3.5.0",
+  "author": {
+    "name": "Pamacea",
+    "email": "[email protected]"
+  },
+  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/explore",
+  "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "homepage": "https://github.com/pamacea/smite/tree/main/plugins/explore",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pamacea/smite.git",
-    "directory": "plugins/explore"
-  },
-  "bugs": {
-    "url": "https://github.com/pamacea/smite/issues"
-  },
-  "keywords": [
-    "smite",
-    "smite-plugin",
-    "explore",
-    "code-exploration",
-    "semantic-search"
-  ],
-  "smite": {
-    "type": "agent",
-    "minVersion": "3.1.0",
-    "configFile": ".claude/.smite/explore.json",
-    "skills": [
-      "skills/explore/SKILL.md"
-    ],
-    "subagents": {
-      "searcher": {
-        "skill": "skills/searcher/SKILL.md",
-        "purpose": "Search via grepai"
-      },
-      "analyzer": {
-        "skill": "skills/analyzer/SKILL.md",
-        "purpose": "Code and structure analysis"
-      }
-    }
-  },
-  "commands": [
-    {
-      "name": "explore",
-      "file": "commands/explore.md",
-      "description": "Unified exploration command"
-    }
-  ],
-  "hooks": {
-    "install": "hooks/install.js"
-  },
-  "dependencies": {
-    "grepai-cli": {
-      "required": true,
-      "purpose": "Native semantic search"
-    }
-  },
-  "integrations": {
-    "grepai": {
-      "supported": true,
-      "features": ["semantic-search", "hybrid-search", "context-optimization"],
-      "description": "Native grepai CLI integration for 75% token savings"
-    },
-    "ralph": {
-      "supported": true,
-      "workflows": ["spec-first", "debug", "refactor", "feature"],
-      "description": "Used by Ralph workflows as analysis step"
-    },
-    "implement": {
-      "supported": true,
-      "workflows": ["full", "architect"],
-      "description": "Used by Implement agent before coding"
-    }
-  },
-  "deprecations": {
-    "basics/explore": {
-      "replacedBy": "/explore",
-      "migration": "Use /explore --mode=deep instead of /explore",
-      "version": "3.2.0"
-    },
-    "toolkit/explore": {
-      "replacedBy": "/explore",
-      "migration": "Use /explore --mode=quick instead of /toolkit explore",
-      "version": "3.2.0"
-    },
-    "toolkit/search": {
-      "replacedBy": "/explore --mode=semantic",
-      "migration": "Use /explore --mode=semantic instead of /toolkit search",
-      "version": "3.2.0"
-    },
-    "toolkit/graph": {
-      "replacedBy": "/explore --mode=impact",
-      "migration": "Use /explore --mode=impact instead of /toolkit graph",
-      "version": "3.2.0"
-    },
-    "builder/explore": {
-      "replacedBy": "/explore --type=code",
-      "migration": "Use /explore --type=code instead of builder step 1",
-      "version": "3.2.0"
-    },
-    "ralph/analyze": {
-      "replacedBy": "/explore --output=summary",
-      "migration": "Use /explore --output=summary instead of Ralph analyze step",
-      "version": "3.2.0"
-    }
-  }
+  "keywords": ["smite", "explore", "code-exploration", "semantic-search"]
 }
