@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.0",
-  "description": "Complete development workflow with lazy loading, model routing, progressive build, multi-agent review, and analytics",
+  "version": "2.5.0",
+  "description": "Complete development workflow with lazy loading, hooks system, MCP integration, quality gates, and 12 composable flags",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
@@ -19,6 +19,9 @@
     "performance",
     "typescript",
     "git",
-    "documentation"
+    "documentation",
+    "mcp",
+    "hooks",
+    "quality-gates"
   ]
 }

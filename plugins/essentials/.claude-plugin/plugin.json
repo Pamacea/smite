@@ -1,12 +1,20 @@
 {
   "name": "essentials",
   "version": "2.0.0",
-  "description": "Productivity utilities - auto-rename, shell aliases",
+  "description": "Productivity utilities with auto-rename, shell aliases, lazy loading, hooks system, and cross-platform support",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
   },
   "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/essentials",
   "repository": "https://github.com/Pamacea/smite",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "productivity",
+    "auto-rename",
+    "shell-aliases",
+    "cross-platform",
+    "hooks",
+    "session-management"
+  ]
 }

@@ -1,3 +1,11 @@
+---
+lazy_load: true
+category: "template"
+name: "warnings"
+version: "2.0.0"
+description: "Standard warning templates for SMITE commands - toolkit first, MCP tools, platform detection, error handling"
+---
+
 # SMITE Core - Standard Warnings
 
 This file contains reusable warning templates that should be used consistently across all SMITE plugins.
@@ -96,7 +104,7 @@ fi
 ## Git Best Practices
 
 ### Cross-Platform Git Hooks
-Windows PowerShell hooks may fail with `.ps1 extension` errors. Use automatic retry:
+Windows PowerShell hooks may fail with `.ps1` extension` errors. Use automatic retry:
 
 ```bash
 git commit -m "message" 2>&1 || \

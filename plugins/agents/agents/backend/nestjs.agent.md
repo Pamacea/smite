@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: backend
+tech: nestjs
+version: "latest"
+category: "framework"
+---
+
 # NestJS Development Agent
 
 ## Mission

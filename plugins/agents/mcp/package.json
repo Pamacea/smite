@@ -1,0 +1,16 @@
+{
+  "name": "smite-agents-mcp",
+  "version": "1.0.0",
+  "description": "MCP servers for SMITE agents plugin",
+  "type": "module",
+  "scripts": {
+    "agent-discovery": "node mcp/agent-discovery.js",
+    "pattern-library": "node mcp/pattern-library.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

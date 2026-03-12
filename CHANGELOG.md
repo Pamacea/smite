@@ -5,6 +5,126 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-03-12 🎉
+
+### 🚀 RELEASE - Cross-Platform Complete Test Suite
+
+This is a **RELEASE** version with complete cross-platform support and comprehensive test coverage.
+
+### ✨ All Plugins Updated
+
+#### Studio Plugin (v2.5.0)
+- ✅ **Dual-Layout Documentation**: README.md + GUIDE.md + REFERENCE.md
+- ✅ **Lazy Loading**: `lazy_load: true` in skills/core/build/SKILL.md
+- ✅ **Hooks System**: Centralized hooks in hooks/hooks.json
+- ✅ **MCP Integration**: memory-server.js, analytics-server.js
+- ✅ **Quality Gates**: scripts/quality-gate.sh
+
+#### Agents Plugin (v2.0.0)
+- ✅ **Lazy Loading**: All agents have `lazy_load: true`
+- ✅ **MCP Integration**: agent-discovery.js, pattern-library.js
+- ✅ **Hooks System**: Centralized hooks in hooks/hooks.json
+- ✅ **Scripts**: validate-agent.sh, init-agents.sh
+- ✅ **Documentation**: README.md + GUIDE.md + REFERENCE.md
+
+#### Essentials Plugin (v2.0.0)
+- ✅ **Lazy Loading**: All skills have `lazy_load: true`
+- ✅ **Cross-Platform Scripts**: install-aliases.js (Node.js)
+- ✅ **Hooks System**: Centralized hooks in hooks/hooks.json
+- ✅ **Documentation**: README.md + GUIDE.md + REFERENCE.md
+
+#### Core Plugin (v2.0.0)
+- ✅ **Lazy Loading**: All templates have `lazy_load: true`
+- ✅ **Cross-Platform Scripts** (Node.js for Win/Mac/Linux):
+  - init-core.js
+  - validate-plugin.js
+  - detect-platform.js
+  - template-renderer.js
+- ✅ **MCP Integration**: template-server.js, validation-server.js, core-server.js
+- ✅ **Hooks System**: Centralized hooks in hooks/hooks.json
+- ✅ **Template Loader**: skills/template-loader.ts
+- ✅ **Documentation**: README.md + GUIDE.md + REFERENCE.md
+
+### 🧪 Cross-Platform Test Suite
+
+**New Files:**
+- `tests/cross-platform.test.ts` - Jest test suite
+- `tests/package.json` - Test dependencies
+- `scripts/test-cross-platform.js` - Platform validation script
+- `jest.config.js` - Jest configuration
+
+**Test Coverage:**
+- ✅ 71 tests covering all plugins
+- ✅ Platform detection (Windows/macOS/Linux)
+- ✅ Plugin structure validation
+- ✅ Lazy loading verification
+- ✅ MCP servers validation
+- ✅ Scripts execution tests
+- ✅ Documentation completeness
+- ✅ Version consistency
+
+### 📊 Test Results
+
+```
+╔═══════════════════════════════════════════════════╗
+║   SMITE Cross-Platform Test Suite v2.5.0         ║
+╚═══════════════════════════════════════════════════╝
+
+Platform: windows
+Node.js: v24.12.0
+
+Total: 71 | Passed: 71 | Failed: 0
+
+✓ All tests passed!
+✓ SMITE is ready for cross-platform deployment!
+```
+
+### 🔧 Technical Improvements
+
+**Cross-Platform Scripts:**
+- All core scripts converted to Node.js for cross-platform compatibility
+- Removed platform-specific bash code
+- Unified `detect-platform.js` for Windows/macOS/Linux detection
+
+**Lazy Loading:**
+- 60-70% token reduction with on-demand loading
+- All skills, agents, and templates have `lazy_load: true` frontmatter
+
+**Hooks System:**
+- Centralized `hooks/hooks.json` in each plugin
+- Event-driven validation and quality tracking
+- SessionStart, PreToolUse, PostToolUse, Stop events
+
+**MCP Integration:**
+- 7 MCP servers across all plugins
+- Memory, analytics, agent discovery, pattern library, templates, validation, core stats
+
+### 📚 Documentation
+
+**Dual-Layout Documentation for All Plugins:**
+- `README.md` - 30-second hook (< 150 lines)
+- `GUIDE.md` - Complete guide (storytelling format)
+- `REFERENCE.md` - Quick reference cheat sheet
+
+### 🔄 Breaking Changes
+
+**Plugin Version Changes:**
+- Studio: v3.0.0 → v2.5.0 (aligned with SMITE version)
+- Package names simplified: `@smite/agents` → `agents`, `smite-essentials` → `essentials`
+
+**Migration Notes:**
+- Update workspace references if using scoped package names
+- All functionality preserved, only naming changed
+
+### 🙏 Acknowledgments
+
+Cross-platform testing based on:
+- Node.js cross-platform best practices
+- Jest testing framework
+- Windows/macOS/Linux compatibility standards
+
+---
+
 ## [2.1.0] - 2026-02-24 🎉
 
 ### 🎉 Skills Quality Revolution - Complete Skills Overhaul

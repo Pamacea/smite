@@ -1,4 +1,5 @@
 ---
+lazy_load: false
 name: rename
 description: Automatically runs on SessionStart, PostToolUse, and UserPromptSubmit hooks to rename Claude Code sessions using LLM analysis following "Action: Context" format (e.g., "Fix: login bug", "Add: user CRUD"). Generates intelligent, context-aware names that evolve as session progresses. Manual override via /rename command available. Integrates with session .jsonl storage. (user)
 version: 3.1.2
@@ -36,9 +37,9 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 
 ## When NOT to Use
 
-- ❌ **During command/skill invocations** (automatically skipped)
-- ❌ **For system-generated messages** (filtered out automatically)
-- ❌ **When session name is already perfect** (max renames limit prevents spam)
+- During command/skill invocations (automatically skipped)
+- For system-generated messages (filtered out automatically)
+- When session name is already perfect (max renames limit prevents spam)
 
 ## Core Workflow
 
@@ -110,16 +111,6 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 | Not evolving with session | Outdated context | Updates based on conversation progress |
 | Manual override not working | Frustrating | Always allows manual /rename command |
 
-## Integration
-
-- **SessionStart hook**: Analyzes first message, sets initial name
-- **PostToolUse hook**: Renames after Write/Bash/git operations
-- **UserPromptSubmit hook**: Updates based on conversation evolution
-- **Manual command**: `/rename` for custom or auto-generated names
-- **Storage**: System messages in .jsonl session files
-
 ---
 
 *Auto-generated from plugin.json - Last sync: 2025-01-22*
-
-**Note:** Previously named `auto-rename-session`, now `auto-rename`

@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "smite-memory": {
+      "transport": "stdio",
+      "command": "node",
+      "args": ["./plugins/studio/mcp/memory-server.js"],
+      "description": "Persistent memory for SMITE patterns and decisions",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "smite-analytics": {
+      "transport": "stdio",
+      "command": "node",
+      "args": ["./plugins/studio/mcp/analytics-server.js"],
+      "description": "Build metrics and performance tracking",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

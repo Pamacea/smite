@@ -1,6 +1,6 @@
 {
   "version": "4.0.0",
-  "lastUpdated": "2026-02-08",
+  "lastUpdated": "2026-03-12",
   "plugins": [
     {
       "id": "core",
@@ -22,30 +22,31 @@
         "postInstall": null
       },
       "compatibility": {
-        "smiteVersion": ">=3.1.0",
+        "smiteVersion": ">=4.0.0",
         "nodeVersion": ">=18.0.0"
       }
     },
     {
       "id": "studio",
       "name": "studio",
-      "version": "1.0.0",
-      "description": "Complete development workflow - explore, architect, build, refactor",
+      "version": "3.0.0",
+      "description": "Complete development workflow with lazy loading, hooks, MCP integration, and quality gates",
       "category": "development",
       "required": true,
       "dependencies": ["/core"],
       "features": [
-        "Code exploration (4 modes: deep, quick, semantic, impact)",
-        "Architecture design (init, design, strategy, creative workflow)",
-        "Feature implementation (4 flags: speed, scale, quality, team)",
-        "Code refactoring (quick, full, bug fix)",
-        "Tech stack support (Next.js, Rust, Python, Go)"
+        "12 composable flags (speed, scale, quality, team, clean, test, debug, docs, git, branch, profile, types)",
+        "Lazy loading for optional skills (~70% token savings)",
+        "Hooks system (PreToolUse, PostToolUse, SessionStart, Stop)",
+        "MCP integration (memory + analytics servers)",
+        "Quality gates with automatic scoring",
+        "Dual-layout documentation (README + GUIDE + REFERENCE)",
+        "23+ specialized agents",
+        "Auto-detection for zero-config usage"
       ],
       "commands": {
-        "explore": "/studio explore [--mode=deep|quick|semantic|impact]",
-        "architect": "/studio architect [--mode=init|design|strategy] [-b -w -v -x]",
-        "build": "/studio build [--speed|--scale|--quality|--team]",
-        "refactor": "/studio refactor [--quick|--full|--scope=bug]"
+        "build": "/studio build [--speed|--scale|--quality|--team|--clean|--test|--debug|--docs|--git|--branch|--profile|--types]",
+        "refactor": "/studio refactor [--quick|--full|--profile|--security|--types]"
       },
       "installation": {
         "command": "/plugin install studio",
@@ -55,12 +56,19 @@
         "smiteVersion": ">=4.0.0",
         "nodeVersion": ">=18.0.0",
         "externalDependencies": ["grepai-cli (optional for semantic search)"]
-      }
+      },
+      "newInV3": [
+        "Lazy loading architecture for skills",
+        "Hooks system with validation and quality gates",
+        "MCP servers for memory and analytics",
+        "Quality gate script with scoring",
+        "Dual-layout documentation (README + GUIDE + REFERENCE)"
+      ]
     },
     {
       "id": "essentials",
       "name": "essentials",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "description": "Productivity utilities - auto-rename, shell aliases",
       "category": "productivity",
       "required": false,
@@ -83,6 +91,42 @@
         "smiteVersion": ">=4.0.0",
         "nodeVersion": ">=18.0.0"
       }
+    },
+    {
+      "id": "agents",
+      "name": "agents",
+      "version": "2.0.0",
+      "description": "23+ specialized agents for backend, frontend, workflow, database, and devops",
+      "category": "agents",
+      "required": false,
+      "dependencies": ["/core", "/studio"],
+      "features": [
+        "Backend agents: NestJS, Rust, Python, Go",
+        "Frontend agents: Next.js, Vite, React Native",
+        "Workflow agents: TDD, Performance, Security, TypeScript",
+        "Database agents: Prisma",
+        "DevOps agents: Docker",
+        "Agent discovery system"
+      ],
+      "commands": {
+        "discover": "/agents discover --tech=<stack>",
+        "list": "/agents list"
+      },
+      "installation": {
+        "command": "/plugin install agents",
+        "postInstall": null
+      },
+      "compatibility": {
+        "smiteVersion": ">=4.0.0",
+        "nodeVersion": ">=18.0.0"
+      }
     }
-  ]
+  ],
+  "migrationGuide": "See MIGRATION_v2_to_v3.md for v2.0 to v3.0 migration",
+  "documentation": {
+    "README": "README.md - 30-second hook",
+    "GUIDE": "GUIDE.md - Complete guide",
+    "REFERENCE": "REFERENCE.md - Cheat sheet",
+    "MIGRATION": "MIGRATION_v2_to_v3.md - Migration guide"
+  }
 }

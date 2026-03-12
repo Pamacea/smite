@@ -1,0 +1,17 @@
+{
+  "name": "smite-mcp-servers",
+  "version": "1.0.0",
+  "description": "MCP servers for SMITE plugin ecosystem",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "memory": "node mcp/memory-server.js",
+    "analytics": "node mcp/analytics-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

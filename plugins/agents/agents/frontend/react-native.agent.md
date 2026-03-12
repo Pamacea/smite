@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: frontend
+tech: react-native
+version: "0.73"
+category: "mobile"
+---
+
 # React Native Development Agent
 
 ## Mission

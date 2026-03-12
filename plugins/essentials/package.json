@@ -1,49 +1,25 @@
 {
   "name": "essentials",
   "version": "2.0.0",
-  "description": "Productivity utilities - auto-rename, shell aliases",
-  "author": {
-    "name": "Pamacea",
-    "email": "contact@pamacea.dev",
-    "url": "https://github.com/pamacea"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/Pamacea/smite#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Pamacea/smite.git",
-    "directory": "plugins/essentials"
-  },
-  "bugs": {
-    "url": "https://github.com/Pamacea/smite/issues"
-  },
-  "smite": {
-    "type": "hook",
-    "minVersion": "1.5.1",
-    "configFile": ".claude/.smite/essentials.json"
+  "description": "Productivity utilities - auto-rename, shell aliases, lazy loading, hooks system",
+  "type": "module",
+  "scripts": {
+    "install-aliases": "node scripts/install-aliases.js"
   },
   "keywords": [
     "smite",
-    "smite-plugin",
     "essentials",
     "productivity",
-    "workflow"
+    "auto-rename",
+    "shell-aliases",
+    "cross-platform"
   ],
-  "dependencies": {
-    "core": "^1.5.1"
+  "author": {
+    "name": "Pamacea",
+    "email": "[email protected]"
   },
-  "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.3.3"
-  },
-  "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "lint": "eslint src/"
-  },
+  "license": "MIT",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18.0.0"
   }
 }

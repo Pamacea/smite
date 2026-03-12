@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: devops
+tech: docker
+version: "latest"
+category: "containerization"
+---
+
 # Docker Development Agent
 
 ## Mission
