@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.0",
-  "description": "Complete development workflow - architect, build, refactor",
+  "version": "2.5.0",
+  "description": "Complete development workflow with lazy loading, hooks system, MCP integration, quality gates, and 12 composable flags",
   "author": {
     "name": "Pamacea",
     "email": "contact@pamacea.dev",

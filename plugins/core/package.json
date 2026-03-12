@@ -39,7 +39,16 @@
     "test:verify": "ts-node integration/run-tests.ts",
     "test:verify:lazy-loading": "ts-node -e \"require('./integration/__tests__/verification.test.ts').describe('Lazy Loading System')\"",
     "test:verify:model-routing": "ts-node -e \"require('./integration/__tests__/verification.test.ts').describe('Model Routing System')\"",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "init": "node scripts/init-core.js",
+    "validate": "node scripts/validate-plugin.js .",
+    "validate-plugin": "node scripts/validate-plugin.js",
+    "detect-platform": "node scripts/detect-platform.js",
+    "render-template": "node scripts/template-renderer.js",
+    "list-templates": "node scripts/template-renderer.js list",
+    "mcp:template": "node mcp/template-server.js",
+    "mcp:validation": "node mcp/validation-server.js",
+    "mcp:core": "node mcp/core-server.js"
   },
   "engines": {
     "node": ">=18.0.0",

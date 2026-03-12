@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: frontend
+tech: vite
+version: "5.0"
+category: "build-tool"
+---
+
 # Vite Development Agent
 
 ## Mission

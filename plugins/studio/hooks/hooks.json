@@ -1,0 +1,65 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"console.log('[SMITE Studio] v2.1.0 ready - Phase 1 complete')\" > /dev/null 2>&1 || exit 0",
+            "runInBackground": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/studio/scripts/validate-changes.sh",
+            "timeout": 5000,
+            "allowFailure": true
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/studio/scripts/validate-command.sh",
+            "timeout": 3000,
+            "allowFailure": true
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/studio/scripts/track-metrics.sh",
+            "runInBackground": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/studio/scripts/session-summary.sh",
+            "timeout": 10000,
+            "allowFailure": true
+          }
+        ]
+      }
+    ]
+  }
+}

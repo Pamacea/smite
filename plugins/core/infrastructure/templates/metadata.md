@@ -1,3 +1,11 @@
+---
+lazy_load: true
+category: "template"
+name: "metadata"
+version: "2.0.0"
+description: "Standard metadata templates for consistent documentation - command footers, plugin manifests, skill footers, changelogs"
+---
+
 # SMITE Core - Metadata Templates
 
 Standard metadata templates for consistent documentation across all plugins.

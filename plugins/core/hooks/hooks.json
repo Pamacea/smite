@@ -1,0 +1,86 @@
+{
+  "version": "2.0.0",
+  "description": "Centralized hooks for SMITE Core - SessionStart, PreToolUse, PostToolUse, Stop events",
+  "hooks": {
+    "SessionStart": [
+      {
+        "id": "core-init",
+        "priority": 100,
+        "action": "initialize",
+        "description": "Initialize core systems - lazy loading, platform detection, metrics"
+      },
+      {
+        "id": "lazy-load-init",
+        "priority": 90,
+        "action": "initLazyLoading",
+        "description": "Initialize lazy loading system for templates and skills"
+      },
+      {
+        "id": "platform-detect",
+        "priority": 80,
+        "action": "detectPlatform",
+        "description": "Detect and cache platform information (Windows/macOS/Linux)"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "id": "validate-tool-usage",
+        "matcher": "Write|Edit|Create",
+        "priority": 50,
+        "action": "validateToolUsage",
+        "description": "Validate tool usage before execution - check patterns, warn if needed"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "id": "track-template-usage",
+        "matcher": "Write|Edit",
+        "priority": 50,
+        "action": "trackTemplateUsage",
+        "description": "Track which templates are used most frequently"
+      },
+      {
+        "id": "track-platform-stats",
+        "priority": 40,
+        "action": "updatePlatformStats",
+        "description": "Update platform distribution statistics"
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "id": "validate-context",
+        "priority": 30,
+        "action": "validateContext",
+        "description": "Validate conversation context before processing"
+      }
+    ],
+    "Stop": [
+      {
+        "id": "core-metrics",
+        "priority": 100,
+        "action": "reportMetrics",
+        "description": "Report core metrics - template usage, platform stats, token savings"
+      },
+      {
+        "id": "cleanup-cache",
+        "priority": 50,
+        "action": "cleanupCache",
+        "description": "Clean up temporary caches and resources"
+      }
+    ]
+  },
+  "settings": {
+    "lazyLoading": {
+      "enabled": true,
+      "cacheSize": 100,
+      "cacheTTL": 3600000
+    },
+    "metrics": {
+      "enabled": true,
+      "storagePath": ".smite/core/metrics.json"
+    },
+    "platform": {
+      "cachePath": ".smite/core/platform-cache.json"
+    }
+  }
+}

@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: backend
+tech: rust
+version: "2024"
+category: "language"
+---
+
 # Rust Development Agent
 
 ## Mission

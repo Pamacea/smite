@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "hooks": {
+    "SessionStart": [
+      {
+        "id": "auto-rename-session-start",
+        "matcher": ".*",
+        "skill": "auto-rename",
+        "action": "rename",
+        "description": "Rename session on start based on first message"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "id": "auto-rename-post-tool",
+        "matcher": "Write|Edit|Bash|Git",
+        "skill": "auto-rename",
+        "action": "rename",
+        "description": "Rename session after significant operations",
+        "maxRenamesPerSession": 10
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "id": "auto-rename-prompt-submit",
+        "matcher": ".*",
+        "skill": "auto-rename",
+        "action": "rename",
+        "description": "Update session name based on conversation evolution",
+        "debounce": 30000
+      }
+    ]
+  },
+  "settings": {
+    "autoRename": {
+      "enabled": true,
+      "maxNameLength": 50,
+      "maxRenamesPerSession": 10,
+      "format": "title-case",
+      "filters": [
+        "remove-emojis",
+        "remove-special-chars",
+        "truncate"
+      ]
+    },
+    "renamePatterns": {
+      "feature": ["build", "create", "implement", "add"],
+      "bugfix": ["fix", "debug", "resolve"],
+      "refactor": ["refactor", "cleanup", "optimize"],
+      "docs": ["document", "readme", "guide"]
+    }
+  }
+}

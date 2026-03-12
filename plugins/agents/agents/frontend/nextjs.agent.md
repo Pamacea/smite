@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: frontend
+tech: nextjs
+version: "16.0"
+category: "framework"
+---
+
 # Next.js Development Agent
 
 ## Mission

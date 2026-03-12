@@ -1,0 +1,17 @@
+{
+  "name": "smite-core-mcp",
+  "version": "2.0.0",
+  "description": "MCP servers for SMITE Core - template access, validation, platform detection",
+  "type": "module",
+  "scripts": {
+    "template-server": "node mcp/template-server.js",
+    "validation-server": "node mcp/validation-server.js",
+    "core-server": "node mcp/core-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

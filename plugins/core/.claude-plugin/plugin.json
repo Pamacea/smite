@@ -1,7 +1,7 @@
 {
   "name": "core",
-  "description": "Shared utilities, templates, and schemas for all SMITE plugins",
   "version": "2.0.0",
+  "description": "Shared infrastructure for all SMITE plugins with lazy loading, templates, validation, hooks, MCP integration, and cross-platform support",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
@@ -9,5 +9,14 @@
   "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/core",
   "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "keywords": ["utilities", "templates", "validation", "schemas", "platform", "shared"]
+  "keywords": [
+    "infrastructure",
+    "templates",
+    "validation",
+    "lazy-loading",
+    "cross-platform",
+    "hooks",
+    "mcp",
+    "metrics"
+  ]
 }
