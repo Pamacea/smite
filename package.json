@@ -1,15 +1,20 @@
 {
   "name": "smite",
-  "version": "2.1.0",
-  "description": "SMITE - Multi-agent orchestration with skills quality revolution + 4-flag composable system",
+  "version": "2.5.0",
+  "description": "SMITE - Multi-agent orchestration with cross-platform support, lazy loading, hooks system, MCP integration, and comprehensive test coverage",
   "private": true,
+  "type": "module",
   "workspaces": [
     "plugins/*"
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
-    "test:toolkit": "npm run test --workspace=plugins/toolkit",
-    "test:ralph": "npm run test --workspace=plugins/ralph",
+    "test:cross-platform": "node scripts/test-cross-platform.js",
+    "test:all": "npm run test:cross-platform && npm run test --workspaces --if-present",
+    "test:studio": "npm run test --workspace=plugins/studio",
+    "test:agents": "npm run test --workspace=plugins/agents",
+    "test:essentials": "npm run test --workspace=plugins/essentials",
+    "test:core": "npm run test --workspace=plugins/core",
     "test:coverage": "npm run test --workspaces --if-present -- --coverage",
     "lint": "npm run lint --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",

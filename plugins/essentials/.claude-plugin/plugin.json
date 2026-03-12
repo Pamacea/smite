@@ -1,12 +1,33 @@
 {
   "name": "essentials",
   "version": "2.0.0",
-  "description": "Productivity utilities - auto-rename, shell aliases",
+  "description": "Productivity utilities with auto-rename, shell aliases, lazy loading, hooks system, and cross-platform support",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
   },
   "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/essentials",
   "repository": "https://github.com/Pamacea/smite",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "productivity",
+    "auto-rename",
+    "shell-aliases",
+    "cross-platform",
+    "hooks",
+    "session-management"
+  ],
+  "capabilities": {
+    "skills": true,
+    "hooks": true,
+    "commands": true
+  },
+  "features": {
+    "lazy_loading": "Skills loaded on-demand with lazy_load frontmatter",
+    "hooks": "SessionStart, PostToolUse, UserPromptSubmit event handlers",
+    "cross_platform": "Windows (PowerShell, cmd), macOS (Bash, Zsh), Linux (Bash, Zsh)",
+    "auto_rename": "Intelligent session renaming with Action: Context format",
+    "shell_aliases": "cc (normal) and ccc (bypass) aliases for Claude Code",
+    "centralized_hooks": "Single hooks.json configuration file"
+  }
 }

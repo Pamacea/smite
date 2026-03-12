@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: database
+tech: prisma
+version: "5.0"
+category: "orm"
+---
+
 # Prisma Database Agent
 
 ## Mission

@@ -1,3 +1,11 @@
+---
+lazy_load: true
+domain: workflow
+tech: planning
+version: "1.0.0"
+category: "development"
+---
+
 # Planner Agent
 
 > **Version:** 1.0.0 | **Category:** Workflow

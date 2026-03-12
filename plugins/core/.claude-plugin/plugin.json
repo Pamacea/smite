@@ -1,7 +1,7 @@
 {
   "name": "core",
-  "description": "Shared utilities, templates, and schemas for all SMITE plugins",
   "version": "2.0.0",
+  "description": "Shared infrastructure for all SMITE plugins with lazy loading, templates, validation, hooks, MCP integration, and cross-platform support",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
@@ -9,5 +9,32 @@
   "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/core",
   "repository": "https://github.com/Pamacea/smite",
   "license": "MIT",
-  "keywords": ["utilities", "templates", "validation", "schemas", "platform", "shared"]
+  "keywords": [
+    "infrastructure",
+    "templates",
+    "validation",
+    "lazy-loading",
+    "cross-platform",
+    "hooks",
+    "mcp",
+    "metrics"
+  ],
+  "capabilities": {
+    "templates": true,
+    "validation": true,
+    "hooks": true,
+    "mcp": true,
+    "scripts": true,
+    "lazy_loading": true
+  },
+  "features": {
+    "lazy_loading": "60% token reduction with on-demand template loading",
+    "template_engine": "Markdown templates with variable substitution",
+    "validation_schemas": "JSON schemas for plugin/config validation",
+    "platform_detection": "Cross-platform detection (Windows/macOS/Linux)",
+    "hooks_system": "Centralized hook registry for all plugins",
+    "mcp_integration": "3 MCP servers (templates, validation, core)",
+    "cross_platform_scripts": "Node.js scripts for Win/Mac/Linux",
+    "metrics": "Template usage tracking and platform statistics"
+  }
 }

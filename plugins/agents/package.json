@@ -1,8 +1,13 @@
 {
-  "name": "@smite/agents",
+  "name": "agents",
   "version": "2.0.0",
   "description": "Specialized development agents by domain",
   "private": true,
+  "scripts": {
+    "test": "echo \"No tests yet\"",
+    "validate": "node scripts/validate-agent.sh",
+    "init": "node scripts/init-agents.sh"
+  },
   "smite": {
     "id": "agents",
     "version": "2.0.0",

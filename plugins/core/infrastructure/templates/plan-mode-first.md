@@ -1,3 +1,11 @@
+---
+lazy_load: true
+category: "template"
+name: "plan-mode-first"
+version: "2.0.0"
+description: "OBLIGATORY plan mode template before significant actions - subagents, multi-file changes, refactoring, testing"
+---
+
 # Plan Mode First - Template
 
 **OBLIGATOIRE avant toute action significative.**
@@ -187,5 +195,4 @@ Voici mon plan:
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: 2025-02-02
+**Version**: 2.0.0 | **Last Updated**: 2026-03-12

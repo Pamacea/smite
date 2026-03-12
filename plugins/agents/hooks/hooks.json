@@ -1,0 +1,54 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"console.log('[SMITE Agents] v2.0.0 ready - 23 agents available')\" > /dev/null 2>&1 || exit 0",
+            "runInBackground": true
+          }
+        ]
+      }
+    ],
+    "PreAgentInvoke": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/agents/scripts/validate-agent.sh",
+            "timeout": 3000,
+            "allowFailure": true
+          }
+        ]
+      }
+    ],
+    "PostAgentInvoke": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/agents/scripts/track-usage.sh",
+            "runInBackground": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./plugins/agents/scripts/agent-metrics.sh",
+            "timeout": 10000,
+            "allowFailure": true
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,3 +1,12 @@
+---
+lazy_load: true
+domain: backend
+tech: express
+version: "latest"
+category: "api"
+aliases: ["fastify", "nextjs-api"]
+---
+
 # Route API Agent
 
 ## Mission

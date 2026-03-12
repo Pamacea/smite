@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.0",
-  "description": "Complete development workflow with lazy loading, model routing, progressive build, multi-agent review, and analytics",
+  "version": "2.5.0",
+  "description": "Complete development workflow with lazy loading, hooks system, MCP integration, quality gates, and 12 composable flags",
   "author": {
     "name": "Pamacea",
     "email": "[email protected]"
@@ -19,6 +19,23 @@
     "performance",
     "typescript",
     "git",
-    "documentation"
-  ]
+    "documentation",
+    "mcp",
+    "hooks",
+    "quality-gates"
+  ],
+  "capabilities": {
+    "skills": true,
+    "hooks": true,
+    "mcp": true,
+    "commands": true
+  },
+  "features": {
+    "lazy_loading": "Skills loaded on-demand with disable-model-invocation",
+    "hooks": "PreToolUse, PostToolUse, SessionStart, Stop event handlers",
+    "mcp_servers": "Memory and analytics MCP servers",
+    "quality_gates": "Automatic quality scoring and validation",
+    "progressive_build": "Checkpoint-based incremental implementation",
+    "dual_layout_docs": "README + GUIDE + REFERENCE documentation"
+  }
 }

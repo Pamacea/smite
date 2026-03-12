@@ -1,0 +1,42 @@
+{
+  "name": "agents",
+  "version": "2.0.0",
+  "description": "23+ specialized development agents organized by domain with lazy loading, hooks system, MCP integration, and pattern library",
+  "author": {
+    "name": "Pamacea",
+    "email": "[email protected]"
+  },
+  "homepage": "https://github.com/Pamacea/smite/tree/main/plugins/agents",
+  "repository": "https://github.com/Pamacea/smite",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "frontend",
+    "backend",
+    "database",
+    "devops",
+    "workflow",
+    "optimization",
+    "testing",
+    "nextjs",
+    "rust",
+    "nestjs",
+    "prisma",
+    "mcp",
+    "hooks",
+    "agent-discovery"
+  ],
+  "capabilities": {
+    "agents": true,
+    "hooks": true,
+    "mcp": true
+  },
+  "features": {
+    "agent_discovery": "Auto-discovery via --tech flag",
+    "lazy_loading": "Agents loaded on-demand with lazy_load frontmatter",
+    "hooks": "SessionStart, PreAgentInvoke, PostAgentInvoke, Stop handlers",
+    "mcp_servers": "Agent discovery and pattern library MCP servers",
+    "pattern_library": "Store and retrieve code patterns by domain/tech",
+    "metrics": "Usage tracking and analytics per agent"
+  }
+}
