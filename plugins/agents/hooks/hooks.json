@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"console.log('[SMITE Agents] v2.0.0 ready')\" > /dev/null 2>&1 || exit 0",
+            "command": "node -e \"console.log('[SMITE Agents] v2.0.0 ready')\" > nul 2>&1 || exit 0",
             "runInBackground": true
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-agent.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/validate-agent.mjs",
             "timeout": 3000,
             "allowFailure": true
           }
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/track-usage.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/track-usage.mjs",
             "runInBackground": true
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/agent-metrics.sh",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/agent-metrics.mjs",
             "timeout": 10000,
             "allowFailure": true
           }
