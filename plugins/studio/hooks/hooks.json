@@ -6,57 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node -e \"console.log('[SMITE Studio] v2.1.0 ready - Phase 1 complete')\" > /dev/null 2>&1 || exit 0",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/session-start.js",
             "runInBackground": true
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-changes.sh",
-            "timeout": 5000,
-            "allowFailure": true
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-command.sh",
-            "timeout": 3000,
-            "allowFailure": true
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/track-metrics.sh",
-            "runInBackground": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/session-summary.sh",
-            "timeout": 10000,
-            "allowFailure": true
           }
         ]
       }
