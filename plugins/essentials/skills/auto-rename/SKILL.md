@@ -11,22 +11,37 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 
 ---
 
-## When to Use
+## Usage Guidelines
 
-- **Automatic**: Runs automatically on hooks (no manual invocation needed)
-- **Manual override**: Use `/rename "custom name"` for specific names
-- **After session start**: Automatically sets initial name
-- **After significant work**: Automatically updates name based on context
+### Automatic Activation
 
-### Examples
+The skill runs automatically on three key hooks:
+
+| Hook | When it Triggers | What it Does |
+|------|-----------------|--------------|
+| **SessionStart** | When a session begins | Sets initial name from first meaningful message |
+| **PostToolUse** | After code operations (Write, Bash, git) | Updates name based on work performed |
+| **UserPromptSubmit** | After significant conversation | Refines name as session evolves |
+
+### Smart Filtering
+
+The system intelligently avoids unnecessary renames by:
+
+- **Skipping command/skill invocations**: Only processes genuine user requests
+- **Filtering system messages**: Ignores <command->, <objective>, <process> artifacts
+- **Rate limiting**: Maximum 10 automatic renames prevents spam
+- **Quality threshold**: Only renames when meaningful improvement detected
+
+### Manual Override
+
 ```bash
-# Automatic (runs on hooks)
-# No action needed - runs automatically
+# Automatic (runs on hooks - no action needed)
+# The system handles everything automatically
 
-# Manual override
+# Manual override when you want custom names
 /rename "Build JWT authentication system"
 
-# Auto-generated examples
+# Auto-generated examples (for reference)
 "Fix: login bug"
 "Add: user CRUD API"
 "Refactor: auth system"
@@ -35,21 +50,17 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 
 ---
 
-## When NOT to Use
-
-- During command/skill invocations (automatically skipped)
-- For system-generated messages (filtered out automatically)
-- When session name is already perfect (max renames limit prevents spam)
-
 ## Core Workflow
 
 1. **Input**: Hook trigger (SessionStart, PostToolUse, UserPromptSubmit)
 2. **Process**:
-   - Skip command/skill invocations (system-generated messages)
+   - Intelligently skip command/skill invocations (system-generated messages)
    - Analyze session context (first real user message, recent tools, project)
    - Generate concise name following "Action: Context" format
    - Update session .jsonl file with system message
 3. **Output**: Session renamed and visible in history/resume
+
+---
 
 ## Key Principles
 
@@ -58,6 +69,9 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 - **Command artifact filtering**: Skips <command->, <objective>, <process> tags from skills
 - **Dynamic updates**: Name evolves as session progresses
 - **Manual override**: `/rename` command available for custom names
+- **User control**: Always respects manual naming preferences
+
+---
 
 ## Name Format
 
@@ -75,6 +89,8 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 | **Docs** | Documentation | `Docs: API README` |
 | **Config** | Configuration | `Config: env variables` |
 
+---
+
 ## Integration
 
 - **SessionStart hook**: Analyzes first message, sets initial name
@@ -83,12 +99,16 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 - **Manual command**: `/rename` for custom or auto-generated names
 - **Storage**: System messages in .jsonl session files
 
+---
+
 ## Configuration
 
 - **maxSessionNameLength**: 50 characters (default)
 - **maxRenamesPerSession**: 10 automatic renames (default)
 - **renameTriggers**: Control which hooks activate (sessionStart, postToolUse, userPromptSubmit)
 - **Config file**: `config/settings.json`
+
+---
 
 ## Error Handling
 
@@ -100,16 +120,16 @@ Automatically rename Claude Code sessions with intelligent, context-aware names 
 
 ---
 
-## Anti-Patterns
+## Design Principles
 
-| Anti-Pattern | Problem | Fix |
-|-------------|---------|-----|
-| Renaming on every message | Annoying, spammy | Maximum 10 automatic renames per session |
-| Including command artifacts | Confusing names | Filters out <command->, <objective>, <process> tags |
-| Generic names | Not useful | Uses specific "Action: Context" format |
-| Renaming during skill execution | Distracting | Skips system-generated messages |
-| Not evolving with session | Outdated context | Updates based on conversation progress |
-| Manual override not working | Frustrating | Always allows manual /rename command |
+| Principle | Implementation | Benefit |
+|-----------|----------------|---------|
+| **Rate Limiting** | Maximum 10 automatic renames per session | Prevents spam, maintains focus |
+| **Smart Filtering** | Filters out <command->, <objective>, <process> tags | Clean, meaningful names |
+| **Specific Naming** | Uses "Action: Context" format with clear prefixes | Instant session understanding |
+| **Non-Intrusive Operation** | Skips system-generated and skill execution messages | No distraction during work |
+| **Contextual Evolution** | Updates name based on conversation progress | Names stay relevant |
+| **User Sovereignty** | Manual /rename command always available | Full control when needed |
 
 ---
 

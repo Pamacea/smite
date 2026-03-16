@@ -1,6 +1,6 @@
 {
   "name": "smite",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "SMITE - Multi-agent orchestration with cross-platform support, lazy loading, hooks system, MCP integration, and comprehensive test coverage",
   "private": true,
   "type": "module",

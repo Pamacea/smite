@@ -5,6 +5,72 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-03-16
+
+### PATCH - Positive Framing Refactoring
+
+**Transformation systématique des contraintes négatives en instructions positives**
+
+### ✨ Skills Documentation Optimization
+
+#### Build Skill (v3.1.0)
+- **Transformed**: 560 → 318 lines (-43% reduction)
+- **"When NOT to Use"** → **"Scope Definition"** (positive framing)
+- **"PROHIBITED WITHOUT EXCEPTION"** → **"Preferred Tools"** (action-oriented)
+- **Created companion**: `build/REFERENCE.md` (478 lines detailed documentation)
+
+#### Refactor Skill (v2.1.0)
+- **Transformed**: 884 → 231 lines (-74% reduction)
+- **"TOOL GATEKEEPER - NON-NEGOTIABLE"** → **"Tool Selection Standards"**
+- **"NEVER use these tools"** → **"Use grepai search or /toolkit search"**
+- **Created companion**: `refactor/REFERENCE.md` (478 lines detailed documentation)
+
+#### Auto-Rename Skill (v3.1.2)
+- **Already optimized at 136 lines**
+- **"When NOT to Use"** → **"Usage Guidelines"**
+- **"Anti-Patterns"** → **"Design Principles"**
+
+### 🔧 Technical Improvements
+
+**Positive Framing Methodology:**
+- Negative constraints → Actionable positive instructions
+- "NEVER/INTERDIT/NO" → "ALWAYS/USE/DO" statements
+- "PROHIBITED" → "Preferred/Recommended" alternatives
+- "Anti-Patterns" → "Best Practices" or "Design Principles"
+
+**File Size Optimization:**
+- All SKILL.md files now < 500 lines (best practice compliance)
+- Detailed content extracted to REFERENCE.md companions
+- SKILL.md serves as entry point, REFERENCE.md for deep dives
+
+**Cross-Reference System:**
+- `@REFERENCE.md` imports in SKILL.md files
+- Seamless navigation between entry points and detailed docs
+- Maintained all functionality while improving readability
+
+### 📊 Metrics
+
+| File | Before | After | Reduction |
+|------|--------|-------|-----------|
+| build/SKILL.md | 560 lines | 318 lines | -43% |
+| refactor/SKILL.md | 884 lines | 231 lines | -74% |
+| auto-rename/SKILL.md | Already optimized | 136 lines | ✓ |
+| optional/refactor/SKILL.md | Already optimized | 210 lines | ✓ |
+
+### 🔄 Migration Notes
+
+**No Breaking Changes:**
+- All functionality preserved
+- All workflows intact
+- Only documentation quality improved
+
+**Benefits:**
+- Faster skill loading (reduced file sizes)
+- Clearer intent (positive vs negative)
+- Better maintainability (modular documentation)
+
+---
+
 ## [2.5.0] - 2026-03-12 🎉
 
 ### 🚀 RELEASE - Cross-Platform Complete Test Suite
@@ -770,7 +836,9 @@ See:
 - Initial project structure
 - Proof of concept
 
-[Unreleased]: https://github.com/Pamacea/smite/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Pamacea/smite/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/Pamacea/smite/compare/v2.5.0...v2.5.1
+[2.5.0]: https://github.com/Pamacea/smite/compare/v2.1.0...v2.5.0
 [2.1.0]: https://github.com/Pamacea/smite/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Pamacea/smite/compare/v1.6.6...v2.0.0
 [1.6.6]: https://github.com/Pamacea/smite/compare/v1.6.5...v1.6.6
